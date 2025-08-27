@@ -44,7 +44,9 @@ def write_sarif(path: str, run: SarifRun) -> None:
         json.dump(sarif, f, indent=2)
 
 
-def make_location(file_path: str, line: int | None = None, column: int | None = None) -> Dict[str, Any]:
+def make_location(
+    file_path: str, line: int | None = None, column: int | None = None
+) -> Dict[str, Any]:
     region: Dict[str, Any] = {}
     if line is not None:
         region["startLine"] = line
@@ -57,5 +59,3 @@ def make_location(file_path: str, line: int | None = None, column: int | None = 
         }
     }
     return location
-
-
