@@ -33,5 +33,3 @@ def test_sarif_write_and_location(tmp_path: Path):
     region = res["locations"][0]["physicalLocation"]["region"]
     assert region["startLine"] == 10
     assert region["startColumn"] == 2
-
-

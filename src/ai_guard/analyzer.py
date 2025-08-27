@@ -7,7 +7,7 @@ import json
 import sys
 from typing import List
 
-from .config import Gates
+from .config import load_config
 from .report import GateResult, summarize
 from .diff_parser import changed_python_files
 from .sarif_report import SarifRun, SarifResult, write_sarif, make_location
@@ -20,7 +20,8 @@ def cov_percent() -> int:
     Returns:
         Coverage percentage as integer
     """
-    import xml.etree.ElementTree as ET
+    # Harden XML parsing against XML-based attacks
+    from defusedxml import ElementTree as ET
 
     try:
         tree = ET.parse("coverage.xml")
@@ -186,7 +187,9 @@ def run_security_check() -> tuple[GateResult, List[SarifResult]]:
             capture_output=True,
         )
         sarif = _parse_bandit_json(proc.stdout)
-        return GateResult("Security (bandit)", proc.returncode == 0), sarif
+        # Treat HIGH severity as blocking; MEDIUM/LOW are warnings
+        passed = not any(r.level == "error" for r in sarif)
+        return GateResult("Security (bandit)", passed), sarif
     except FileNotFoundError:
         return GateResult("Security (bandit)", False, "bandit not found"), []
 
@@ -209,11 +212,12 @@ def run_coverage_check(min_coverage: int) -> GateResult:
 def main() -> None:
     """Main entry point for AI-Guard analyzer."""
     parser = argparse.ArgumentParser(description="AI-Guard Quality Gate Analyzer")
+    default_gates = load_config()
     parser.add_argument(
         "--min-cov",
         type=int,
-        default=Gates().min_coverage,
-        help=f"Minimum coverage percentage (default: {Gates().min_coverage})",
+        default=default_gates.min_coverage,
+        help=f"Minimum coverage percentage (default: {default_gates.min_coverage})",
     )
     parser.add_argument(
         "--skip-tests", action="store_true", help="Skip running tests (useful for CI)"

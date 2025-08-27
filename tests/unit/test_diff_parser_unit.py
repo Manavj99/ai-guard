@@ -16,5 +16,3 @@ def test_parse_github_event_roundtrip(tmp_path: Path):
     parsed = parse_github_event(str(p))
     assert parsed["pull_request"]["base"]["sha"] == "base123"
     assert _get_base_head_from_event(str(p)) == ("base123", "head456")
-
-

@@ -17,6 +17,20 @@ Modern teams ship faster with AI. AI-Guard keeps quality high with automated, op
 pip install -r requirements.txt
 pytest -q
 ```
+## CLI
+
+Run with CLI (defaults read from `ai-guard.toml` if present):
+
+```bash
+python -m src.ai_guard check --min-cov 80 --skip-tests --sarif ai-guard.sarif
+```
+
+Minimal config file example `ai-guard.toml`:
+
+```toml
+[gates]
+min_coverage = 80
+```
 
 Push a PR: the GitHub Action runs AI-Guard and fails the check if gates aren't met.
 
