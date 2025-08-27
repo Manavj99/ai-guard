@@ -2,11 +2,15 @@
 
 import argparse
 import subprocess
+import re
+import json
 import sys
 from typing import List
 
 from .config import Gates
 from .report import GateResult, summarize
+from .diff_parser import changed_python_files
+from .sarif_report import SarifRun, SarifResult, write_sarif, make_location
 from .tests_runner import run_pytest_with_coverage
 from .security_scanner import run_bandit
 
@@ -27,43 +31,134 @@ def cov_percent() -> int:
         return 0
 
 
-def run_lint_check() -> GateResult:
+def _parse_flake8_output(output: str) -> List[SarifResult]:
+    results: List[SarifResult] = []
+    pattern = re.compile(r"^(?P<file>.*?):(?P<line>\d+):(?P<col>\d+): (?P<code>[A-Z]\d{3,4}) (?P<msg>.*)$")
+    for line in output.splitlines():
+        m = pattern.match(line.strip())
+        if not m:
+            continue
+        file_path = m.group("file")
+        line_no = int(m.group("line"))
+        col_no = int(m.group("col"))
+        code = m.group("code")
+        msg = m.group("msg")
+        results.append(
+            SarifResult(
+                rule_id=f"flake8:{code}",
+                level="warning",
+                message=f"{code} {msg}",
+                locations=[make_location(file_path, line_no, col_no)],
+            )
+        )
+    return results
+
+
+def _parse_mypy_output(output: str) -> List[SarifResult]:
+    results: List[SarifResult] = []
+    pattern = re.compile(
+        r"^(?P<file>.*?):(?P<line>\d+):(?:(?P<col>\d+):)? (?P<level>error|note|warning): (?P<msg>.*?)(?: \[(?P<code>[^\]]+)\])?$"
+    )
+    for line in output.splitlines():
+        m = pattern.match(line.strip())
+        if not m:
+            continue
+        file_path = m.group("file")
+        line_no = int(m.group("line"))
+        col = m.group("col")
+        col_no = int(col) if col else None
+        level = m.group("level")
+        msg = m.group("msg")
+        code = m.group("code") or "mypy-error"
+        sarif_level = "error" if level == "error" else ("warning" if level == "warning" else "note")
+        results.append(
+            SarifResult(
+                rule_id=f"mypy:{code}",
+                level=sarif_level,
+                message=msg,
+                locations=[make_location(file_path, line_no, col_no)],
+            )
+        )
+    return results
+
+
+def run_lint_check(paths: List[str] | None = None) -> tuple[GateResult, List[SarifResult]]:
     """Run flake8 linting check.
     
     Returns:
         GateResult for linting
     """
     try:
-        rc = subprocess.call(["flake8", "src", "tests"])
-        return GateResult("Lint (flake8)", rc == 0)
+        cmd = ["flake8"]
+        if paths:
+            cmd.extend(paths)
+        else:
+            cmd.extend(["src", "tests"])
+        proc = subprocess.run(cmd, text=True, capture_output=True)
+        sarif = _parse_flake8_output(proc.stdout + "\n" + proc.stderr)
+        return GateResult("Lint (flake8)", proc.returncode == 0), sarif
     except FileNotFoundError:
-        return GateResult("Lint (flake8)", False, "flake8 not found")
+        return GateResult("Lint (flake8)", False, "flake8 not found"), []
 
 
-def run_type_check() -> GateResult:
+def run_type_check(paths: List[str] | None = None) -> tuple[GateResult, List[SarifResult]]:
     """Run mypy type checking.
     
     Returns:
         GateResult for type checking
     """
     try:
-        rc = subprocess.call(["mypy", "src"])
-        return GateResult("Static types (mypy)", rc == 0)
+        cmd = ["mypy", "--show-error-codes", "--no-color-output", "--no-error-summary"]
+        if paths:
+            cmd.extend(paths)
+        else:
+            cmd.append("src")
+        proc = subprocess.run(cmd, text=True, capture_output=True)
+        sarif = _parse_mypy_output(proc.stdout + "\n" + proc.stderr)
+        return GateResult("Static types (mypy)", proc.returncode == 0), sarif
     except FileNotFoundError:
-        return GateResult("Static types (mypy)", False, "mypy not found")
+        return GateResult("Static types (mypy)", False, "mypy not found"), []
 
 
-def run_security_check() -> GateResult:
+def _parse_bandit_json(output: str) -> List[SarifResult]:
+    """Parse Bandit's JSON output into SARIF results."""
+    results: List[SarifResult] = []
+    try:
+        data = json.loads(output or "{}")
+    except json.JSONDecodeError:
+        return results
+
+    issues = data.get("results") or []
+    for issue in issues:
+        file_path = issue.get("filename") or issue.get("file_name") or ""
+        line_no = issue.get("line_number")
+        test_id = issue.get("test_id") or "bandit-issue"
+        message = issue.get("issue_text") or issue.get("issue_severity") or "Bandit issue"
+        sev = (issue.get("issue_severity") or "LOW").upper()
+        level = "note"
+        if sev == "MEDIUM":
+            level = "warning"
+        if sev == "HIGH":
+            level = "error"
+        location = make_location(file_path, int(line_no) if isinstance(line_no, int) else None, None)
+        results.append(SarifResult(rule_id=f"bandit:{test_id}", level=level, message=message, locations=[location]))
+    return results
+
+
+def run_security_check() -> tuple[GateResult, List[SarifResult]]:
     """Run bandit security scan.
     
     Returns:
         GateResult for security scanning
     """
     try:
-        rc = run_bandit()
-        return GateResult("Security (bandit)", rc == 0)
+        # Prefer JSON output for SARIF conversion
+        proc = subprocess.run(["bandit", "-r", "src", "-c", ".bandit", "-f", "json", "-q"],
+                              text=True, capture_output=True)
+        sarif = _parse_bandit_json(proc.stdout)
+        return GateResult("Security (bandit)", proc.returncode == 0), sarif
     except FileNotFoundError:
-        return GateResult("Security (bandit)", False, "bandit not found")
+        return GateResult("Security (bandit)", False, "bandit not found"), []
 
 
 def run_coverage_check(min_coverage: int) -> GateResult:
@@ -88,18 +183,34 @@ def main() -> None:
                        help=f"Minimum coverage percentage (default: {Gates().min_coverage})")
     parser.add_argument("--skip-tests", action="store_true",
                        help="Skip running tests (useful for CI)")
+    parser.add_argument("--event", type=str, default=None,
+                       help="Path to GitHub event JSON to scope changed files")
+    parser.add_argument("--sarif", type=str, default="ai-guard.sarif",
+                       help="Output SARIF file path")
     args = parser.parse_args()
 
     results: List[GateResult] = []
+    sarif_diagnostics: List[SarifResult] = []
 
-    # Lint check
-    results.append(run_lint_check())
+    # Determine changed Python files (for scoping)
+    changed_py = changed_python_files(args.event)
 
-    # Type check
-    results.append(run_type_check())
+    # Lint check (scoped to changed files if available)
+    lint_scope = [p for p in changed_py if p.endswith(".py")] or None
+    lint_gate, lint_sarif = run_lint_check(lint_scope)
+    results.append(lint_gate)
+    sarif_diagnostics.extend(lint_sarif)
+
+    # Type check (scoped where possible)
+    type_scope = [p for p in (lint_scope or []) if p.startswith("src/")] or None
+    type_gate, mypy_sarif = run_type_check(type_scope)
+    results.append(type_gate)
+    sarif_diagnostics.extend(mypy_sarif)
 
     # Security check
-    results.append(run_security_check())
+    sec_gate, bandit_sarif = run_security_check()
+    results.append(sec_gate)
+    sarif_diagnostics.extend(bandit_sarif)
 
     # Coverage check
     results.append(run_coverage_check(args.min_cov))
@@ -110,8 +221,16 @@ def main() -> None:
         test_rc = run_pytest_with_coverage()
         results.append(GateResult("Tests", test_rc == 0))
 
-    # Summarize and exit
+    # Summarize
     exit_code = summarize(results)
+
+    # SARIF emission (basic run with results summary)
+    # Compose SARIF run: include diagnostics plus overall gate statuses as notes
+    gate_summaries: List[SarifResult] = [
+        SarifResult(rule_id=f"gate:{r.name}", level=("note" if r.passed else "error"), message=r.details or r.name)
+        for r in results
+    ]
+    write_sarif(args.sarif, SarifRun(tool_name="ai-guard", results=sarif_diagnostics + gate_summaries))
     sys.exit(exit_code)
 
 
