@@ -2,6 +2,9 @@
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [project]
 name = "ai-guard"
 version = "0.1.0"
@@ -13,6 +16,12 @@ authors = [
     {name = "AI-Guard Contributors"}
 ]
 keywords = ["code-quality", "ci-cd", "testing", "security", "ai"]
+dependencies = [
+    "typer>=0.12.5",
+    "rich>=13.7.1",
+    "tomli>=2.0.1",
+    "defusedxml>=0.7.1",
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
