@@ -40,3 +40,4 @@ Push a PR: the GitHub Action runs AI-Guard and fails the check if gates aren't m
 * LLM-assisted test synthesis (opt-in)
 * SARIF output + PR annotations
 * Language adapters (JS/TS, Go, Rust)
+" " 
