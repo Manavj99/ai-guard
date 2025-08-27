@@ -1,0 +1,4 @@
+[bandit]
+targets: src
+exclude: tests
+skips: B101
