@@ -9,8 +9,6 @@ on:
 jobs:
   guard:
     runs-on: ubuntu-latest
-    env:
-      PYTHONPATH: ${{ github.workspace }}/src
 
     permissions:
       contents: read
@@ -41,13 +39,19 @@ jobs:
         run: bandit -r src -x tests -s B101 -q || true
 
       - name: Run tests with coverage
-        run: pytest -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml
+        run: |
+          cd src
+          python -m pytest ../tests -q --maxfail=1 --disable-warnings --cov=. --cov-report=xml
+        working-directory: ${{ github.workspace }}
 
       - name: Generate speculative tests for changed code
         run: python -m src.ai_guard.generators.testgen --event "$GITHUB_EVENT_PATH"
 
       - name: Re-run tests with speculative tests
-        run: pytest -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml
+        run: |
+          cd src
+          python -m pytest ../tests -q --maxfail=1 --disable-warnings --cov=. --cov-report=xml
+        working-directory: ${{ github.workspace }}
 
       - name: Dependency vulnerability scan (pip-audit)
         run: pip-audit -r requirements.txt || exit 1
