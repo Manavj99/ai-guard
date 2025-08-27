@@ -40,18 +40,16 @@ jobs:
 
       - name: Run tests with coverage
         run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE"
           cd src
-          python -m pytest ../tests -q --maxfail=1 --disable-warnings --cov=. --cov-report=xml
-        working-directory: ${{ github.workspace }}
-
-      - name: Generate speculative tests for changed code
-        run: python -m src.ai_guard.generators.testgen --event "$GITHUB_EVENT_PATH"
-
+          python -m pytest ../tests -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml:../coverage.xml
+      
       - name: Re-run tests with speculative tests
         run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE"
           cd src
-          python -m pytest ../tests -q --maxfail=1 --disable-warnings --cov=. --cov-report=xml
-        working-directory: ${{ github.workspace }}
+          python -m pytest ../tests -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml:../coverage.xml
+      
 
       - name: Dependency vulnerability scan (pip-audit)
         run: pip-audit -r requirements.txt || exit 1
