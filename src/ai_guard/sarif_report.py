@@ -47,15 +47,20 @@ def write_sarif(path: str, run: SarifRun) -> None:
 def make_location(
     file_path: str, line: int | None = None, column: int | None = None
 ) -> Dict[str, Any]:
+    # Normalize file path to use forward slashes for GitHub compatibility
+    normalized_path = file_path.replace("\\", "/")
+
     region: Dict[str, Any] = {}
     if line is not None:
         region["startLine"] = line
     if column is not None:
         region["startColumn"] = column
+
+    # Always include region if we have line information
     location: Dict[str, Any] = {
         "physicalLocation": {
-            "artifactLocation": {"uri": file_path},
-            **({"region": region} if region else {}),
+            "artifactLocation": {"uri": normalized_path},
+            "region": region,
         }
     }
     return location

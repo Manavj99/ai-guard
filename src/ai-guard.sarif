@@ -1,0 +1,131 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "ai-guard"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "flake8:W293",
+          "level": "warning",
+          "message": {
+            "text": "W293 blank line contains whitespace"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ai_guard/sarif_report.py"
+                },
+                "region": {
+                  "startLine": 52,
+                  "startColumn": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "flake8:W293",
+          "level": "warning",
+          "message": {
+            "text": "W293 blank line contains whitespace"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ai_guard/sarif_report.py"
+                },
+                "region": {
+                  "startLine": 58,
+                  "startColumn": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "gate:Lint (flake8)",
+          "level": "error",
+          "message": {
+            "text": "Lint (flake8)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "README.md"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "gate:Static types (mypy)",
+          "level": "error",
+          "message": {
+            "text": "Static types (mypy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "README.md"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "gate:Security (bandit)",
+          "level": "note",
+          "message": {
+            "text": "Security (bandit)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "README.md"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "gate:Coverage",
+          "level": "note",
+          "message": {
+            "text": "87% >= 80%"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "README.md"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

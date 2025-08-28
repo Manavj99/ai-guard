@@ -297,6 +297,7 @@ def main() -> None:
             rule_id=f"gate:{r.name}",
             level=("note" if r.passed else "error"),
             message=r.details or r.name,
+            locations=[make_location("README.md", 1)]  # Use a default location for gate summaries
         )
         for r in results
     ]

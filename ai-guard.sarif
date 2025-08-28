@@ -19,7 +19,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\analyzer.py"
+                  "uri": "src/ai_guard/analyzer.py"
                 },
                 "region": {
                   "startLine": 4
@@ -38,7 +38,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\analyzer.py"
+                  "uri": "src/ai_guard/analyzer.py"
                 },
                 "region": {
                   "startLine": 122
@@ -57,7 +57,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\analyzer.py"
+                  "uri": "src/ai_guard/analyzer.py"
                 },
                 "region": {
                   "startLine": 143
@@ -76,7 +76,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\analyzer.py"
+                  "uri": "src/ai_guard/analyzer.py"
                 },
                 "region": {
                   "startLine": 194
@@ -95,7 +95,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\analyzer.py"
+                  "uri": "src/ai_guard/analyzer.py"
                 },
                 "region": {
                   "startLine": 194
@@ -114,7 +114,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\diff_parser.py"
+                  "uri": "src/ai_guard/diff_parser.py"
                 },
                 "region": {
                   "startLine": 38
@@ -133,7 +133,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\diff_parser.py"
+                  "uri": "src/ai_guard/diff_parser.py"
                 },
                 "region": {
                   "startLine": 41
@@ -152,7 +152,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\diff_parser.py"
+                  "uri": "src/ai_guard/diff_parser.py"
                 },
                 "region": {
                   "startLine": 41
@@ -171,7 +171,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\diff_parser.py"
+                  "uri": "src/ai_guard/diff_parser.py"
                 },
                 "region": {
                   "startLine": 53
@@ -190,7 +190,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\diff_parser.py"
+                  "uri": "src/ai_guard/diff_parser.py"
                 },
                 "region": {
                   "startLine": 57
@@ -209,7 +209,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\diff_parser.py"
+                  "uri": "src/ai_guard/diff_parser.py"
                 },
                 "region": {
                   "startLine": 57
@@ -228,7 +228,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\diff_parser.py"
+                  "uri": "src/ai_guard/diff_parser.py"
                 },
                 "region": {
                   "startLine": 61
@@ -247,7 +247,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\diff_parser.py"
+                  "uri": "src/ai_guard/diff_parser.py"
                 },
                 "region": {
                   "startLine": 61
@@ -266,7 +266,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\diff_parser.py"
+                  "uri": "src/ai_guard/diff_parser.py"
                 },
                 "region": {
                   "startLine": 67
@@ -285,7 +285,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\diff_parser.py"
+                  "uri": "src/ai_guard/diff_parser.py"
                 },
                 "region": {
                   "startLine": 67
@@ -304,7 +304,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\security_scanner.py"
+                  "uri": "src/ai_guard/security_scanner.py"
                 },
                 "region": {
                   "startLine": 3
@@ -323,7 +323,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\security_scanner.py"
+                  "uri": "src/ai_guard/security_scanner.py"
                 },
                 "region": {
                   "startLine": 20
@@ -342,7 +342,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\security_scanner.py"
+                  "uri": "src/ai_guard/security_scanner.py"
                 },
                 "region": {
                   "startLine": 30
@@ -361,7 +361,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\security_scanner.py"
+                  "uri": "src/ai_guard/security_scanner.py"
                 },
                 "region": {
                   "startLine": 30
@@ -380,7 +380,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\tests_runner.py"
+                  "uri": "src/ai_guard/tests_runner.py"
                 },
                 "region": {
                   "startLine": 3
@@ -399,7 +399,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\\ai_guard\\tests_runner.py"
+                  "uri": "src/ai_guard/tests_runner.py"
                 },
                 "region": {
                   "startLine": 21
@@ -413,35 +413,76 @@
           "level": "note",
           "message": {
             "text": "Lint (flake8)"
-          }
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "README.md"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
         },
         {
           "ruleId": "gate:Static types (mypy)",
           "level": "note",
           "message": {
             "text": "Static types (mypy)"
-          }
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "README.md"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
         },
         {
           "ruleId": "gate:Security (bandit)",
           "level": "note",
           "message": {
             "text": "Security (bandit)"
-          }
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "README.md"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
         },
         {
           "ruleId": "gate:Coverage",
           "level": "note",
           "message": {
             "text": "87% >= 50%"
-          }
-        },
-        {
-          "ruleId": "gate:Tests",
-          "level": "note",
-          "message": {
-            "text": "Tests"
-          }
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "README.md"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
         }
       ]
     }
