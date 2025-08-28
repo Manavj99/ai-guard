@@ -2,6 +2,8 @@
 
 **Goal:** Stop risky PRs (especially AI-generated ones) from merging by enforcing quality, security, and test gates — and by auto-generating targeted tests for changed code.
 
+<!-- Test comment: This change will trigger the AI-Guard workflow to verify our fixes are working -->
+
 ## Why
 Modern teams ship faster with AI. AI-Guard keeps quality high with automated, opinionated gates: lint, types, security, coverage, and speculative tests.
 
