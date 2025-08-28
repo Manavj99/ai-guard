@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch  # noqa: F401
 
 from src.ai_guard.tests_runner import run_pytest, run_pytest_with_coverage
 from src.ai_guard.security_scanner import run_bandit

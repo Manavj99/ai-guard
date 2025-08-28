@@ -41,7 +41,7 @@
                   "uri": "src\\ai_guard\\analyzer.py"
                 },
                 "region": {
-                  "startLine": 112
+                  "startLine": 122
                 }
               }
             }
@@ -60,7 +60,7 @@
                   "uri": "src\\ai_guard\\analyzer.py"
                 },
                 "region": {
-                  "startLine": 133
+                  "startLine": 143
                 }
               }
             }
@@ -79,7 +79,7 @@
                   "uri": "src\\ai_guard\\analyzer.py"
                 },
                 "region": {
-                  "startLine": 184
+                  "startLine": 194
                 }
               }
             }
@@ -98,7 +98,7 @@
                   "uri": "src\\ai_guard\\analyzer.py"
                 },
                 "region": {
-                  "startLine": 184
+                  "startLine": 194
                 }
               }
             }
@@ -117,7 +117,7 @@
                   "uri": "src\\ai_guard\\diff_parser.py"
                 },
                 "region": {
-                  "startLine": 29
+                  "startLine": 38
                 }
               }
             }
@@ -136,7 +136,7 @@
                   "uri": "src\\ai_guard\\diff_parser.py"
                 },
                 "region": {
-                  "startLine": 32
+                  "startLine": 41
                 }
               }
             }
@@ -155,7 +155,7 @@
                   "uri": "src\\ai_guard\\diff_parser.py"
                 },
                 "region": {
-                  "startLine": 32
+                  "startLine": 41
                 }
               }
             }
@@ -174,7 +174,7 @@
                   "uri": "src\\ai_guard\\diff_parser.py"
                 },
                 "region": {
-                  "startLine": 44
+                  "startLine": 53
                 }
               }
             }
@@ -193,7 +193,7 @@
                   "uri": "src\\ai_guard\\diff_parser.py"
                 },
                 "region": {
-                  "startLine": 47
+                  "startLine": 57
                 }
               }
             }
@@ -212,7 +212,83 @@
                   "uri": "src\\ai_guard\\diff_parser.py"
                 },
                 "region": {
-                  "startLine": 47
+                  "startLine": 57
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "bandit:B607",
+          "level": "note",
+          "message": {
+            "text": "Starting a process with a partial executable path"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\\ai_guard\\diff_parser.py"
+                },
+                "region": {
+                  "startLine": 61
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "bandit:B603",
+          "level": "note",
+          "message": {
+            "text": "subprocess call - check for execution of untrusted input."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\\ai_guard\\diff_parser.py"
+                },
+                "region": {
+                  "startLine": 61
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "bandit:B607",
+          "level": "note",
+          "message": {
+            "text": "Starting a process with a partial executable path"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\\ai_guard\\diff_parser.py"
+                },
+                "region": {
+                  "startLine": 67
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "bandit:B603",
+          "level": "note",
+          "message": {
+            "text": "subprocess call - check for execution of untrusted input."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\\ai_guard\\diff_parser.py"
+                },
+                "region": {
+                  "startLine": 67
                 }
               }
             }
@@ -357,7 +433,14 @@
           "ruleId": "gate:Coverage",
           "level": "note",
           "message": {
-            "text": "51% >= 50%"
+            "text": "87% >= 50%"
+          }
+        },
+        {
+          "ruleId": "gate:Tests",
+          "level": "note",
+          "message": {
+            "text": "Tests"
           }
         }
       ]

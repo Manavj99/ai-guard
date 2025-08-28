@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path  # noqa: F401
 import json
 
 from src.ai_guard.report import GateResult, summarize

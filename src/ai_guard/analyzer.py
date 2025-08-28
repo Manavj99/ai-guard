@@ -26,17 +26,17 @@ def cov_percent() -> int:
 
     # Try multiple possible locations for coverage.xml
     coverage_paths = ["coverage.xml", "../coverage.xml"]
-    
+
     for coverage_path in coverage_paths:
         try:
             if os.path.exists(coverage_path):
                 tree = ET.parse(coverage_path)
-                rate = float(tree.getroot().attrib.get("line-rate", "0"))
+                rate = float(tree.getroot().get("line-rate", "0"))
                 return int(round(rate * 100))
         except Exception as e:
             print(f"Warning: Could not parse {coverage_path}: {e}")
             continue
-    
+
     print("Warning: No coverage.xml file found")
     return 0
 
@@ -249,7 +249,7 @@ def main() -> None:
     # Determine changed Python files (for scoping)
     changed_py = changed_python_files(args.event)
     print(f"Changed Python files: {changed_py}")
-    
+
     if args.event:
         print(f"GitHub event file: {args.event}")
         try:
