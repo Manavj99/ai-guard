@@ -3,8 +3,7 @@
 __version__ = "0.1.0"
 __author__ = "AI-Guard Contributors"
 
-from .analyzer import main as run_guard
 from .config import Gates
 from .report import GateResult, summarize
 
-__all__ = ["run_guard", "Gates", "GateResult", "summarize"]
+__all__ = ["Gates", "GateResult", "summarize"]

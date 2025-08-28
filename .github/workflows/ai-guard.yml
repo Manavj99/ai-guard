@@ -49,13 +49,13 @@ jobs:
           export PYTHONPATH="$GITHUB_WORKSPACE"
           cd src
           python -m pytest ../tests -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml:../coverage.xml
-      
-
       - name: Dependency vulnerability scan (pip-audit)
         run: pip-audit -r requirements.txt || exit 1
 
       - name: Enforce quality gates
-        run: python -m src.ai_guard.analyzer --min-cov 80 --skip-tests --event "$GITHUB_EVENT_PATH" --sarif ai-guard.sarif
+        run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python -m src.ai_guard.analyzer --min-cov 80 --skip-tests --event "$GITHUB_EVENT_PATH" --sarif ai-guard.sarif
 
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3

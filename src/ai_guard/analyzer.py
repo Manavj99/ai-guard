@@ -22,13 +22,23 @@ def cov_percent() -> int:
     """
     # Harden XML parsing against XML-based attacks
     from defusedxml import ElementTree as ET
+    import os
 
-    try:
-        tree = ET.parse("coverage.xml")
-        rate = float(tree.getroot().attrib.get("line-rate", "0"))
-        return int(round(rate * 100))
-    except Exception:
-        return 0
+    # Try multiple possible locations for coverage.xml
+    coverage_paths = ["coverage.xml", "../coverage.xml"]
+    
+    for coverage_path in coverage_paths:
+        try:
+            if os.path.exists(coverage_path):
+                tree = ET.parse(coverage_path)
+                rate = float(tree.getroot().attrib.get("line-rate", "0"))
+                return int(round(rate * 100))
+        except Exception as e:
+            print(f"Warning: Could not parse {coverage_path}: {e}")
+            continue
+    
+    print("Warning: No coverage.xml file found")
+    return 0
 
 
 def _parse_flake8_output(output: str) -> List[SarifResult]:
@@ -238,6 +248,18 @@ def main() -> None:
 
     # Determine changed Python files (for scoping)
     changed_py = changed_python_files(args.event)
+    print(f"Changed Python files: {changed_py}")
+    
+    if args.event:
+        print(f"GitHub event file: {args.event}")
+        try:
+            import os
+            if os.path.exists(args.event):
+                print(f"Event file exists, size: {os.path.getsize(args.event)} bytes")
+            else:
+                print("Event file does not exist")
+        except Exception as e:
+            print(f"Error checking event file: {e}")
 
     # Lint check (scoped to changed files if available)
     lint_scope = [p for p in changed_py if p.endswith(".py")] or None

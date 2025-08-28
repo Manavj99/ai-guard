@@ -15,13 +15,22 @@ def changed_python_files(event_path: str | None = None) -> List[str]:
     """
     # If GitHub event is provided and has base/head, use precise diff
     if event_path:
-        base_head = _get_base_head_from_event(event_path)
-        if base_head is not None:
-            base, head = base_head
-            files = _git_changed_files(base, head)
-            return [p for p in files if p.endswith(".py")]
+        try:
+            base_head = _get_base_head_from_event(event_path)
+            if base_head is not None:
+                base, head = base_head
+                files = _git_changed_files(base, head)
+                if files:  # Only return diff if we successfully got files
+                    return [p for p in files if p.endswith(".py")]
+        except Exception as e:
+            print(f"Warning: Error parsing GitHub event: {e}")
+    
     # Fallback: all tracked Python files
-    return [p for p in _git_ls_files() if p.endswith(".py")]
+    try:
+        return [p for p in _git_ls_files() if p.endswith(".py")]
+    except Exception as e:
+        print(f"Warning: Error getting tracked files: {e}")
+        return []
 
 
 def _git_ls_files() -> List[str]:
@@ -44,11 +53,20 @@ def _git_changed_files(base_ref: str, head_ref: str) -> List[str]:
     import subprocess
 
     try:
+        # Validate that the refs exist in the repository
+        subprocess.check_call(["git", "rev-parse", "--verify", base_ref], 
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.check_call(["git", "rev-parse", "--verify", head_ref], 
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        # Get the diff
         out = subprocess.check_output(
             ["git", "diff", "--name-only", f"{base_ref}...{head_ref}"], text=True
         )
         return [line.strip() for line in out.splitlines() if line.strip()]
     except (subprocess.CalledProcessError, FileNotFoundError):
+        # If Git operations fail, return empty list instead of crashing
+        print(f"Warning: Could not get diff between {base_ref} and {head_ref}")
         return []
 
 
@@ -77,11 +95,24 @@ def _get_base_head_from_event(event_path: str) -> Tuple[str, str] | None:
     event = parse_github_event(event_path)
     if not event:
         return None
+    
+    # Handle pull_request events
     pr = event.get("pull_request")
-    if not isinstance(pr, dict):
+    if isinstance(pr, dict):
+        base_sha = pr.get("base", {}).get("sha")
+        head_sha = pr.get("head", {}).get("sha")
+        if isinstance(base_sha, str) and isinstance(head_sha, str):
+            return base_sha, head_sha
+    
+    # Handle push events
+    if event.get("before") and event.get("after"):
+        before_sha = event.get("before")
+        after_sha = event.get("after")
+        if isinstance(before_sha, str) and isinstance(after_sha, str):
+            return before_sha, after_sha
+    
+    # Handle workflow_dispatch events (no specific commits)
+    if event.get("event_name") == "workflow_dispatch":
         return None
-    base_sha = pr.get("base", {}).get("sha") or pr.get("base", {}).get("ref")
-    head_sha = pr.get("head", {}).get("sha") or pr.get("head", {}).get("ref")
-    if isinstance(base_sha, str) and isinstance(head_sha, str):
-        return base_sha, head_sha
+    
     return None
