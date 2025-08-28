@@ -467,9 +467,9 @@
         },
         {
           "ruleId": "gate:Coverage",
-          "level": "note",
+          "level": "error",
           "message": {
-            "text": "87% >= 50%"
+            "text": "14% >= 50%"
           },
           "locations": [
             {

@@ -56,11 +56,15 @@ def make_location(
     if column is not None:
         region["startColumn"] = column
 
-    # Always include region if we have line information
+    # Only include region if we have line or column information
     location: Dict[str, Any] = {
         "physicalLocation": {
             "artifactLocation": {"uri": normalized_path},
-            "region": region,
         }
     }
+
+    # Add region only if it contains actual data
+    if region:
+        location["physicalLocation"]["region"] = region
+
     return location
