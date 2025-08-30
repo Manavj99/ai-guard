@@ -10,4 +10,4 @@ rich==13.3.5
 pygithub==2.4.0
 pip-audit==2.7.3
 defusedxml==0.7.1
-click==8.1.7
+click==8.2.1
