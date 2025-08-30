@@ -12,6 +12,8 @@ from .report import GateResult, summarize
 from .diff_parser import changed_python_files
 from .sarif_report import SarifRun, SarifResult, write_sarif, make_location
 from .tests_runner import run_pytest_with_coverage
+from .report_json import write_json
+from .report_html import write_html
 
 
 def cov_percent() -> int:
@@ -204,6 +206,39 @@ def run_security_check() -> tuple[GateResult, List[SarifResult]]:
         return GateResult("Security (bandit)", False, "bandit not found"), []
 
 
+def _to_findings(sarif_results: List[SarifResult]) -> List[dict[str, str | int | None]]:
+    """Convert SARIF results to neutral findings format for JSON/HTML reports.
+
+    Args:
+        sarif_results: List of SARIF results
+
+    Returns:
+        List of findings as dictionaries
+    """
+    out = []
+    for r in sarif_results:
+        # Extract location info if available
+        path = "unknown"
+        line = None
+        if r.locations and len(r.locations) > 0:
+            loc = r.locations[0]
+            if ("physicalLocation" in loc
+                    and "artifactLocation" in loc["physicalLocation"]):
+                path = loc["physicalLocation"]["artifactLocation"].get("uri", "unknown")
+            if ("physicalLocation" in loc
+                    and "region" in loc["physicalLocation"]):
+                line = loc["physicalLocation"]["region"].get("startLine")
+
+        out.append({
+            "rule_id": r.rule_id,
+            "level": r.level,
+            "message": r.message,
+            "path": path,
+            "line": line,
+        })
+    return out
+
+
 def run_coverage_check(min_coverage: int) -> GateResult:
     """Run coverage check.
 
@@ -227,7 +262,10 @@ def main() -> None:
         "--min-cov",
         type=int,
         default=default_gates.min_coverage,
-        help=f"Minimum coverage percentage (default: {default_gates.min_coverage})",
+        help=(
+            f"Minimum coverage percentage "
+            f"(default: {default_gates.min_coverage})"
+        ),
     )
     parser.add_argument(
         "--skip-tests", action="store_true", help="Skip running tests (useful for CI)"
@@ -239,9 +277,44 @@ def main() -> None:
         help="Path to GitHub event JSON to scope changed files",
     )
     parser.add_argument(
-        "--sarif", type=str, default="ai-guard.sarif", help="Output SARIF file path"
+        "--report-format",
+        choices=["sarif", "json", "html"],
+        default="sarif",
+        help="Output format for the final report"
+    )
+    parser.add_argument(
+        "--report-path",
+        type=str,
+        default=None,
+        help="Path to write the report. Default depends on format"
+    )
+    # Back-compat:
+    parser.add_argument(
+        "--sarif", type=str, default=None,
+        help=(
+            "(Deprecated) Output SARIF file path; "
+            "use --report-format/--report-path"
+        )
     )
     args = parser.parse_args()
+
+    # Handle deprecated --sarif argument
+    if args.sarif and not args.report_path:
+        print(
+            "[warn] --sarif is deprecated. Use --report-format sarif "
+            "--report-path PATH",
+            file=sys.stderr
+        )
+        args.report_format = "sarif"
+        args.report_path = args.sarif
+
+    # Set default report path based on format
+    if not args.report_path:
+        args.report_path = {
+            "sarif": "ai-guard.sarif",
+            "json": "ai-guard.json",
+            "html": "ai-guard.html",
+        }[args.report_format]
 
     results: List[GateResult] = []
     sarif_diagnostics: List[SarifResult] = []
@@ -290,21 +363,34 @@ def main() -> None:
     # Summarize
     exit_code = summarize(results)
 
-    # SARIF emission (basic run with results summary)
-    # Compose SARIF run: include diagnostics plus overall gate statuses as notes
-    gate_summaries: List[SarifResult] = [
-        SarifResult(
-            rule_id=f"gate:{r.name}",
-            level=("note" if r.passed else "error"),
-            message=r.details or r.name,
-            locations=[make_location("README.md", 1)]  # Use a default location for gate summaries
+    # Generate findings for JSON/HTML reports
+    findings = _to_findings(sarif_diagnostics)
+
+    # Generate report based on format
+    if args.report_format == "sarif":
+        # SARIF emission (basic run with results summary)
+        # Compose SARIF run: include diagnostics plus overall gate statuses as notes
+        gate_summaries: List[SarifResult] = [
+            SarifResult(
+                rule_id=f"gate:{r.name}",
+                level=("note" if r.passed else "error"),
+                message=r.details or r.name,
+                locations=[make_location("README.md", 1)]  # Default location
+            )
+            for r in results
+        ]
+        write_sarif(
+            args.report_path,
+            SarifRun(tool_name="ai-guard", results=sarif_diagnostics + gate_summaries),
         )
-        for r in results
-    ]
-    write_sarif(
-        args.sarif,
-        SarifRun(tool_name="ai-guard", results=sarif_diagnostics + gate_summaries),
-    )
+    elif args.report_format == "json":
+        write_json(args.report_path, results, findings)
+    elif args.report_format == "html":
+        write_html(args.report_path, results, findings)
+    else:
+        print(f"Unknown report format: {args.report_format}", file=sys.stderr)
+        sys.exit(2)
+
     sys.exit(exit_code)
 
 

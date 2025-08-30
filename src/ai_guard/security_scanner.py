@@ -1,6 +1,7 @@
 """Security scanning for AI-Guard."""
 
 import subprocess
+import os
 from typing import Optional, List
 
 
@@ -13,7 +14,15 @@ def run_bandit(extra_args: Optional[List[str]] = None) -> int:
     Returns:
         Exit code from bandit
     """
-    cmd = ["bandit", "-r", "src", "-c", ".bandit"]
+    cmd = ["bandit", "-r", "src"]
+
+    # Check if .bandit config exists, if not use default settings
+    if os.path.exists(".bandit"):
+        cmd.extend(["-c", ".bandit"])
+    else:
+        # Use default bandit settings if no config file
+        cmd.extend(["-f", "json", "-ll"])
+
     if extra_args:
         cmd.extend(extra_args)
 
