@@ -21,7 +21,7 @@ dependencies = [
     "rich==13.3.5",
     "tomli>=2.0.1",
     "defusedxml>=0.7.1",
-    "click==8.1.7",
+    "click==8.2.1",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
