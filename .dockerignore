@@ -1,0 +1,13 @@
+# keep the context small & builds fast
+.git
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+dist/
+build/
+.eggs/
+.coverage
+.pytest_cache/

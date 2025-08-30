@@ -1,4 +1,4 @@
-.PHONY: help install test lint type-check security coverage clean
+.PHONY: help install test lint type-check security coverage clean docker docker-run
 
 help:  ## Show this help message
 	@echo "AI-Guard Development Commands:"
@@ -39,3 +39,9 @@ all: lint type-check security test  ## Run all quality checks
 
 ci:  ## Run CI checks (used by GitHub Actions)
 	python -m src.ai_guard.analyzer --min-cov 80
+
+docker:  ## Build Docker image
+	docker build -t ai-guard:latest .
+
+docker-run:  ## Run Docker container (scan current repo)
+	docker run --rm -v "$(PWD)":/workspace ai-guard:latest --min-cov 80 --sarif /workspace/ai-guard.sarif

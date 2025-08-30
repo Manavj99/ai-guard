@@ -57,6 +57,40 @@ Generate SARIF output for GitHub Code Scanning:
 python -m src.ai_guard check --min-cov 80 --skip-tests --sarif ai-guard.sarif
 ```
 
+### Using Docker
+
+Build the Docker image:
+
+```bash
+# Build image
+make docker
+# or manually:
+docker build -t ai-guard:latest .
+```
+
+Run quality checks in Docker:
+
+```bash
+# Full scan with tests & SARIF
+docker run --rm -v "$PWD":/workspace ai-guard:latest \
+  --min-cov 85 \
+  --sarif /workspace/ai-guard.sarif
+
+# Quick scan (no tests) on the repo
+docker run --rm -v "$PWD":/workspace ai-guard:latest \
+  --skip-tests \
+  --sarif /workspace/ai-guard.sarif
+
+# Using make target
+make docker-run
+```
+
+**Why Docker?**
+- **Reproducible**: Exact Python + toolchain versions
+- **Portable**: Works the same everywhere (laptop, CI, cloud)
+- **Secure**: Non-root user, minimal base image
+- **Fast**: Only changed files get type/lint checks with `--event`
+
 ## ⚙️ Configuration
 
 Create an `ai-guard.toml` file in your project root:
@@ -79,6 +113,65 @@ Options:
   --help               Show this message and exit
 ```
 
+## 📋 Example Outputs
+
+### Console Output
+
+**Passing run:**
+```
+Changed Python files: ['src/foo/utils.py']
+Lint (flake8): PASS
+Static types (mypy): PASS
+Security (bandit): PASS (0 high findings)
+Coverage: PASS (86% ≥ min 85%)
+Summary: all gates passed ✅
+```
+
+**Failing run:**
+```
+Changed Python files: ['src/foo/handler.py']
+Lint (flake8): PASS
+Static types (mypy): FAIL
+  src/foo/handler.py:42: error: Argument 1 to "process" has incompatible type "str"; expected "int"  [arg-type]
+Security (bandit): PASS (0 high findings)
+Coverage: FAIL (78% < min 85%)
+
+Summary:
+✗ Static types (mypy)
+✗ Coverage (min 85%)
+Exit code: 1
+```
+
+### SARIF Output
+
+AI-Guard generates SARIF files compatible with GitHub Code Scanning:
+
+```json
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": { "driver": { "name": "AI-Guard", "version": "0.1.0" } },
+      "results": [
+        {
+          "ruleId": "mypy:arg-type",
+          "level": "error",
+          "message": { "text": "Argument 1 to 'process' has incompatible type 'str'; expected 'int'" },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": { "uri": "src/foo/handler.py" },
+                "region": { "startLine": 42 }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
 ## 🐙 GitHub Integration
 
 ### Automatic PR Checks
@@ -99,6 +192,46 @@ You can manually trigger the workflow from the GitHub Actions tab:
 1. Go to **Actions** → **AI-Guard**
 2. Click **Run workflow**
 3. Select branch and click **Run workflow**
+
+### Using Docker in GitHub Actions
+
+If you prefer containerized jobs, you can use the Docker image:
+
+```yaml
+name: AI-Guard
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build AI-Guard image
+        run: docker build -t ai-guard:latest .
+
+      # Pass the GitHub event JSON so AI-Guard scopes to changed files
+      - name: Run AI-Guard
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE":/workspace \
+            -v "$GITHUB_EVENT_PATH":/tmp/event.json:ro \
+            ai-guard:latest \
+              --event /tmp/event.json \
+              --min-cov 85 \
+              --sarif /workspace/ai-guard.sarif
+
+      # Surface SARIF in the Security tab
+      - name: Upload SARIF to code scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ai-guard.sarif
+```
+
+This will fail the job (and block the PR) if any gate fails, and the SARIF will appear in **Security → Code scanning alerts**.
 
 ### Workflow Status
 
