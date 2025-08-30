@@ -18,7 +18,7 @@ authors = [
 keywords = ["code-quality", "ci-cd", "testing", "security", "ai"]
 dependencies = [
     "typer==0.9.0",
-    "rich==13.3.5",
+    "rich==14.1.0",
     "tomli>=2.0.1",
     "defusedxml>=0.7.1",
     "click==8.1.7",
