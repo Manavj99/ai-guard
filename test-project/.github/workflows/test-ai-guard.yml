@@ -1,0 +1,299 @@
+name: Test AI-Guard Integration
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+  MIN_COVERAGE: 80
+
+jobs:
+  # Job 1: Install and Test AI-Guard
+  test-ai-guard:
+    name: 🧪 Test AI-Guard
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout test project
+        uses: actions/checkout@v4
+
+      - name: 📥 Checkout AI-Guard (for local testing)
+        uses: actions/checkout@v4
+        with:
+          repository: Manavj99/ai-guard
+          path: ai-guard
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install test project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🏗️ Install AI-Guard locally
+        run: |
+          cd ai-guard
+          pip install -e .
+          cd ..
+
+      - name: ✅ Verify AI-Guard installation
+        run: |
+          ai-guard --help
+          echo "✅ AI-Guard installed successfully"
+
+  # Job 2: Run Quality Gates
+  quality-gates:
+    name: 🎯 Quality Gates
+    runs-on: ubuntu-latest
+    needs: test-ai-guard
+    
+    steps:
+      - name: 📥 Checkout test project
+        uses: actions/checkout@v4
+
+      - name: 📥 Checkout AI-Guard
+        uses: actions/checkout@v4
+        with:
+          repository: Manavj99/ai-guard
+          path: ai-guard
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          cd ai-guard && pip install -e . && cd ..
+
+      - name: 🔍 Run linting
+        run: |
+          echo "🔍 Running flake8 linting..."
+          flake8 src tests
+          echo "✅ Linting completed"
+
+      - name: 🧪 Run type checking
+        run: |
+          echo "🧪 Running mypy type checking..."
+          mypy src
+          echo "✅ Type checking completed"
+
+      - name: 🛡️ Run security scan
+        run: |
+          echo "🛡️ Running security scan with bandit..."
+          bandit -r src -c .bandit -f json -o bandit-report.json || true
+          echo "✅ Security scan completed"
+
+      - name: 📊 Run tests with coverage
+        run: |
+          echo "📊 Running tests with coverage..."
+          export PYTHONPATH="$GITHUB_WORKSPACE/src"
+          python -m pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing
+          echo "✅ Coverage analysis completed"
+
+      - name: 🎯 Run AI-Guard quality gates
+        run: |
+          echo "🎯 Running AI-Guard quality gates..."
+          export PYTHONPATH="$GITHUB_WORKSPACE/src"
+          
+          # Run AI-Guard with comprehensive analysis
+          ai-guard check \
+            --min-cov ${{ env.MIN_COVERAGE }} \
+            --skip-tests \
+            --report-format json \
+            --report-path quality-report.json
+          
+          echo "✅ Quality gates completed"
+
+      - name: 📋 Display quality report
+        run: |
+          echo "📋 Quality Report Summary:"
+          echo "=========================="
+          if [ -f "quality-report.json" ]; then
+            python -c "
+          import json
+          try:
+              with open('quality-report.json', 'r') as f:
+                  data = json.load(f)
+                  print(f'Quality Score: {data.get(\"summary\", {}).get(\"score\", \"N/A\")}')
+                  print(f'Gates Passed: {data.get(\"summary\", {}).get(\"gates_passed\", \"N/A\")}')
+                  print(f'Total Gates: {data.get(\"summary\", {}).get(\"total_gates\", \"N/A\")}')
+          except Exception as e:
+              print(f'Error reading report: {e}')
+          "
+          else
+            echo "No quality report generated"
+          fi
+
+      - name: 📤 Upload SARIF for GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ai-guard.sarif
+
+      - name: 📊 Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: test-project
+          name: ai-guard-test-project
+          fail_ci_if_error: false
+
+  # Job 3: Test Different Report Formats
+  test-reports:
+    name: 📊 Test Reports
+    runs-on: ubuntu-latest
+    needs: test-ai-guard
+    
+    steps:
+      - name: 📥 Checkout test project
+        uses: actions/checkout@v4
+
+      - name: 📥 Checkout AI-Guard
+        uses: actions/checkout@v4
+        with:
+          repository: Manavj99/ai-guard
+          path: ai-guard
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          cd ai-guard && pip install -e . && cd ..
+
+      - name: 📄 Test SARIF report generation
+        run: |
+          echo "📄 Testing SARIF report generation..."
+          export PYTHONPATH="$GITHUB_WORKSPACE/src"
+          ai-guard check --skip-tests --report-format sarif --report-path test-sarif.sarif
+          
+          if [ -f "test-sarif.sarif" ]; then
+            echo "✅ SARIF report generated successfully"
+            ls -la test-sarif.sarif
+          else
+            echo "❌ SARIF report generation failed"
+            exit 1
+          fi
+
+      - name: 📄 Test JSON report generation
+        run: |
+          echo "📄 Testing JSON report generation..."
+          export PYTHONPATH="$GITHUB_WORKSPACE/src"
+          ai-guard check --skip-tests --report-format json --report-path test-json.json
+          
+          if [ -f "test-json.json" ]; then
+            echo "✅ JSON report generated successfully"
+            ls -la test-json.json
+          else
+            echo "❌ JSON report generation failed"
+            exit 1
+          fi
+
+      - name: 📄 Test HTML report generation
+        run: |
+          echo "📄 Testing HTML report generation..."
+          export PYTHONPATH="$GITHUB_WORKSPACE/src"
+          ai-guard check --skip-tests --report-format html --report-path test-html.html
+          
+          if [ -f "test-html.html" ]; then
+            echo "✅ HTML report generated successfully"
+            ls -la test-html.html
+          else
+            echo "❌ HTML report generation failed"
+            exit 1
+          fi
+
+      - name: 📋 Upload test reports as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-guard-test-reports
+          path: |
+            test-sarif.sarif
+            test-json.json
+            test-html.html
+          retention-days: 7
+
+  # Job 4: Integration Test
+  integration-test:
+    name: 🔗 Integration Test
+    runs-on: ubuntu-latest
+    needs: [test-ai-guard, quality-gates, test-reports]
+    if: always()
+    
+    steps:
+      - name: 📥 Checkout test project
+        uses: actions/checkout@v4
+
+      - name: 📥 Checkout AI-Guard
+        uses: actions/checkout@v4
+        with:
+          repository: Manavj99/ai-guard
+          path: ai-guard
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          cd ai-guard && pip install -e . && cd ..
+
+      - name: 🧪 Run integration tests
+        run: |
+          echo "🧪 Running integration tests..."
+          export PYTHONPATH="$GITHUB_WORKSPACE/src"
+          
+          # Test that AI-Guard can analyze the test project
+          ai-guard check --min-cov 80 --skip-tests --report-format json
+          
+          # Test that the sample app works correctly
+          python -c "
+          from sample_app.calculator import Calculator
+          calc = Calculator()
+          assert calc.add(2, 3) == 5.0
+          assert calc.multiply(4, 5) == 20.0
+          print('✅ Sample app integration test passed')
+          "
+          
+          echo "✅ Integration tests completed"
+
+      - name: 📊 Final status report
+        run: |
+          echo "📊 AI-Guard Integration Test Status:"
+          echo "===================================="
+          echo "Installation: ${{ needs.test-ai-guard.result }}"
+          echo "Quality Gates: ${{ needs.quality-gates.result }}"
+          echo "Report Generation: ${{ needs.test-reports.result }}"
+          echo "Integration: ${{ job.status }}"
+          echo ""
+          
+          if [ "${{ needs.test-ai-guard.result }}" == "success" ] && \
+             [ "${{ needs.quality-gates.result }}" == "success" ] && \
+             [ "${{ needs.test-reports.result }}" == "success" ] && \
+             [ "${{ job.status }}" == "success" ]; then
+            echo "🎉 All integration tests passed! AI-Guard is working correctly."
+            echo "✅ Status: SUCCESS"
+          else
+            echo "❌ Some integration tests failed. Review the logs above."
+            echo "⚠️ Status: FAILED"
+          fi

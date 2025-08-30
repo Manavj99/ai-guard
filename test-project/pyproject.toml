@@ -1,0 +1,90 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project]
+name = "sample-app"
+version = "1.0.0"
+description = "Sample application for testing AI-Guard functionality"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "AI-Guard Test Team"}
+]
+keywords = ["testing", "ai-guard", "calculator", "sample"]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "bandit>=1.7.0",
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_ignores = true
+ignore_missing_imports = true
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --cov=src --cov-report=xml --cov-report=term-missing"
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.ai-guard]
+min_coverage = 80
+quality_threshold = 85
+skip_tests = false
+report_format = "sarif"
+report_path = "ai-guard.sarif"
+
+[tool.ai-guard.gates]
+linting = true
+type_checking = true
+security_scanning = true
+coverage_enforcement = true
+test_generation = true
+
+[tool.ai-guard.security]
+bandit_config = ".bandit"
+exclude_patterns = ["tests/*", "docs/*"]
+
+[tool.ai-guard.coverage]
+exclude_patterns = ["tests/*", "docs/*", "migrations/*"]
+
+[tool.flake8]
+max-line-length = 127
+max-complexity = 10
+exclude = ["tests/*", "docs/*"]
+ignore = ["E203", "W503"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101", "B601"]

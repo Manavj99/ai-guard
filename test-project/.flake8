@@ -1,0 +1,8 @@
+[flake8]
+max-line-length = 127
+max-complexity = 10
+exclude = tests/*,docs/*,__pycache__/*,.git/*
+ignore = E203,W503,E501
+count = True
+statistics = True
+show-source = True
