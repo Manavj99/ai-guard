@@ -4,7 +4,7 @@ import pytest  # noqa: F401
 import tempfile  # noqa: F401
 import os  # noqa: F401
 from pathlib import Path  # noqa: F401
-from unittest.mock import patch, Mock  # noqa: F401
+from unittest.mock import patch, Mock, call  # noqa: F401
 from src.ai_guard.generators.testgen import (
     generate_speculative_tests,
     main
@@ -43,7 +43,8 @@ class TestTestGen:
         with patch('builtins.print') as mock_print:
             main()
             mock_print.assert_called_with(
-                "[testgen] No Python files changed, skipping test generation"
+                "[testgen] No Python files changed, "
+                "skipping test generation"
             )
 
     @patch('src.ai_guard.generators.testgen.changed_python_files')
@@ -72,8 +73,9 @@ class TestTestGen:
             )
             # Check that the output message contains the expected path
             # (allowing for different separators)
-            output_calls = [call[0][0] for call in mock_print.call_args_list]
-            assert any("tests" in call and "test_generated.py" in call for call in output_calls)
+            output_calls = [call_args[0][0] for call_args in mock_print.call_args_list]
+            assert any("tests" in call_args and "test_generated.py" in call_args
+                       for call_args in output_calls)
 
     @patch('src.ai_guard.generators.testgen.changed_python_files')
     @patch('argparse.ArgumentParser.parse_args')

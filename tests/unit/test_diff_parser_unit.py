@@ -51,7 +51,8 @@ class TestDiffParser:
         }
 
         # Mock parse_github_event to return our test data
-        with patch('src.ai_guard.diff_parser.parse_github_event', return_value=event_data):
+        with patch('src.ai_guard.diff_parser.parse_github_event',
+                   return_value=event_data):
             result = _get_base_head_from_event("dummy_path")
             assert result == ("base123", "head456")
 
@@ -62,7 +63,8 @@ class TestDiffParser:
             "after": "after456"
         }
 
-        with patch('src.ai_guard.diff_parser.parse_github_event', return_value=event_data):
+        with patch('src.ai_guard.diff_parser.parse_github_event',
+                   return_value=event_data):
             result = _get_base_head_from_event("dummy_path")
             assert result == ("before123", "after456")
 
@@ -72,7 +74,8 @@ class TestDiffParser:
             "event_name": "workflow_dispatch"
         }
 
-        with patch('src.ai_guard.diff_parser.parse_github_event', return_value=event_data):
+        with patch('src.ai_guard.diff_parser.parse_github_event',
+                   return_value=event_data):
             result = _get_base_head_from_event("dummy_path")
             assert result is None
 
@@ -80,7 +83,8 @@ class TestDiffParser:
         """Test handling invalid event data."""
         event_data = {"invalid": "data"}
 
-        with patch('src.ai_guard.diff_parser.parse_github_event', return_value=event_data):
+        with patch('src.ai_guard.diff_parser.parse_github_event',
+                   return_value=event_data):
             result = _get_base_head_from_event("dummy_path")
             assert result is None
 

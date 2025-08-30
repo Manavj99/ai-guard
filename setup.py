@@ -4,22 +4,31 @@
 from setuptools import setup, find_packages
 
 if __name__ == "__main__":
+    # Read README with proper encoding
+    try:
+        with open("README.md", encoding="utf-8") as f:
+            long_description = f.read()
+    except FileNotFoundError:
+        long_description = "Smart Code Quality Gatekeeper for AI-generated code"
+
     setup(
         name="ai-guard",
         version="0.1.0",
         description="Smart Code Quality Gatekeeper for AI-generated code",
-        long_description=open("README.md").read(),
+        long_description=long_description,
         long_description_content_type="text/markdown",
         author="AI-Guard Contributors",
         author_email="contributors@ai-guard.dev",
-        url="https://github.com/your-org/ai-guard",
+        url="https://github.com/Manavj99/ai-guard",
         packages=find_packages(where="src"),
         package_dir={"": "src"},
         python_requires=">=3.11",
         install_requires=[
-            "typer>=0.12.5",
-            "rich>=13.7.1",
-            "pygithub>=2.4.0",
+            "typer>=0.9.0",
+            "rich>=13.3.5",
+            "tomli>=2.0.1",
+            "defusedxml>=0.7.1",
+            "click>=8.1.7",
         ],
         extras_require={
             "dev": [
@@ -30,6 +39,7 @@ if __name__ == "__main__":
                 "bandit>=1.7.9",
                 "hypothesis>=6.112.0",
                 "pre-commit>=3.0.0",
+                "pygithub>=2.4.0",
             ],
         },
         entry_points={

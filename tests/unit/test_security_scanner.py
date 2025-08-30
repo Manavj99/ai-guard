@@ -26,7 +26,9 @@ class TestSecurityScanner:
 
         result = run_bandit(extra_args)
 
-        expected_cmd = ["bandit", "-r", "src", "-c", ".bandit", "--verbose", "--exclude", "tests"]
+        expected_cmd = [
+            "bandit", "-r", "src", "-c", ".bandit", "--verbose", "--exclude", "tests"
+        ]
         mock_call.assert_called_once_with(expected_cmd)
         assert result == 0
 

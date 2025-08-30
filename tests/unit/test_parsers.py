@@ -39,7 +39,8 @@ def test_parse_flake8_output_basic():
 
 def test_parse_mypy_output_basic():
     output = (
-        "src/ai_guard/example.py:12: error: Incompatible return value type [return-value]\n"
+        "src/ai_guard/example.py:12: error: Incompatible return value type "
+        "[return-value]\n"
         "src/ai_guard/other.py:22:7: warning: Name 'x' is not defined [name-defined]\n"
         "Note: Some notes here\n"
     )

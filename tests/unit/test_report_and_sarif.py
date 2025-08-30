@@ -19,7 +19,9 @@ def test_summarize_outputs_and_exit_code(capsys):
 
 def test_sarif_write_and_location(tmp_path: Path):
     loc = make_location("file.py", 10, 2)
-    result = SarifResult(rule_id="flake8:E999", level="error", message="boom", locations=[loc])
+    result = SarifResult(
+        rule_id="flake8:E999", level="error", message="boom", locations=[loc]
+    )
     out = tmp_path / "out.sarif"
     write_sarif(str(out), SarifRun(tool_name="ai-guard", results=[result]))
     data = json.loads(out.read_text(encoding="utf-8"))

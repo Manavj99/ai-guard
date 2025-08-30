@@ -10,184 +10,6 @@
       },
       "results": [
         {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/__main__.py"
-                },
-                "region": {
-                  "startLine": 43,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/__main__.py"
-                },
-                "region": {
-                  "startLine": 45,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/__main__.py"
-                },
-                "region": {
-                  "startLine": 54,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/__main__.py"
-                },
-                "region": {
-                  "startLine": 62,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/__main__.py"
-                },
-                "region": {
-                  "startLine": 68,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/security_scanner.py"
-                },
-                "region": {
-                  "startLine": 18,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/security_scanner.py"
-                },
-                "region": {
-                  "startLine": 25,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "mypy:assignment",
-          "level": "error",
-          "message": {
-            "text": "Incompatible types in assignment (expression has type \"TextIOWrapper\", variable has type \"dict[str, str | int | None]\") "
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/report_html.py"
-                },
-                "region": {
-                  "startLine": 121
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "mypy:attr-defined",
-          "level": "error",
-          "message": {
-            "text": "\"dict[str, str | int | None]\" has no attribute \"write\" "
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/report_html.py"
-                },
-                "region": {
-                  "startLine": 122
-                }
-              }
-            }
-          ]
-        },
-        {
           "ruleId": "bandit:B404",
           "level": "note",
           "message": {
@@ -219,7 +41,7 @@
                   "uri": "src/ai_guard/analyzer.py"
                 },
                 "region": {
-                  "startLine": 124
+                  "startLine": 122
                 }
               }
             }
@@ -238,7 +60,7 @@
                   "uri": "src/ai_guard/analyzer.py"
                 },
                 "region": {
-                  "startLine": 145
+                  "startLine": 143
                 }
               }
             }
@@ -257,7 +79,7 @@
                   "uri": "src/ai_guard/analyzer.py"
                 },
                 "region": {
-                  "startLine": 196
+                  "startLine": 194
                 }
               }
             }
@@ -276,7 +98,7 @@
                   "uri": "src/ai_guard/analyzer.py"
                 },
                 "region": {
-                  "startLine": 196
+                  "startLine": 194
                 }
               }
             }
@@ -504,7 +326,7 @@
                   "uri": "src/ai_guard/security_scanner.py"
                 },
                 "region": {
-                  "startLine": 29
+                  "startLine": 20
                 }
               }
             }
@@ -523,7 +345,7 @@
                   "uri": "src/ai_guard/security_scanner.py"
                 },
                 "region": {
-                  "startLine": 39
+                  "startLine": 30
                 }
               }
             }
@@ -542,7 +364,7 @@
                   "uri": "src/ai_guard/security_scanner.py"
                 },
                 "region": {
-                  "startLine": 39
+                  "startLine": 30
                 }
               }
             }
@@ -588,7 +410,7 @@
         },
         {
           "ruleId": "gate:Lint (flake8)",
-          "level": "error",
+          "level": "note",
           "message": {
             "text": "Lint (flake8)"
           },
@@ -607,7 +429,7 @@
         },
         {
           "ruleId": "gate:Static types (mypy)",
-          "level": "error",
+          "level": "note",
           "message": {
             "text": "Static types (mypy)"
           },
@@ -645,9 +467,28 @@
         },
         {
           "ruleId": "gate:Coverage",
-          "level": "error",
+          "level": "note",
           "message": {
-            "text": "0% >= 50%"
+            "text": "87% >= 80%"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "README.md"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "gate:Tests",
+          "level": "note",
+          "message": {
+            "text": "Tests"
           },
           "locations": [
             {

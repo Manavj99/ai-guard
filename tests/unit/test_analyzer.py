@@ -119,7 +119,9 @@ class TestAnalyzer:
         """Test type check failure."""
         mock_proc = Mock()
         mock_proc.returncode = 1
-        mock_proc.stdout = "src/ai_guard/example.py:12: error: Incompatible return value type"
+        mock_proc.stdout = (
+            "src/ai_guard/example.py:12: error: Incompatible return value type"
+        )
         mock_proc.stderr = ""
         mock_run.return_value = mock_proc
 
@@ -222,7 +224,8 @@ class TestAnalyzer:
         mock_proc = Mock()
         mock_proc.returncode = 0
         mock_proc.stdout = (
-            '{"results": [{"filename": "test.py", "line_number": 10, "issue_severity": "HIGH"}]}'
+            '{"results": [{"filename": "test.py", "line_number": 10, '
+            '"issue_severity": "HIGH"}]}'
         )
         mock_run.return_value = mock_proc
 
@@ -288,6 +291,8 @@ class TestAnalyzer:
         mock_args.skip_tests = True
         mock_args.event = None
         mock_args.sarif = "test.sarif"
+        mock_args.report_format = "sarif"
+        mock_args.report_path = "test.sarif"
         mock_parse_args.return_value = mock_args
 
         # Mock function returns
@@ -334,6 +339,8 @@ class TestAnalyzer:
         mock_args.skip_tests = False
         mock_args.event = "event.json"
         mock_args.sarif = "test.sarif"
+        mock_args.report_format = "sarif"
+        mock_args.report_path = "test.sarif"
         mock_parse_args.return_value = mock_args
 
         # Mock function returns
@@ -376,6 +383,8 @@ class TestAnalyzer:
         mock_args.skip_tests = True
         mock_args.event = "event.json"
         mock_args.sarif = "test.sarif"
+        mock_args.report_format = "sarif"
+        mock_args.report_path = "test.sarif"
         mock_parse_args.return_value = mock_args
 
         # Mock function returns
