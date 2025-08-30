@@ -17,7 +17,7 @@ Modern teams ship faster with AI. AI-Guard keeps quality high with automated, op
 - **📊 Coverage Enforcement**: Configurable coverage thresholds (default: 80%)
 - **🛡️ Security Scanning**: Automated vulnerability detection with Bandit
 - **🧪 Test Generation**: Speculative test generation for changed files
-- **📋 SARIF Output**: GitHub Code Scanning compatible results
+- **📋 Multi-Format Reports**: SARIF (GitHub Code Scanning), JSON (CI automation), HTML (artifacts)
 - **⚡ CI Integration**: Single-command GitHub Actions integration
 - **🎛️ Configurable**: Easy customization via TOML configuration
 
@@ -51,10 +51,20 @@ Run with custom coverage threshold:
 python -m src.ai_guard check --min-cov 90 --skip-tests
 ```
 
-Generate SARIF output for GitHub Code Scanning:
+Generate different report formats:
 
 ```bash
+# SARIF for GitHub Code Scanning (default)
 python -m src.ai_guard check --min-cov 80 --skip-tests --sarif ai-guard.sarif
+
+# JSON for CI automation
+python -m src.ai_guard check --min-cov 80 --skip-tests --report-format json
+
+# HTML for CI artifacts
+python -m src.ai_guard check --min-cov 80 --skip-tests --report-format html
+
+# Custom report path
+python -m src.ai_guard check --min-cov 80 --skip-tests --report-format html --report-path reports/quality.html
 ```
 
 ### Using Docker
@@ -106,12 +116,24 @@ min_coverage = 80
 python -m src.ai_guard check [OPTIONS]
 
 Options:
-  --min-cov INTEGER     Override min coverage % [default: 80]
-  --skip-tests         Skip running tests (useful for CI)
-  --event PATH         Path to GitHub event JSON
-  --sarif PATH         Output SARIF path [default: ai-guard.sarif]
-  --help               Show this message and exit
+  --min-cov INTEGER           Override min coverage % [default: 80]
+  --skip-tests               Skip running tests (useful for CI)
+  --event PATH               Path to GitHub event JSON
+  --report-format FORMAT     Output format: sarif, json, or html [default: sarif]
+  --report-path PATH         Path to write the report (default depends on format)
+  --sarif PATH               (Deprecated) Output SARIF path; use --report-format/--report-path
+  --help                     Show this message and exit
 ```
+
+**Report Formats:**
+- **`sarif`**: GitHub Code Scanning compatible SARIF output (default)
+- **`json`**: Machine-readable JSON summary with gate results and findings
+- **`html`**: Human-friendly HTML report for CI artifacts and dashboards
+
+**Default Report Paths:**
+- `sarif`: `ai-guard.sarif`
+- `json`: `ai-guard.json`  
+- `html`: `ai-guard.html`
 
 ## 📋 Example Outputs
 
@@ -142,9 +164,13 @@ Summary:
 Exit code: 1
 ```
 
-### SARIF Output
+### Report Outputs
 
-AI-Guard generates SARIF files compatible with GitHub Code Scanning:
+AI-Guard supports multiple output formats for different use cases:
+
+#### SARIF Output (Default)
+
+GitHub Code Scanning compatible SARIF files:
 
 ```json
 {
@@ -170,6 +196,49 @@ AI-Guard generates SARIF files compatible with GitHub Code Scanning:
     }
   ]
 }
+```
+
+#### JSON Output
+
+Machine-readable summary for CI ingestion and automation:
+
+```json
+{
+  "version": "1.0",
+  "summary": {
+    "passed": false,
+    "gates": [
+      {"name": "Lint (flake8)", "passed": true, "details": ""},
+      {"name": "Static types (mypy)", "passed": false, "details": "mypy not found"},
+      {"name": "Coverage", "passed": true, "details": "85% >= 80%"}
+    ]
+  },
+  "findings": [
+    {
+      "rule_id": "mypy:arg-type",
+      "level": "error", 
+      "message": "Argument 1 to 'process' has incompatible type",
+      "path": "src/foo/handler.py",
+      "line": 42
+    }
+  ]
+}
+```
+
+#### HTML Output
+
+Human-friendly report for CI artifacts and dashboards:
+
+```bash
+# Generate HTML report
+ai-guard --report-format html --report-path ai-guard.html --min-cov 85
+
+# Upload as CI artifact (GitHub Actions example)
+- name: Upload HTML report
+  uses: actions/upload-artifact@v4
+  with:
+    name: ai-guard-report
+    path: ai-guard.html
 ```
 
 ## 🐙 GitHub Integration
@@ -233,6 +302,89 @@ jobs:
 
 This will fail the job (and block the PR) if any gate fails, and the SARIF will appear in **Security → Code scanning alerts**.
 
+### Multi-Format Reporting in CI
+
+AI-Guard supports multiple output formats for different CI needs:
+
+#### JSON Reports for Automation
+
+Generate machine-readable reports for CI decision making:
+
+```yaml
+- name: Run AI-Guard (JSON)
+  run: |
+    python -m src.ai_guard.analyzer \
+      --report-format json \
+      --report-path ai-guard.json \
+      --min-cov 85 \
+      --skip-tests
+
+- name: Parse results for CI logic
+  run: |
+    if python -c "import json; data=json.load(open('ai-guard.json')); exit(0 if data['summary']['passed'] else 1)"; then
+      echo "All gates passed"
+    else
+      echo "Some gates failed"
+      exit 1
+    fi
+```
+
+#### HTML Reports for Artifacts
+
+Generate human-friendly reports for CI artifacts:
+
+```yaml
+- name: Run AI-Guard (HTML)
+  run: |
+    python -m src.ai_guard.analyzer \
+      --report-format html \
+      --report-path ai-guard.html \
+      --min-cov 85 \
+      --skip-tests
+
+- name: Upload HTML report artifact
+  uses: actions/upload-artifact@v4
+  with:
+    name: ai-guard-report
+    path: ai-guard.html
+    retention-days: 30
+```
+
+#### Combined Workflow Example
+
+Run multiple formats in a single workflow:
+
+```yaml
+- name: Run AI-Guard (All formats)
+  run: |
+    python -m src.ai_guard.analyzer \
+      --report-format sarif \
+      --report-path ai-guard.sarif \
+      --min-cov 85 \
+      --skip-tests
+    
+    python -m src.ai_guard.analyzer \
+      --report-format json \
+      --report-path ai-guard.json \
+      --min-cov 85 \
+      --skip-tests
+    
+    python -m src.ai_guard.analyzer \
+      --report-format html \
+      --report-path ai-guard.html \
+      --min-cov 85 \
+      --skip-tests
+
+- name: Upload all reports
+  uses: actions/upload-artifact@v4
+  with:
+    name: ai-guard-reports
+    path: |
+      ai-guard.sarif
+      ai-guard.json
+      ai-guard.html
+```
+
 ### Workflow Status
 
 - ✅ **Green**: All quality gates passed
@@ -255,6 +407,9 @@ ai-guard/
 │   ├── analyzer.py         # Main quality gate orchestrator
 │   ├── config.py           # Configuration management
 │   ├── diff_parser.py      # Git diff parsing
+│   ├── report.py           # Core reporting and result aggregation
+│   ├── report_json.py      # JSON report generation
+│   ├── report_html.py      # HTML report generation
 │   ├── sarif_report.py     # SARIF output generation
 │   ├── security_scanner.py # Security scanning
 │   └── tests_runner.py     # Test execution
