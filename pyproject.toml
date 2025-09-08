@@ -4,6 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["ai_guard*"]
 
 [project]
 name = "smart-ai-guard"

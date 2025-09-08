@@ -20,7 +20,7 @@ if __name__ == "__main__":
         author="AI-Guard Contributors",
         author_email="contributors@ai-guard.dev",
         url="https://github.com/Manavj99/ai-guard",
-        packages=find_packages(where="src"),
+        packages=find_packages(where="src", include=["ai_guard*"]),
         package_dir={"": "src"},
         python_requires=">=3.11",
         install_requires=[
