@@ -1,0 +1,59 @@
+[1mdiff --git a/ai-guard.json b/ai-guard.json[m
+[1mindex 10e76f4..b0c1f91 100644[m
+[1m--- a/ai-guard.json[m
+[1m+++ b/ai-guard.json[m
+[36m@@ -3,35 +3,42 @@[m
+   "summary": {[m
+     "passed": false,[m
+     "gates": [[m
+[31m-      {[m
+[31m-        "name": "Security (bandit)",[m
+[31m-        "passed": true,[m
+[31m-        "details": "No issues"[m
+[31m-      },[m
+       {[m
+         "name": "Lint (flake8)",[m
+         "passed": false,[m
+[31m-        "details": "blank line contains whitespace"[m
+[32m+[m[32m        "details": "expected 2 blank lines, found 1"[m
+       },[m
+       {[m
+         "name": "Static types (mypy)",[m
+         "passed": true,[m
+         "details": "No issues"[m
+       },[m
+[32m+[m[32m      {[m
+[32m+[m[32m        "name": "Security (bandit)",[m
+[32m+[m[32m        "passed": false,[m
+[32m+[m[32m        "details": "Try, Except, Pass detected."[m
+[32m+[m[32m      },[m
+       {[m
+         "name": "Coverage",[m
+         "passed": false,[m
+[31m-        "details": "3% >= 80%"[m
+[32m+[m[32m        "details": "\u274c Coverage: 34.0% >= 80.0% (FAILED)"[m
+       }[m
+     ][m
+   },[m
+   "findings": [[m
+     {[m
+[31m-      "rule_id": "W293",[m
+[32m+[m[32m      "rule_id": "E302",[m
+[32m+[m[32m      "level": "warning",[m
+[32m+[m[32m      "message": "expected 2 blank lines, found 1",[m
+[32m+[m[32m      "path": "check_coverage.py",[m
+[32m+[m[32m      "line": 8[m
+[32m+[m[32m    },[m
+[32m+[m[32m    {[m
+[32m+[m[32m      "rule_id": "B110",[m
+       "level": "warning",[m
+[31m-      "message": "blank line contains whitespace",[m
+[31m-      "path": "test-project/src/sample_app/calculator.py",[m
+[31m-      "line": 9[m
+[32m+[m[32m      "message": "Try, Except, Pass detected.",[m
+[32m+[m[32m      "path": "src\\ai_guard\\parsers\\typescript.py",[m
+[32m+[m[32m      "line": 39[m
+     }[m
+   ][m
+ }[m
+\ No newline at end of file[m

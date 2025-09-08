@@ -21,7 +21,7 @@
       {
         "name": "Coverage",
         "passed": false,
-        "details": "\u274c Coverage: 34.0% >= 80.0% (FAILED)"
+        "details": "\u274c Coverage: 38.0% >= 80.0% (FAILED)"
       }
     ]
   },

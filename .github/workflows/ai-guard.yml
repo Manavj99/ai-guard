@@ -28,6 +28,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -e .
 
       - name: Lint (flake8)
         run: flake8 src tests
@@ -41,14 +42,12 @@ jobs:
       - name: Run tests with coverage
         run: |
           export PYTHONPATH="$GITHUB_WORKSPACE"
-          cd src
-          python -m pytest ../tests -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml:../coverage.xml
+          python -m pytest tests/ -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml:coverage.xml
       
       - name: Re-run tests with speculative tests
         run: |
           export PYTHONPATH="$GITHUB_WORKSPACE"
-          cd src
-          python -m pytest ../tests -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml:../coverage.xml
+          python -m pytest tests/ -q --maxfail=1 --disable-warnings --cov=src --cov-report=xml:coverage.xml
       - name: Dependency vulnerability scan (pip-audit)
         run: pip-audit -r requirements.txt --severity-level high || true
 

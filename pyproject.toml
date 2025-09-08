@@ -5,6 +5,7 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["ai_guard*"]
+packages = ["ai_guard"]
 
 [project]
 name = "smart-ai-guard"
@@ -36,6 +37,7 @@ classifiers = [
 
 [project.scripts]
 ai-guard = "ai_guard.analyzer:main"
+smart-ai-guard = "ai_guard.analyzer:main"
 
 [project.optional-dependencies]
 dev = [

@@ -87,7 +87,7 @@ jobs:
         run: |
           echo "📊 Running tests with coverage..."
           export PYTHONPATH="$GITHUB_WORKSPACE"
-          python -m pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing
+          python -m pytest tests/ -v --cov=src --cov-report=xml:coverage.xml --cov-report=term-missing
           
           # Extract coverage percentage
           COVERAGE=$(python -c "
@@ -209,7 +209,7 @@ jobs:
           export PYTHONPATH="$GITHUB_WORKSPACE"
           
           # Run tests to ensure they pass
-          python -m pytest tests/ -v --tb=short
+          python -m pytest tests/ -v --tb=short --maxfail=1
           echo "✅ Test validation completed"
 
   # Job 3: Deployment and Monitoring
