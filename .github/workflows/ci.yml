@@ -40,8 +40,7 @@ jobs:
       - name: Install Python deps (dev)
         run: |
           python -m pip install --upgrade pip
-          pip install "coverage[toml]==7.6.1" "pytest==8.3.2" "pytest-cov==5.0.0"
-          pip install -e ".[dev]" || true
+          pip install -e ".[dev]"
 
       - name: Install Node deps
         run: |
