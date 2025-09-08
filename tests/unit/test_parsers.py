@@ -1,7 +1,6 @@
 """Unit tests for SARIF parser helpers in analyzer."""
 
-
-from src.ai_guard.analyzer import (
+from ai_guard.analyzer import (
     _parse_flake8_output,
     _parse_mypy_output,
     _parse_bandit_json,

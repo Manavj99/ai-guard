@@ -1,9 +1,9 @@
-.PHONY: help install test lint type-check security coverage clean docker docker-run
+.PHONY: help install test lint type-check security coverage clean docker docker-run format format-check
 
 help:  ## Show this help message
 	@echo "AI-Guard Development Commands:"
 	@echo ""
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$1, $$2}'
 
 install:  ## Install dependencies
 	pip install -r requirements.txt
@@ -24,6 +24,14 @@ security:  ## Run security scans
 coverage:  ## Run tests and generate coverage report
 	pytest --cov=src --cov-report=html --cov-report=xml
 
+format:  ## Format code with black and autopep8
+	black src tests
+	autopep8 --in-place --recursive --aggressive --aggressive src tests
+
+format-check:  ## Check code formatting without making changes
+	black --check src tests
+	autopep8 --diff --recursive --aggressive --aggressive src tests
+
 clean:  ## Clean up generated files
 	rm -rf build/
 	rm -rf dist/
@@ -35,7 +43,7 @@ clean:  ## Clean up generated files
 	find . -type d -name __pycache__ -delete
 	find . -type f -name "*.pyc" -delete
 
-all: lint type-check security test  ## Run all quality checks
+all: format lint type-check security test  ## Run all quality checks
 
 ci:  ## Run CI checks (used by GitHub Actions)
 	python -m src.ai_guard.analyzer --min-cov 80

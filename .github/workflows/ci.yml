@@ -1,0 +1,70 @@
+name: ai-guard-ci
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [ "3.10", "3.11", "3.12" ]
+        node: [ "18", "20" ]
+    env:
+      PYTHONHASHSEED: "0"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml', '**/requirements*.txt') }}
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json','**/pnpm-lock.yaml','**/yarn.lock') }}
+
+      - name: Install Python deps (dev)
+        run: |
+          python -m pip install --upgrade pip
+          pip install "coverage[toml]==7.6.1" "pytest==8.3.2" "pytest-cov==5.0.0"
+          pip install -e ".[dev]" || true
+
+      - name: Install Node deps
+        run: |
+          if [ -f package-lock.json ] || [ -f pnpm-lock.yaml ] || [ -f yarn.lock ]; then
+            npm ci || npm i
+          fi
+
+      - name: Lint & format (pre-commit)
+        run: |
+          pip install pre-commit
+          pre-commit run --all-files
+
+      - name: Run tests
+        run: |
+          pytest -q --maxfail=1 --disable-warnings --cov=src --cov-report=term-missing
+
+      - name: Coverage XML/HTML
+        run: |
+          coverage xml -o coverage.xml
+          coverage html -d htmlcov
+
+      - name: Upload Coverage HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: htmlcov

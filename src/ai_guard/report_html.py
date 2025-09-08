@@ -1,6 +1,6 @@
 """HTML report writer for AI-Guard."""
 
-from typing import List
+from typing import List, Dict, Any
 from html import escape
 from .report import GateResult
 
@@ -49,7 +49,7 @@ code {
 def write_html(
     report_path: str,
     gates: List[GateResult],
-    findings: List[dict[str, str | int | None]]
+    findings: List[dict[str, str | int | None]],
 ) -> None:
     """Write an HTML report with gate summaries and findings.
 
@@ -68,7 +68,8 @@ def write_html(
     gates_rows: List[str] = []
     for g in gates:
         status_badge = (
-            '<span class="badge pass">PASS</span>' if g.passed
+            '<span class="badge pass">PASS</span>'
+            if g.passed
             else '<span class="badge fail">FAIL</span>'
         )
         gates_rows.append(
@@ -82,11 +83,11 @@ def write_html(
 
     findings_rows: List[str] = []
     for finding in findings:
-        path = str(finding.get('path', ''))
-        line = finding.get('line')
-        level = str(finding.get('level', 'note'))
-        rule_id = str(finding.get('rule_id', ''))
-        message = str(finding.get('message', ''))
+        path = str(finding.get("path", ""))
+        line = finding.get("line")
+        level = str(finding.get("level", "note"))
+        rule_id = str(finding.get("rule_id", ""))
+        message = str(finding.get("message", ""))
 
         findings_rows.append(
             f"<tr>"
@@ -120,3 +121,54 @@ def write_html(
 """
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(html)
+
+
+class HTMLReportGenerator:
+    """HTML report generator for AI-Guard quality gate results."""
+
+    def __init__(self) -> None:
+        """Initialize the HTML report generator."""
+
+    def generate_html_report(
+        self,
+        results: List[GateResult],
+        findings: List[Dict[str, Any]],
+        output_path: str,
+    ) -> None:
+        """Generate an HTML report from gate results and findings.
+
+        Args:
+            results: List of gate results
+            findings: List of findings dictionaries
+            output_path: Path to write the HTML report
+        """
+        write_html(output_path, results, findings)
+
+    def generate_summary_html(self, results: List[GateResult]) -> str:
+        """Generate HTML summary from gate results.
+
+        Args:
+            results: List of gate results
+
+        Returns:
+            HTML summary as string
+        """
+        passed = [r for r in results if r.passed]
+        failed = [r for r in results if not r.passed]
+
+        html = f"""
+        <div class="summary">
+            <h2>Quality Gates Summary</h2>
+            <p>Total: {len(results)}</p>
+            <p>Passed: <span class="badge pass">{len(passed)}</span></p>
+            <p>Failed: <span class="badge fail">{len(failed)}</span></p>
+        </div>
+        """
+
+        if failed:
+            html += "<div class='failed-gates'><h3>Failed Gates:</h3><ul>"
+            for result in failed:
+                html += f"<li>{result.name}: {result.details}</li>"
+            html += "</ul></div>"
+
+        return html

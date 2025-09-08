@@ -1,0 +1,75 @@
+# AI-Guard Enhanced Test Generation Configuration
+
+[llm]
+# LLM provider: openai, anthropic, local
+provider = "openai"
+# API key (can also be set via environment variable)
+api_key = ""
+# Model to use
+model = "gpt-4"
+# Temperature for generation (0.0 = deterministic, 1.0 = creative)
+temperature = 0.1
+# Maximum tokens for generated tests
+max_tokens = 1000
+
+[test_generation]
+# Test framework to use
+framework = "pytest"
+# Generate mocks for external dependencies
+generate_mocks = true
+# Generate parameterized tests
+generate_parametrized_tests = true
+# Generate edge case tests
+generate_edge_cases = true
+# Maximum number of tests per file
+max_tests_per_file = 10
+# Include docstrings in generated tests
+include_docstrings = true
+# Include type hints in generated tests
+include_type_hints = true
+
+[coverage_analysis]
+# Analyze coverage gaps
+analyze_coverage_gaps = true
+# Minimum coverage threshold
+min_coverage_threshold = 80.0
+# Include coverage suggestions in generated tests
+include_coverage_suggestions = true
+
+[output]
+# Output directory for generated tests
+output_directory = "tests/unit"
+# Suffix for generated test files
+test_file_suffix = "_test.py"
+# Generate separate test files per module
+separate_files = false
+# Include import statements
+include_imports = true
+
+[templates]
+# Use built-in test templates
+use_builtin_templates = true
+# Path to custom template directory
+custom_template_dir = ""
+# Template to use for functions
+function_template = "function_test"
+# Template to use for classes
+class_template = "class_test"
+# Template to use for edge cases
+edge_case_template = "edge_case_test"
+
+[security]
+# Validate generated code for security issues
+validate_security = true
+# Allow network calls in generated tests
+allow_network_calls = false
+# Allow file system operations in generated tests
+allow_file_operations = false
+
+[integration]
+# Integrate with existing test suite
+integrate_with_existing = true
+# Update existing test files
+update_existing = false
+# Generate test discovery files
+generate_discovery = true

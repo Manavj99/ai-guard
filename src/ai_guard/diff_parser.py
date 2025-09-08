@@ -1,7 +1,63 @@
 """Parse changed files from Git diffs or GitHub events."""
 
 import json
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any, Optional
+
+
+def get_file_extensions(file_paths: List[str]) -> List[str]:
+    """Extract file extensions from a list of file paths.
+
+    Args:
+        file_paths: List of file paths
+
+    Returns:
+        List of unique file extensions (without the dot)
+    """
+    extensions = set()
+    for file_path in file_paths:
+        if "." in file_path:
+            # Split by dot and get the last part
+            parts = file_path.split(".")
+            if len(parts) > 1:
+                ext = parts[-1].lower()
+                if ext and ext.isalnum():  # Only add if extension is alphanumeric
+                    extensions.add(ext)
+    return sorted(list(extensions))
+
+
+def filter_python_files(file_paths: List[str]) -> List[str]:
+    """Filter a list of file paths to only include Python files.
+
+    Args:
+        file_paths: List of file paths
+
+    Returns:
+        List of Python file paths only
+    """
+    return [f for f in file_paths if f.endswith(".py")]
+
+
+def parse_diff_output(diff_output: str) -> List[str]:
+    """Parse git diff output to extract changed file paths.
+
+    Args:
+        diff_output: Output from git diff command
+
+    Returns:
+        List of changed file paths
+    """
+    files = []
+    lines = diff_output.split("\n")
+
+    for line in lines:
+        line = line.strip()
+        if line.startswith("+++ b/") or line.startswith("--- a/"):
+            # Extract file path from diff output
+            file_path = line[6:]  # Remove '+++ b/' or '--- a/' prefix
+            if file_path not in files:
+                files.append(file_path)
+
+    return files
 
 
 def changed_python_files(event_path: str | None = None) -> List[str]:
@@ -56,11 +112,13 @@ def _git_changed_files(base_ref: str, head_ref: str) -> List[str]:
         # Validate that the refs exist in the repository
         subprocess.check_call(
             ["git", "rev-parse", "--verify", base_ref],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
         subprocess.check_call(
             ["git", "rev-parse", "--verify", head_ref],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
 
         # Get the diff
@@ -120,3 +178,78 @@ def _get_base_head_from_event(event_path: str) -> Tuple[str, str] | None:
         return None
 
     return None
+
+
+class DiffParser:
+    """Parser for Git diffs and GitHub events."""
+
+    def __init__(self) -> None:
+        """Initialize the diff parser."""
+
+    def parse_changed_files(self, event_path: Optional[str] = None) -> List[str]:
+        """Parse changed files from Git diffs or GitHub events.
+
+        Args:
+            event_path: Optional path to GitHub event JSON file
+
+        Returns:
+            List of changed file paths
+        """
+        return changed_python_files(event_path)
+
+    def parse_github_event(self, event_path: str) -> Dict[str, Any]:
+        """Parse GitHub event JSON file.
+
+        Args:
+            event_path: Path to the event JSON file
+
+        Returns:
+            Parsed event data
+        """
+        return parse_github_event(event_path)
+
+    def get_file_extensions(self, file_paths: List[str]) -> List[str]:
+        """Extract file extensions from a list of file paths.
+
+        Args:
+            file_paths: List of file paths
+
+        Returns:
+            List of unique file extensions (without the dot)
+        """
+        return get_file_extensions(file_paths)
+
+    def filter_python_files(self, file_paths: List[str]) -> List[str]:
+        """Filter a list of file paths to only include Python files.
+
+        Args:
+            file_paths: List of file paths
+
+        Returns:
+            List of Python file paths only
+        """
+        return filter_python_files(file_paths)
+
+
+def parse_diff(diff_content: str) -> List[str]:
+    """Parse diff content to extract changed file paths.
+
+    Args:
+        diff_content: Raw diff content
+
+    Returns:
+        List of changed file paths
+    """
+    return parse_diff_output(diff_content)
+
+
+def get_changed_files(event_path: Optional[str] = None) -> List[str]:
+    """Get list of changed files.
+
+    Args:
+        event_path: Optional path to GitHub event JSON file
+
+    Returns:
+        List of changed file paths
+    """
+    return changed_python_files(event_path)

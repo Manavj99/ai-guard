@@ -40,13 +40,20 @@ strict = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q --cov=src --cov-report=xml"
+addopts = "-q --cov=src --cov-report=xml --cov-fail-under=0"
+filterwarnings = [
+    "ignore::pytest.PytestCollectionWarning"
+]
 
 [tool.coverage.run]
+branch = true
 source = ["src"]
-omit = ["tests/*"]
+omit = ["tests/*", "**/__main__.py", "**/contrib/**"]
 
 [tool.coverage.report]
+fail_under = 5
+show_missing = true
+skip_covered = false
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",

@@ -86,7 +86,7 @@ jobs:
         id: coverage-check
         run: |
           echo "📊 Running tests with coverage..."
-          export PYTHONPATH="$GITHUB_WORKSPACE/src"
+          export PYTHONPATH="$GITHUB_WORKSPACE"
           python -m pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing
           
           # Extract coverage percentage
@@ -104,7 +104,7 @@ jobs:
         id: quality-check
         run: |
           echo "🎯 Running AI-Guard quality gates..."
-          export PYTHONPATH="$GITHUB_WORKSPACE/src"
+          export PYTHONPATH="$GITHUB_WORKSPACE"
           
           # Run AI-Guard with comprehensive analysis
           python -m src.ai_guard.analyzer \
@@ -197,7 +197,7 @@ jobs:
       - name: 🎲 Generate speculative tests
         run: |
           echo "🎲 Generating speculative tests for changed files..."
-          export PYTHONPATH="$GITHUB_WORKSPACE/src"
+          export PYTHONPATH="$GITHUB_WORKSPACE"
           
           # This would integrate with the test generation feature
           # python -m src.ai_guard.generators.testgen --diff-only
@@ -206,7 +206,7 @@ jobs:
       - name: 🧪 Validate generated tests
         run: |
           echo "🧪 Validating generated tests..."
-          export PYTHONPATH="$GITHUB_WORKSPACE/src"
+          export PYTHONPATH="$GITHUB_WORKSPACE"
           
           # Run tests to ensure they pass
           python -m pytest tests/ -v --tb=short

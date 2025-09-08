@@ -10,517 +10,16 @@
       },
       "results": [
         {
-          "ruleId": "flake8:W293",
+          "ruleId": "B110",
           "level": "warning",
           "message": {
-            "text": "W293 blank line contains whitespace"
+            "text": "Try, Except, Pass detected."
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src/ai_guard/__main__.py"
-                },
-                "region": {
-                  "startLine": 43,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/__main__.py"
-                },
-                "region": {
-                  "startLine": 45,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/__main__.py"
-                },
-                "region": {
-                  "startLine": 54,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/__main__.py"
-                },
-                "region": {
-                  "startLine": 62,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/__main__.py"
-                },
-                "region": {
-                  "startLine": 68,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/security_scanner.py"
-                },
-                "region": {
-                  "startLine": 18,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "flake8:W293",
-          "level": "warning",
-          "message": {
-            "text": "W293 blank line contains whitespace"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/security_scanner.py"
-                },
-                "region": {
-                  "startLine": 25,
-                  "startColumn": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "mypy:assignment",
-          "level": "error",
-          "message": {
-            "text": "Incompatible types in assignment (expression has type \"TextIOWrapper\", variable has type \"dict[str, str | int | None]\") "
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/report_html.py"
-                },
-                "region": {
-                  "startLine": 121
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "mypy:attr-defined",
-          "level": "error",
-          "message": {
-            "text": "\"dict[str, str | int | None]\" has no attribute \"write\" "
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/report_html.py"
-                },
-                "region": {
-                  "startLine": 122
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B404",
-          "level": "note",
-          "message": {
-            "text": "Consider possible security implications associated with the subprocess module."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/analyzer.py"
-                },
-                "region": {
-                  "startLine": 4
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B603",
-          "level": "note",
-          "message": {
-            "text": "subprocess call - check for execution of untrusted input."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/analyzer.py"
-                },
-                "region": {
-                  "startLine": 124
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B603",
-          "level": "note",
-          "message": {
-            "text": "subprocess call - check for execution of untrusted input."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/analyzer.py"
-                },
-                "region": {
-                  "startLine": 145
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B607",
-          "level": "note",
-          "message": {
-            "text": "Starting a process with a partial executable path"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/analyzer.py"
-                },
-                "region": {
-                  "startLine": 196
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B603",
-          "level": "note",
-          "message": {
-            "text": "subprocess call - check for execution of untrusted input."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/analyzer.py"
-                },
-                "region": {
-                  "startLine": 196
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B404",
-          "level": "note",
-          "message": {
-            "text": "Consider possible security implications associated with the subprocess module."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/diff_parser.py"
-                },
-                "region": {
-                  "startLine": 38
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B607",
-          "level": "note",
-          "message": {
-            "text": "Starting a process with a partial executable path"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/diff_parser.py"
-                },
-                "region": {
-                  "startLine": 41
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B603",
-          "level": "note",
-          "message": {
-            "text": "subprocess call - check for execution of untrusted input."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/diff_parser.py"
-                },
-                "region": {
-                  "startLine": 41
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B404",
-          "level": "note",
-          "message": {
-            "text": "Consider possible security implications associated with the subprocess module."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/diff_parser.py"
-                },
-                "region": {
-                  "startLine": 53
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B607",
-          "level": "note",
-          "message": {
-            "text": "Starting a process with a partial executable path"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/diff_parser.py"
-                },
-                "region": {
-                  "startLine": 57
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B603",
-          "level": "note",
-          "message": {
-            "text": "subprocess call - check for execution of untrusted input."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/diff_parser.py"
-                },
-                "region": {
-                  "startLine": 57
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B607",
-          "level": "note",
-          "message": {
-            "text": "Starting a process with a partial executable path"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/diff_parser.py"
-                },
-                "region": {
-                  "startLine": 61
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B603",
-          "level": "note",
-          "message": {
-            "text": "subprocess call - check for execution of untrusted input."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/diff_parser.py"
-                },
-                "region": {
-                  "startLine": 61
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B607",
-          "level": "note",
-          "message": {
-            "text": "Starting a process with a partial executable path"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/diff_parser.py"
-                },
-                "region": {
-                  "startLine": 67
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B603",
-          "level": "note",
-          "message": {
-            "text": "subprocess call - check for execution of untrusted input."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/diff_parser.py"
-                },
-                "region": {
-                  "startLine": 67
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B404",
-          "level": "note",
-          "message": {
-            "text": "Consider possible security implications associated with the subprocess module."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/security_scanner.py"
-                },
-                "region": {
-                  "startLine": 3
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B603",
-          "level": "note",
-          "message": {
-            "text": "subprocess call - check for execution of untrusted input."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/security_scanner.py"
-                },
-                "region": {
-                  "startLine": 29
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B607",
-          "level": "note",
-          "message": {
-            "text": "Starting a process with a partial executable path"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/security_scanner.py"
+                  "uri": "src\\ai_guard\\parsers\\typescript.py"
                 },
                 "region": {
                   "startLine": 39
@@ -530,67 +29,10 @@
           ]
         },
         {
-          "ruleId": "bandit:B603",
-          "level": "note",
-          "message": {
-            "text": "subprocess call - check for execution of untrusted input."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/security_scanner.py"
-                },
-                "region": {
-                  "startLine": 39
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B404",
-          "level": "note",
-          "message": {
-            "text": "Consider possible security implications associated with the subprocess module."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/tests_runner.py"
-                },
-                "region": {
-                  "startLine": 3
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "bandit:B603",
-          "level": "note",
-          "message": {
-            "text": "subprocess call - check for execution of untrusted input."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src/ai_guard/tests_runner.py"
-                },
-                "region": {
-                  "startLine": 21
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "gate:Lint (flake8)",
+          "ruleId": "gate:Lint",
           "level": "error",
           "message": {
-            "text": "Lint (flake8)"
+            "text": "E501 line too long"
           },
           "locations": [
             {
@@ -609,7 +51,7 @@
           "ruleId": "gate:Static types (mypy)",
           "level": "error",
           "message": {
-            "text": "Static types (mypy)"
+            "text": "mypy error: mypy: can't read file 'src\\test.py': No such file or directory"
           },
           "locations": [
             {
@@ -626,9 +68,9 @@
         },
         {
           "ruleId": "gate:Security (bandit)",
-          "level": "note",
+          "level": "error",
           "message": {
-            "text": "Security (bandit)"
+            "text": "Try, Except, Pass detected."
           },
           "locations": [
             {
@@ -647,7 +89,26 @@
           "ruleId": "gate:Coverage",
           "level": "error",
           "message": {
-            "text": "0% >= 50%"
+            "text": "\u274c Coverage: 21.0% >= 80.0% (FAILED)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "README.md"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "gate:Tests",
+          "level": "error",
+          "message": {
+            "text": "Tests"
           },
           "locations": [
             {

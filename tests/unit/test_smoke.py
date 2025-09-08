@@ -10,8 +10,8 @@ def test_smoke():
 
 def test_imports():
     """Test that main modules can be imported."""
-    from src.ai_guard.config import Gates
-    from src.ai_guard.report import GateResult  # noqa: F401
+    from ai_guard.config import Gates
+    from ai_guard.report import GateResult  # noqa: F401
 
     # Test Gates instantiation
     gates = Gates()

@@ -4,12 +4,7 @@ import pytest  # noqa: F401
 import json
 import tempfile  # noqa: F401
 import os  # noqa: F401
-from src.ai_guard.sarif_report import (
-    SarifResult,
-    SarifRun,
-    write_sarif,
-    make_location
-)
+from ai_guard.sarif_report import SarifResult, SarifRun, write_sarif, make_location
 
 
 class TestSarifReport:
@@ -18,9 +13,7 @@ class TestSarifReport:
     def test_sarif_result_creation(self):
         """Test SarifResult creation."""
         result = SarifResult(
-            rule_id="test-rule",
-            level="warning",
-            message="Test message"
+            rule_id="test-rule", level="warning", message="Test message"
         )
 
         assert result.rule_id == "test-rule"
@@ -35,7 +28,7 @@ class TestSarifReport:
             rule_id="test-rule",
             level="error",
             message="Test message",
-            locations=locations
+            locations=locations,
         )
 
         assert result.locations == locations
@@ -44,7 +37,7 @@ class TestSarifReport:
         """Test SarifRun creation."""
         results = [
             SarifResult("rule1", "warning", "Message 1"),
-            SarifResult("rule2", "error", "Message 2")
+            SarifResult("rule2", "error", "Message 2"),
         ]
 
         run = SarifRun(tool_name="test-tool", results=results)
@@ -79,11 +72,11 @@ class TestSarifReport:
         """Test write_sarif function."""
         results = [
             SarifResult("rule1", "warning", "Test warning"),
-            SarifResult("rule2", "error", "Test error")
+            SarifResult("rule2", "error", "Test error"),
         ]
         run = SarifRun(tool_name="test-tool", results=results)
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.sarif', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".sarif", delete=False) as f:
             temp_path = f.name
 
         try:
@@ -93,7 +86,7 @@ class TestSarifReport:
             assert os.path.exists(temp_path)
 
             # Verify content
-            with open(temp_path, 'r') as f:
+            with open(temp_path, "r") as f:
                 content = json.load(f)
 
             assert content["version"] == "2.1.0"

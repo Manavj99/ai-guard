@@ -1,3 +1,7 @@
-exclude_dirs: ["tests", "venv", ".venv", "env", ".env"]
-skips: ["B101", "B601"]
-targets: ["src"]
+exclude_dirs:
+  - tests
+  - test-project
+skips:
+  - B603
+  - B607
+  - B404

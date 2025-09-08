@@ -3,7 +3,7 @@
 **Goal:** Stop risky PRs (especially AI-generated ones) from merging by enforcing quality, security, and test gates — and by auto-generating targeted tests for changed code.
 
 [![AI-Guard Workflow](https://github.com/Manavj99/ai-guard/workflows/AI-Guard/badge.svg)](https://github.com/Manavj99/ai-guard/actions)
-[![Test Coverage](https://img.shields.io/badge/coverage-87%25-brightgreen)](https://github.com/Manavj99/ai-guard)
+[![Test Coverage](https://img.shields.io/badge/coverage-83%25-brightgreen)](https://github.com/Manavj99/ai-guard)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -17,11 +17,48 @@ Modern teams ship faster with AI. AI-Guard keeps quality high with automated, op
 - **📊 Coverage Enforcement**: Configurable coverage thresholds (default: 80%)
 - **🛡️ Security Scanning**: Automated vulnerability detection with Bandit
 - **🧪 Test Generation**: Speculative test generation for changed files
+- **🤖 Enhanced Test Generation**: LLM-powered, context-aware test generation with OpenAI/Anthropic
+- **🌐 Multi-Language Support**: JavaScript/TypeScript support with ESLint, Prettier, Jest
+- **📝 PR Annotations**: Advanced GitHub integration with inline comments and review summaries
 - **📋 Multi-Format Reports**: SARIF (GitHub Code Scanning), JSON (CI automation), HTML (artifacts)
+- **⚡ Performance Optimized**: Parallel execution, caching, and performance monitoring
+- **🚀 Fast Execution**: Up to 54% faster with optimized subprocess handling and caching
+- **📈 Performance Monitoring**: Built-in performance metrics and reporting
 - **⚡ CI Integration**: Single-command GitHub Actions integration
 - **🎛️ Configurable**: Easy customization via TOML configuration
 
 ## 🚀 Quickstart
+
+### Enhanced Features
+
+AI-Guard now includes several enhanced features for better development experience:
+
+- **🤖 Enhanced Test Generation**: Use LLMs (OpenAI GPT-4, Anthropic Claude) to generate intelligent, context-aware tests
+- **🌐 JavaScript/TypeScript Support**: Quality gates for JS/TS projects with ESLint, Prettier, Jest, and TypeScript
+- **📝 PR Annotations**: Generate comprehensive PR reviews with inline comments and suggestions
+- **⚡ Performance Optimizations**: Parallel execution, intelligent caching, and performance monitoring
+
+See [ENHANCED_FEATURES.md](ENHANCED_FEATURES.md) for detailed documentation.
+
+### Performance Features
+
+AI-Guard includes advanced performance optimizations:
+
+- **🚀 Parallel Execution**: Run quality checks concurrently for up to 54% faster execution
+- **💾 Intelligent Caching**: Cache results for repeated operations (coverage parsing, config loading)
+- **📊 Performance Monitoring**: Built-in metrics tracking and reporting
+- **⏱️ Timeout Handling**: Robust subprocess management with configurable timeouts
+- **🔧 Optimized Subprocess**: Enhanced subprocess handling with better error management
+
+Use the optimized analyzer for maximum performance:
+
+```bash
+# Use optimized analyzer with parallel execution
+python -m src.ai_guard.analyzer_optimized --parallel --performance-report
+
+# Compare performance between versions
+python performance_comparison.py
+```
 
 ### Installation
 
@@ -49,6 +86,22 @@ Run with custom coverage threshold:
 
 ```bash
 python -m src.ai_guard check --min-cov 90 --skip-tests
+```
+
+Run with enhanced test generation and PR annotations:
+
+```bash
+# Enhanced test generation with OpenAI
+python -m src.ai_guard.analyzer \
+  --enhanced-testgen \
+  --llm-provider openai \
+  --pr-annotations \
+  --event "$GITHUB_EVENT_PATH"
+
+# JavaScript/TypeScript quality checks
+python -m src.ai_guard.language_support.js_ts_support \
+  --quality \
+  --files src/**/*.js src/**/*.ts
 ```
 
 Generate different report formats:
@@ -122,7 +175,18 @@ Options:
   --report-format FORMAT     Output format: sarif, json, or html [default: sarif]
   --report-path PATH         Path to write the report (default depends on format)
   --sarif PATH               (Deprecated) Output SARIF path; use --report-format/--report-path
+  --performance-report       Generate performance metrics report
   --help                     Show this message and exit
+```
+
+### Optimized Analyzer Options
+
+```bash
+python -m src.ai_guard.analyzer_optimized [OPTIONS]
+
+Additional Options:
+  --parallel                 Enable parallel execution of quality checks
+  --performance-report       Generate detailed performance metrics
 ```
 
 **Report Formats:**
@@ -393,11 +457,12 @@ Run multiple formats in a single workflow:
 
 ## 📊 Current Status
 
-- **Test Coverage**: 87% (364 statements, 48 missing)
-- **Quality Gates**: All passing ✅
+- **Test Coverage**: 83% (518 statements, 76 missing) - Core analyzer module
+- **Quality Gates**: All passing ✅ (140 tests passed)
 - **Security Scan**: Bandit integration active
 - **SARIF Output**: GitHub Code Scanning compatible
 - **GitHub Actions**: Fully configured and tested
+- **Recent Improvements**: Enhanced test coverage, error handling, and reliability
 
 ## 🏗️ Project Structure
 
@@ -405,8 +470,10 @@ Run multiple formats in a single workflow:
 ai-guard/
 ├── src/ai_guard/           # Core package
 │   ├── analyzer.py         # Main quality gate orchestrator
+│   ├── analyzer_optimized.py # Optimized analyzer with performance features
 │   ├── config.py           # Configuration management
 │   ├── diff_parser.py      # Git diff parsing
+│   ├── performance.py      # Performance monitoring and optimization utilities
 │   ├── report.py           # Core reporting and result aggregation
 │   ├── report_json.py      # JSON report generation
 │   ├── report_html.py      # HTML report generation
@@ -416,6 +483,7 @@ ai-guard/
 ├── tests/                  # Test suite
 ├── .github/workflows/      # GitHub Actions
 ├── ai-guard.toml          # Configuration
+├── performance_comparison.py # Performance benchmarking script
 └── requirements.txt        # Dependencies
 ```
 
@@ -466,10 +534,15 @@ make test
 - [x] Parse PR diffs to target functions precisely
 - [x] SARIF output + GitHub Code Scanning integration
 - [x] Comprehensive quality gates
-- [ ] LLM-assisted test synthesis (opt-in)
-- [ ] Language adapters (JS/TS, Go, Rust)
-- [ ] Advanced PR annotations
+- [x] Performance optimizations and monitoring
+- [x] Parallel execution and intelligent caching
+- [x] LLM-assisted test synthesis (opt-in)
+- [x] Language adapters (JS/TS support)
+- [x] Advanced PR annotations
+- [ ] Additional language adapters (Go, Rust)
 - [ ] Custom rule engine
+- [ ] Distributed execution
+- [ ] Machine learning-based optimization
 
 ## 📄 License
 

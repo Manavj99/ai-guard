@@ -8,7 +8,7 @@ from .report import GateResult
 def write_json(
     report_path: str,
     gates: List[GateResult],
-    findings: List[dict[str, str | int | None]]
+    findings: List[dict[str, str | int | None]],
 ) -> None:
     """Write a JSON report with gate summaries and findings.
 

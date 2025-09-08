@@ -1,33 +1,30 @@
-# ---------- Base runtime ----------
-FROM python:3.11-slim AS runtime
+FROM python:3.11-slim AS base
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1
+ENV PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# git is needed for diff scoping; ca-certificates for HTTPS during pip installs
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      git ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends nodejs npm git \
+ && rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user for security
-RUN useradd -m appuser
 WORKDIR /app
 
-# Install Python deps first to maximize build cache
-# Keep these COPY lines minimal; they invalidate cache only when these files change
-COPY requirements.txt pyproject.toml setup.py README.md ai-guard.toml /app/
+# Optional: copy dependency manifests first for better caching
+COPY pyproject.toml* requirements.txt* /app/
+RUN python -m pip install --upgrade pip \
+ && (test -f requirements.txt && pip install -r requirements.txt || true) \
+ && (test -f pyproject.toml && pip install ".[all]" || true)
 
-RUN python -m pip install --upgrade pip && \
-    pip install -r requirements.txt
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* /app/
+RUN if [ -f package.json ]; then npm ci || npm i; fi
 
-# Copy source and install the package
-COPY src /app/src
-RUN pip install .
+# Copy source
+COPY . /app
 
-# Workspace is where you'll mount the target repo to scan
-WORKDIR /workspace
+# Non-root
+RUN useradd -m appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Default to the CLI. Pass flags at `docker run` time.
-ENTRYPOINT ["python", "-m", "ai_guard.analyzer"]
+ENTRYPOINT ["python", "-m", "ai_guard.cli"]
+CMD ["--help"]

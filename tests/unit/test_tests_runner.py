@@ -3,13 +3,13 @@
 import sys
 import pytest  # noqa: F401
 from unittest.mock import patch, Mock  # noqa: F401
-from src.ai_guard.tests_runner import run_pytest, run_pytest_with_coverage
+from ai_guard.tests_runner import run_pytest, run_pytest_with_coverage
 
 
 class TestTestsRunner:
     """Test tests runner functionality."""
 
-    @patch('subprocess.call')
+    @patch("subprocess.call")
     def test_run_pytest_basic(self, mock_call):
         """Test basic pytest execution."""
         mock_call.return_value = 0
@@ -24,7 +24,7 @@ class TestTestsRunner:
         assert call_args[3] == "-q"
         assert result == 0
 
-    @patch('subprocess.call')
+    @patch("subprocess.call")
     def test_run_pytest_with_extra_args(self, mock_call):
         """Test pytest execution with extra arguments."""
         mock_call.return_value = 0
@@ -41,7 +41,7 @@ class TestTestsRunner:
         assert call_args[4:] == ["--verbose", "--tb=short"]
         assert result == 0
 
-    @patch('subprocess.call')
+    @patch("subprocess.call")
     def test_run_pytest_with_coverage(self, mock_call):
         """Test pytest execution with coverage."""
         mock_call.return_value = 0

@@ -1,7 +1,7 @@
 from unittest.mock import patch  # noqa: F401
 
-from src.ai_guard.tests_runner import run_pytest, run_pytest_with_coverage
-from src.ai_guard.security_scanner import run_bandit
+from ai_guard.tests_runner import run_pytest, run_pytest_with_coverage
+from ai_guard.security_scanner import run_bandit
 
 
 def test_run_pytest_invocations():

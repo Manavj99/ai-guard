@@ -1,8 +1,8 @@
 from pathlib import Path  # noqa: F401
 import json
 
-from src.ai_guard.report import GateResult, summarize
-from src.ai_guard.sarif_report import make_location, write_sarif, SarifRun, SarifResult
+from ai_guard.report import GateResult, summarize
+from ai_guard.sarif_report import make_location, write_sarif, SarifRun, SarifResult
 
 
 def test_summarize_outputs_and_exit_code(capsys):

@@ -79,6 +79,7 @@ jobs:
 
       - name: Run AI-Guard quality gates
         run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE"
           python -m src.ai_guard.analyzer --min-cov 80 --skip-tests --report-format json --report-path quality-report.json
 
       - name: Display quality report

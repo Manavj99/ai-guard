@@ -3,8 +3,8 @@
 import pytest  # noqa: F401
 import tempfile
 import os
-from src.ai_guard.report_html import write_html
-from src.ai_guard.report import GateResult
+from ai_guard.report_html import write_html
+from ai_guard.report import GateResult
 
 
 class TestReportHtml:
@@ -15,20 +15,20 @@ class TestReportHtml:
         gates = [
             GateResult("Lint (flake8)", True, ""),
             GateResult("Static types (mypy)", False, "mypy not found"),
-            GateResult("Coverage", True, "85% >= 80%")
+            GateResult("Coverage", True, "85% >= 80%"),
         ]
 
         findings = [
             {
                 "rule_id": "mypy:arg-type",
                 "level": "error",
-                "message": "Argument 1 to \"func\" has incompatible type",
+                "message": 'Argument 1 to "func" has incompatible type',
                 "path": "src/foo.py",
-                "line": 42
+                "line": 42,
             }
         ]
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
             temp_path = f.name
 
         try:
@@ -38,7 +38,7 @@ class TestReportHtml:
             assert os.path.exists(temp_path)
 
             # Verify content
-            with open(temp_path, 'r', encoding='utf-8') as f:
+            with open(temp_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Check basic structure
@@ -80,18 +80,18 @@ class TestReportHtml:
         """Test HTML report when all gates pass."""
         gates = [
             GateResult("Lint (flake8)", True, ""),
-            GateResult("Coverage", True, "90% >= 80%")
+            GateResult("Coverage", True, "90% >= 80%"),
         ]
 
         findings = []  # No findings
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
             temp_path = f.name
 
         try:
             write_html(temp_path, gates, findings)
 
-            with open(temp_path, 'r', encoding='utf-8') as f:
+            with open(temp_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Should show ALL GATES PASSED
@@ -109,13 +109,13 @@ class TestReportHtml:
         gates = []
         findings = []
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
             temp_path = f.name
 
         try:
             write_html(temp_path, gates, findings)
 
-            with open(temp_path, 'r', encoding='utf-8') as f:
+            with open(temp_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Empty gates should still show ALL GATES PASSED
@@ -129,7 +129,7 @@ class TestReportHtml:
         """Test that HTML special characters are properly escaped."""
         gates = [
             GateResult("Test & Gate", True, "Details < 100%"),
-            GateResult("Another 'Gate'", False, "Error: \"quoted\" message")
+            GateResult("Another 'Gate'", False, 'Error: "quoted" message'),
         ]
 
         findings = [
@@ -138,17 +138,17 @@ class TestReportHtml:
                 "level": "error",
                 "message": "Error with <script> tags & quotes",
                 "path": "src/file<>.py",
-                "line": 10
+                "line": 10,
             }
         ]
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False) as f:
             temp_path = f.name
 
         try:
             write_html(temp_path, gates, findings)
 
-            with open(temp_path, 'r', encoding='utf-8') as f:
+            with open(temp_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Check that special characters are escaped
