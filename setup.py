@@ -24,11 +24,17 @@ if __name__ == "__main__":
         package_dir={"": "src"},
         python_requires=">=3.11",
         install_requires=[
-            "typer>=0.9.0",
-            "rich>=13.3.5",
+            "typer==0.9.0",
+            "rich==13.3.5",
             "tomli>=2.0.1",
             "defusedxml>=0.7.1",
-            "click>=8.1.7",
+            "click==8.1.7",
+            "pygithub==2.4.0",
+            "pip-audit==2.7.3",
+            "black==24.8.0",
+            "autopep8==2.3.2",
+            "openai>=1.0.0",
+            "anthropic>=0.18.0",
         ],
         extras_require={
             "dev": [

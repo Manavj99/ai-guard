@@ -162,6 +162,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ai-guard.sarif
+        if: always()
 
       - name: 📊 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
