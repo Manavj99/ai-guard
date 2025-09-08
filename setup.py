@@ -12,7 +12,7 @@ if __name__ == "__main__":
         long_description = "Smart Code Quality Gatekeeper for AI-generated code"
 
     setup(
-        name="ai-guard",
+        name="smart-ai-guard",
         version="0.1.0",
         description="Smart Code Quality Gatekeeper for AI-generated code",
         long_description=long_description,

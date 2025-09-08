@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [project]
-name = "ai-guard"
+name = "smart-ai-guard"
 version = "0.1.0"
 description = "Smart Code Quality Gatekeeper for AI-generated code"
 readme = "README.md"
