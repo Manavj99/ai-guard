@@ -144,7 +144,7 @@ jobs:
 
       - name: Create dependency update issue
         if: hashFiles('outdated.json') != hashFiles('outdated.json.bak')
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
