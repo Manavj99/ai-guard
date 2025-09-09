@@ -32,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
           pip install -e .
+          pip install -r requirements.txt
 
       - name: Run linting
         run: |
@@ -52,7 +52,7 @@ jobs:
           python -m pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage.xml
           flags: unittests
@@ -82,7 +82,7 @@ jobs:
       - name: Run AI-Guard quality gates
         run: |
           export PYTHONPATH="$GITHUB_WORKSPACE"
-          python -m src.ai_guard.analyzer --min-cov 80 --skip-tests --report-format json --report-path quality-report.json || echo "Quality gates failed, but continuing..."
+          python -m ai_guard.analyzer --min-cov 80 --skip-tests --report-format json --report-path quality-report.json || echo "Quality gates failed, but continuing..."
 
       - name: Display quality report
         run: |

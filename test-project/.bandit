@@ -1,6 +1,0 @@
-# Bandit configuration for sample-app
-# Skip certain tests that are not relevant for this sample project
-
-skips: ['B101', 'B601', 'B602', 'B603']
-exclude_dirs: ['tests', 'docs']
-targets: ['src']

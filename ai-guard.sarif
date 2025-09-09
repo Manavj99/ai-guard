@@ -10,29 +10,10 @@
       },
       "results": [
         {
-          "ruleId": "B110",
-          "level": "warning",
+          "ruleId": "gate:Lint (flake8)",
+          "level": "note",
           "message": {
-            "text": "Try, Except, Pass detected."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\\ai_guard\\parsers\\typescript.py"
-                },
-                "region": {
-                  "startLine": 39
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "gate:Lint",
-          "level": "error",
-          "message": {
-            "text": "E501 line too long"
+            "text": "No issues"
           },
           "locations": [
             {
@@ -49,9 +30,9 @@
         },
         {
           "ruleId": "gate:Static types (mypy)",
-          "level": "error",
+          "level": "note",
           "message": {
-            "text": "mypy error: mypy: can't read file 'src\\test.py': No such file or directory"
+            "text": "No issues"
           },
           "locations": [
             {
@@ -68,9 +49,9 @@
         },
         {
           "ruleId": "gate:Security (bandit)",
-          "level": "error",
+          "level": "note",
           "message": {
-            "text": "Try, Except, Pass detected."
+            "text": "No issues"
           },
           "locations": [
             {
@@ -89,26 +70,7 @@
           "ruleId": "gate:Coverage",
           "level": "error",
           "message": {
-            "text": "\u274c Coverage: 21.0% >= 80.0% (FAILED)"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "README.md"
-                },
-                "region": {
-                  "startLine": 1
-                }
-              }
-            }
-          ]
-        },
-        {
-          "ruleId": "gate:Tests",
-          "level": "error",
-          "message": {
-            "text": "Tests"
+            "text": "\u274c Coverage: 39.0% >= 80.0% (FAILED)"
           },
           "locations": [
             {

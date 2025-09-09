@@ -687,13 +687,15 @@ describe('{file_name}', () => {{
         is_typescript = change.file_path.endswith(('.ts', '.tsx'))
 
         if change.change_type == "function" and change.function_name:
-            return self._generate_function_test(change.function_name, change.code_snippet, is_typescript)
+            return self._generate_function_test(
+                change.function_name, change.code_snippet, is_typescript)
         elif change.change_type == "class" and change.class_name:
             return self._generate_class_test(change.class_name, change.code_snippet, is_typescript)
         else:
             return self._generate_generic_test(file_name, is_typescript)
 
-    def _generate_function_test(self, function_name: str, code_snippet: str, is_typescript: bool) -> str:
+    def _generate_function_test(
+            self, function_name: str, code_snippet: str, is_typescript: bool) -> str:
         """Generate test content for a function."""
 
         return f"""// Auto-generated test for function: {function_name}

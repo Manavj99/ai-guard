@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "summary": {
+    "passed": false,
+    "gates": [
+      {
+        "name": "Lint (flake8)",
+        "passed": false,
+        "details": "FileNotFoundError: [Errno 2] No such file or directory: 'check_coverage.py'"
+      },
+      {
+        "name": "Static types (mypy)",
+        "passed": true,
+        "details": "No issues"
+      },
+      {
+        "name": "Security (bandit)",
+        "passed": true,
+        "details": "No issues"
+      },
+      {
+        "name": "Coverage",
+        "passed": true,
+        "details": "\u2705 Coverage: 21.0% >= 20.0% (PASSED)"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "rule_id": "E902",
+      "level": "warning",
+      "message": "FileNotFoundError: [Errno 2] No such file or directory: 'check_coverage.py'",
+      "path": "check_coverage.py",
+      "line": 0
+    }
+  ]
+}

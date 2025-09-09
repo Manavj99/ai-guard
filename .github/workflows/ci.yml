@@ -68,3 +68,11 @@ jobs:
         with:
           name: coverage-html
           path: htmlcov
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage.xml
+          flags: ci-matrix
+          name: ci-coverage-${{ matrix.python }}-${{ matrix.node }}
+          fail_ci_if_error: false

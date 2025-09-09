@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Callable
 
 
 def _extract_mypy_rule(raw: str) -> str:
@@ -35,8 +35,13 @@ def normalize_rule(tool: str, raw: str) -> str:
       bandit + 'B101'         -> 'bandit:B101'
       eslint + 'no-unused'    -> 'eslint:no-unused'
     """
-    tool_l = (tool or "").lower()
-    raw = raw or "unknown"
+    tool_l = (tool or "none").lower()
+    if raw is None:
+        raw = "None"
+    elif not raw:
+        raw = ""
+    else:
+        raw = str(raw)
     norm = _RULE_NORMALIZERS.get(tool_l)
     if norm:
         return norm(raw)

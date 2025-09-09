@@ -26,6 +26,8 @@ class ErrorCategory(str, Enum):
     PERFORMANCE = "performance"
     COVERAGE = "coverage"
     TESTING = "testing"
+    LINT = "lint"
+    TYPE = "type"
 
 
 @dataclass
@@ -309,7 +311,8 @@ class ErrorFormatter:
         status = "PASSED" if execution_time < threshold else "FAILED"
         emoji = "✅" if execution_time < threshold else "⚠️"
 
-        return f"{emoji} Performance: {function_name} took {execution_time:.3f}s (threshold: {threshold}s) - {status}"
+        return (f"{emoji} Performance: {function_name} took {execution_time:.3f}s "
+                f"(threshold: {threshold}s) - {status}")
 
 
 # Global error formatter instance

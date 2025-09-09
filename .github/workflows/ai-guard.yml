@@ -54,10 +54,18 @@ jobs:
       - name: Enforce quality gates
         run: |
           export PYTHONPATH="$GITHUB_WORKSPACE"
-          python -m src.ai_guard.analyzer --min-cov 80 --skip-tests --sarif ai-guard.sarif || true
+          python -m ai_guard.analyzer --min-cov 80 --skip-tests --sarif ai-guard.sarif || true
 
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ai-guard.sarif
         if: always()
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage.xml
+          flags: ai-guard
+          name: ai-guard-coverage
+          fail_ci_if_error: false

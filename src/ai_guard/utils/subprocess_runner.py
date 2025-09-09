@@ -36,3 +36,41 @@ def run_cmd(
             f"Command failed with code {p.returncode} and no output: {' '.join(cmd)}"
         )
     return p.returncode, out
+
+
+def run_command(cmd: Optional[Sequence[str]]) -> Tuple[int, str]:
+    """
+    Run a command with optional arguments.
+
+    Args:
+        cmd: Command and arguments, or None
+
+    Returns:
+        Tuple of (returncode, output)
+    """
+    if cmd is None:
+        return 1, "No command provided"
+    if not cmd:
+        return 1, "Empty command"
+    return run_cmd(cmd)
+
+
+def _format_command_output(stdout: str, stderr: str) -> str:
+    """
+    Format command output for display.
+
+    Args:
+        stdout: Standard output
+        stderr: Standard error
+
+    Returns:
+        Formatted output string
+    """
+    if stdout and stderr:
+        return f"STDOUT: {stdout}\nSTDERR: {stderr}"
+    elif stdout:
+        return f"STDOUT: {stdout}"
+    elif stderr:
+        return f"STDERR: {stderr}"
+    else:
+        return "No output"

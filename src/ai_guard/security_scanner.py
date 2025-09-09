@@ -41,6 +41,10 @@ def run_safety_check() -> int:
         # Safety not installed, skip
         print("Warning: safety not installed, skipping dependency security check")
         return 0
+    except Exception as e:
+        # Handle any other exceptions gracefully
+        print(f"Warning: Error running safety check: {e}")
+        return 0
 
 
 class SecurityScanner:

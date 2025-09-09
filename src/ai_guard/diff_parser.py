@@ -90,12 +90,15 @@ def changed_python_files(event_path: str | None = None) -> List[str]:
 
 
 def _git_ls_files() -> List[str]:
-    """Get all tracked files from Git."""
+    """Get all tracked files from Git that still exist."""
     import subprocess
+    import os
 
     try:
         out = subprocess.check_output(["git", "ls-files"], text=True)
-        return [line.strip() for line in out.splitlines() if line.strip()]
+        tracked_files = [line.strip() for line in out.splitlines() if line.strip()]
+        # Filter out deleted files - only return files that still exist
+        return [f for f in tracked_files if os.path.exists(f)]
     except (subprocess.CalledProcessError, FileNotFoundError):
         # Fallback if git is not available
         return []
@@ -105,8 +108,10 @@ def _git_changed_files(base_ref: str, head_ref: str) -> List[str]:
     """Get changed files between base and head refs.
 
     Uses `git diff --name-only base...head` to include merge-base.
+    Only returns files that still exist (not deleted).
     """
     import subprocess
+    import os
 
     try:
         # Validate that the refs exist in the repository
@@ -125,7 +130,9 @@ def _git_changed_files(base_ref: str, head_ref: str) -> List[str]:
         out = subprocess.check_output(
             ["git", "diff", "--name-only", f"{base_ref}...{head_ref}"], text=True
         )
-        return [line.strip() for line in out.splitlines() if line.strip()]
+        # Filter out deleted files - only return files that still exist
+        changed_files = [line.strip() for line in out.splitlines() if line.strip()]
+        return [f for f in changed_files if os.path.exists(f)]
     except (subprocess.CalledProcessError, FileNotFoundError):
         # If Git operations fail, return empty list instead of crashing
         print(f"Warning: Could not get diff between {base_ref} and {head_ref}")

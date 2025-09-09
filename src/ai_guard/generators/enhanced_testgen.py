@@ -616,7 +616,8 @@ Generate only the test code, no explanations or markdown formatting."""
                 # Generate parametrized test if function has multiple parameters
                 if len(args) > 1:
                     parametrized_template = next(
-                        (t for t in self.test_templates if t.name == "function_parametrized_test"), None
+                        (t for t in self.test_templates
+                         if t.name == "function_parametrized_test"), None
                     )
                     if parametrized_template:
                         test_cases = self._generate_test_cases(func_def)
@@ -825,7 +826,8 @@ def test_{code_change.change_type}_{change_name}_import():
                             and isinstance(node.body[0].value, ast.Constant)
                             and isinstance(node.body[0].value.value, str)):
                         gaps.append(
-                            f"Function '{node.name}' has docstring but may lack comprehensive tests")
+                            f"Function '{node.name}' has docstring but may lack "
+                            f"comprehensive tests")
 
                     # Check for complex functions that might need more testing
                     if len(node.body) > 10:  # Arbitrary threshold for complexity
@@ -849,7 +851,8 @@ def test_{code_change.change_type}_{change_name}_import():
             for node in ast.walk(tree):
                 if isinstance(node, ast.If):
                     gaps.append(
-                        f"Conditional statement at line {node.lineno} may need both True/False branch tests")
+                        f"Conditional statement at line {node.lineno} may need both "
+                        f"True/False branch tests")
                 elif isinstance(node, ast.For):
                     gaps.append(
                         f"Loop at line {node.lineno} may need empty list and non-empty list tests")

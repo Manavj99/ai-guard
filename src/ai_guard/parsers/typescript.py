@@ -36,8 +36,9 @@ def parse_eslint(output: str) -> List[Dict[str, Any]]:
                     }
                 )
         return findings
-    except Exception:
-        pass
+    except Exception as e:
+        # Log the error for debugging but continue to fallback
+        print(f"Warning: TypeScript parsing error: {e}")
 
     # Fallback: stylish-like
     findings_fallback: List[Dict[str, Any]] = []
