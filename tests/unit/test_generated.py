@@ -29,11 +29,27 @@
 # - src/ai_guard/utils/__init__.py
 # - src/ai_guard/utils/error_formatter.py
 # - src/ai_guard/utils/subprocess_runner.py
+# - test_functionality.py
 # - tests/conftest.py
 # - tests/fixtures/sample.py
+# - tests/test_analyzer_basic.py
+# - tests/test_analyzer_comprehensive.py
+# - tests/test_analyzer_comprehensive_new.py
+# - tests/test_config_basic.py
+# - tests/test_config_comprehensive.py
+# - tests/test_coverage_eval_comprehensive.py
 # - tests/test_coverage_gate.py
+# - tests/test_coverage_improvement.py
+# - tests/test_diff_parser_basic.py
+# - tests/test_diff_parser_comprehensive.py
+# - tests/test_generators_comprehensive.py
+# - tests/test_parsers_comprehensive.py
+# - tests/test_performance_comprehensive.py
 # - tests/test_rule_normalize.py
+# - tests/test_security_scanner.py
 # - tests/test_ts_parsers.py
+# - tests/test_utils_comprehensive.py
+# - tests/unit/test_generated.py
 
 import pytest
 
