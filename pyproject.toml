@@ -24,7 +24,7 @@ dependencies = [
     "defusedxml>=0.7.1",
     "click==8.1.7",
     "pygithub==2.4.0",
-    "pip-audit==2.7.3",
+    "pip-audit==2.9.0",
     "black==24.8.0",
     "autopep8==2.3.2",
     "openai>=1.0.0",
