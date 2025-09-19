@@ -111,14 +111,14 @@ jobs:
               pass
           
           # Write SARIF output
-          with open('security.sarif', 'w') as f:
+          with open('ai-guard.sarif', 'w') as f:
               json.dump(sarif, f, indent=2)
           "
 
       - name: Upload SARIF to code scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: security.sarif
+          sarif_file: ai-guard.sarif
         if: always()
 
   dependency-update:

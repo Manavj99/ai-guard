@@ -18,6 +18,7 @@ def _percent_from_root(root: ET.Element) -> float:
         try:
             return float(line_rate) * 100.0
         except ValueError:
+            # Invalid line-rate format, continue to next method
             pass
 
     lines_valid = root.attrib.get("lines-valid")
@@ -29,6 +30,7 @@ def _percent_from_root(root: ET.Element) -> float:
             if valid > 0:
                 return (covered / valid) * 100.0
         except ValueError:
+            # Invalid lines-valid/lines-covered format, continue to fallback
             pass
 
     # Fallback: sum over packages/classes if present
@@ -36,10 +38,14 @@ def _percent_from_root(root: ET.Element) -> float:
     total_valid = 0.0
     for counter in root.iter("counter"):
         if counter.attrib.get("type") == "LINE":
-            cov = float(counter.attrib.get("covered", 0))
-            miss = float(counter.attrib.get("missed", 0))
-            total_cov += cov
-            total_valid += (cov + miss)
+            try:
+                cov = float(counter.attrib.get("covered", 0))
+                miss = float(counter.attrib.get("missed", 0))
+                total_cov += cov
+                total_valid += cov + miss
+            except ValueError:
+                # Skip invalid counter values
+                continue
 
     if total_valid > 0:
         return (total_cov / total_valid) * 100.0

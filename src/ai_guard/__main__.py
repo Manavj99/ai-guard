@@ -67,7 +67,8 @@ def main() -> None:
 
     # Set sys.argv for the analyzer
     sys.argv = [sys.argv[0]] + analyzer_args
-    run_analyzer()
+    exit_code = run_analyzer()
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":

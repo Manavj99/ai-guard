@@ -597,7 +597,10 @@ describe('{file_name}', () => {{
                 file_paths = [file_path]
 
             if not file_paths:
-                return {"success": True, "output": "No JavaScript/TypeScript files found"}
+                return {
+                    "success": True,
+                    "output": "No JavaScript/TypeScript files found",
+                }
 
             # Run ESLint
             passed, issues = self.run_eslint(file_paths)
@@ -649,14 +652,16 @@ describe('{file_name}', () => {{
         test_file_name = f"{rel_path.stem}{self.config.test_file_suffix}"
 
         # Handle the case where rel_path.parent might be empty
-        if rel_path.parent == Path('.'):
+        if rel_path.parent == Path("."):
             test_path = test_dir / test_file_name
         else:
             test_path = test_dir / rel_path.parent / test_file_name
 
         return str(test_path)
 
-    def analyze_file_changes(self, changes: List[JSFileChange]) -> Dict[str, Dict[str, List[str]]]:
+    def analyze_file_changes(
+        self, changes: List[JSFileChange]
+    ) -> Dict[str, Dict[str, List[str]]]:
         """Analyze file changes and group by file."""
         analysis: dict[str, Any] = {}
 
@@ -664,11 +669,7 @@ describe('{file_name}', () => {{
             file_name = Path(change.file_path).name
 
             if file_name not in analysis:
-                analysis[file_name] = {
-                    "functions": [],
-                    "classes": [],
-                    "imports": []
-                }
+                analysis[file_name] = {"functions": [], "classes": [], "imports": []}
 
             if change.function_name:
                 analysis[file_name]["functions"].append(change.function_name)
@@ -684,18 +685,22 @@ describe('{file_name}', () => {{
     def generate_test_content(self, change: JSFileChange) -> str:
         """Generate test content for a specific file change."""
         file_name = Path(change.file_path).stem
-        is_typescript = change.file_path.endswith(('.ts', '.tsx'))
+        is_typescript = change.file_path.endswith((".ts", ".tsx"))
 
         if change.change_type == "function" and change.function_name:
             return self._generate_function_test(
-                change.function_name, change.code_snippet, is_typescript)
+                change.function_name, change.code_snippet, is_typescript
+            )
         elif change.change_type == "class" and change.class_name:
-            return self._generate_class_test(change.class_name, change.code_snippet, is_typescript)
+            return self._generate_class_test(
+                change.class_name, change.code_snippet, is_typescript
+            )
         else:
             return self._generate_generic_test(file_name, is_typescript)
 
     def _generate_function_test(
-            self, function_name: str, code_snippet: str, is_typescript: bool) -> str:
+        self, function_name: str, code_snippet: str, is_typescript: bool
+    ) -> str:
         """Generate test content for a function."""
 
         return f"""// Auto-generated test for function: {function_name}
@@ -709,7 +714,9 @@ describe('{function_name}', () => {{
 }});
 """
 
-    def _generate_class_test(self, class_name: str, code_snippet: str, is_typescript: bool) -> str:
+    def _generate_class_test(
+        self, class_name: str, code_snippet: str, is_typescript: bool
+    ) -> str:
         """Generate test content for a class."""
 
         return f"""// Auto-generated test for class: {class_name}
@@ -747,18 +754,21 @@ describe('{file_name}', () => {{
             testing_result = self.run_testing()
 
             return {
-                "overall_success": linting_result["success"] and testing_result["success"],
+                "overall_success": linting_result["success"]
+                and testing_result["success"],
                 "linting": linting_result,
-                "testing": testing_result
+                "testing": testing_result,
             }
         except Exception as e:
             return {
                 "overall_success": False,
                 "linting": {"success": False, "error": str(e)},
-                "testing": {"success": False, "error": str(e)}
+                "testing": {"success": False, "error": str(e)},
             }
 
-    def get_recommendations(self, analysis: Dict[str, Dict[str, List[str]]]) -> List[str]:
+    def get_recommendations(
+        self, analysis: Dict[str, Dict[str, List[str]]]
+    ) -> List[str]:
         """Get recommendations based on analysis results."""
         recommendations = []
 
@@ -768,15 +778,18 @@ describe('{file_name}', () => {{
 
             if functions:
                 recommendations.append(
-                    f"Consider adding unit tests for {len(functions)} functions in {file_name}")
+                    f"Consider adding unit tests for {len(functions)} functions in {file_name}"
+                )
 
             if classes:
                 recommendations.append(
-                    f"Consider adding unit tests for {len(classes)} classes in {file_name}")
+                    f"Consider adding unit tests for {len(classes)} classes in {file_name}"
+                )
 
             if not functions and not classes:
                 recommendations.append(
-                    f"No functions or classes found in {file_name} - consider adding test coverage")
+                    f"No functions or classes found in {file_name} - consider adding test coverage"
+                )
 
         if not recommendations:
             recommendations.append("No specific recommendations at this time")
@@ -796,10 +809,10 @@ describe('{file_name}', () => {{
                 "use_prettier": self.config.use_prettier,
                 "use_typescript": self.config.use_typescript,
                 "output_directory": self.config.output_directory,
-                "test_file_suffix": self.config.test_file_suffix
+                "test_file_suffix": self.config.test_file_suffix,
             },
             "project_root": str(self.project_root),
-            "package_json": self.package_json
+            "package_json": self.package_json,
         }
 
 

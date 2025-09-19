@@ -128,12 +128,12 @@ class PRAnnotator:
         for result in lint_results:
             if isinstance(result, dict):
                 issue = CodeIssue(
-                    file_path=result.get("file", ""),
-                    line_number=result.get("line", 0),
+                    file_path=result.get("file_path", result.get("file", "")),
+                    line_number=result.get("line_number", result.get("line", 0)),
                     column=result.get("column", 0),
                     severity=result.get("severity", "warning"),
                     message=result.get("message", ""),
-                    rule_id=result.get("rule", "unknown"),
+                    rule_id=result.get("rule_id", result.get("rule", "unknown")),
                     suggestion=self._generate_lint_suggestion(result),
                 )
                 self.add_issue(issue)
@@ -166,7 +166,7 @@ class PRAnnotator:
         if not coverage_data:
             return
 
-        coverage_percent = coverage_data.get("coverage_percent", 0)
+        coverage_percent = coverage_data.get("coverage", 0)
         uncovered_lines = coverage_data.get("uncovered_lines", [])
 
         if coverage_percent < 80:
@@ -253,11 +253,15 @@ class PRAnnotator:
         # Generate summary
         summary_parts = []
         if error_count > 0:
-            summary_parts.append(f"❌ {error_count} critical issues found")
+            summary_parts.append(
+                f"❌ {error_count} error{'s' if error_count != 1 else ''}"
+            )
         if warning_count > 0:
-            summary_parts.append(f"⚠️ {warning_count} warnings")
+            summary_parts.append(
+                f"⚠️ {warning_count} warning{'s' if warning_count != 1 else ''}"
+            )
         if info_count > 0:
-            summary_parts.append(f"ℹ️ {info_count} suggestions")
+            summary_parts.append(f"ℹ️ {info_count} info")
 
         if not summary_parts:
             summary_parts.append("✅ All quality checks passed!")
@@ -403,6 +407,27 @@ class PRAnnotator:
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(output_data, f, indent=2)
 
+    def generate_annotations_summary(self) -> str:
+        """Generate a summary of annotations."""
+        summary = self.generate_review_summary()
+        return f"{len(self.issues)} issues found: {summary.summary}"
+
+    def write_annotations_to_file(self, output_path: str) -> None:
+        """Write annotations to a file (stdout if path is '-')."""
+        if output_path == "-":
+            # Write to stdout
+
+            summary = self.generate_review_summary()
+            print(self.create_review_comment(summary))
+        else:
+            # Write to file
+            self.save_annotations(output_path)
+
+    def clear_annotations(self) -> None:
+        """Clear all annotations and issues."""
+        self.annotations.clear()
+        self.issues.clear()
+
     def _annotation_to_dict(self, annotation: PRAnnotation) -> Dict[str, Any]:
         """Convert annotation to dictionary for JSON serialization."""
         return {
@@ -437,11 +462,11 @@ def create_pr_annotations(
     mypy_output: Optional[str] = None,
     coverage_output: Optional[str] = None,
     output_file: Optional[str] = None,
-) -> Dict[str, Any]:
+) -> List[PRAnnotation]:
     """Create PR annotations from various analysis outputs.
 
     Args:
-        lint_output: Output from linting tools
+        lint_output: Output from linting tools or list of CodeIssue objects
         bandit_output: Output from security scanning
         mypy_output: Output from type checking
         coverage_output: Output from coverage tools
@@ -454,11 +479,15 @@ def create_pr_annotations(
 
     # Process lint output
     if lint_output:
-        # Parse lint output and add issues
-        # This is a simplified implementation
-        lint_issues = parse_lint_output(lint_output)
-        lint_dicts = [issue.to_dict() for issue in lint_issues]
-        annotator.add_lint_issues(lint_dicts)
+        if isinstance(lint_output, list):
+            # Direct list of CodeIssue objects
+            for issue in lint_output:
+                annotator.add_issue(issue)
+        else:
+            # Parse lint output and add issues
+            lint_issues = parse_lint_output(lint_output)
+            lint_dicts = [issue.to_dict() for issue in lint_issues]
+            annotator.add_lint_issues(lint_dicts)
 
     # Process bandit output
     if bandit_output:
@@ -481,33 +510,29 @@ def create_pr_annotations(
         for file_path, coverage in coverage_data.items():
             annotator.add_coverage_annotation(file_path, coverage)
 
-    # Generate summary
-    summary = annotator.generate_review_summary()
-
-    # Prepare result
-    result = {
-        "annotations": [
-            annotator._annotation_to_dict(a) for a in annotator.annotations
-        ],
-        "issues": [annotator._issue_to_dict(i) for i in annotator.issues],
-        "summary": {
-            "overall_status": summary.overall_status,
-            "summary": summary.summary,
-            "quality_score": summary.quality_score,
-            "suggestions": summary.suggestions,
-        },
-    }
-
     # Write to file if requested
     if output_file:
         try:
+            # Generate summary for file output
+            summary = annotator.generate_review_summary()
+            result = {
+                "annotations": [
+                    annotator._annotation_to_dict(a) for a in annotator.annotations
+                ],
+                "issues": [annotator._issue_to_dict(i) for i in annotator.issues],
+                "summary": {
+                    "overall_status": summary.overall_status,
+                    "summary": summary.summary,
+                    "quality_score": summary.quality_score,
+                    "suggestions": summary.suggestions,
+                },
+            }
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(result, f, indent=2)
         except Exception as e:
             logger.error(f"Failed to write output file: {e}")
-            result["error"] = f"Failed to write output file: {e}"
 
-    return result
+    return annotator.annotations
 
 
 def write_annotations_file(annotations: List[Dict[str, Any]], output_path: str) -> bool:
@@ -536,13 +561,59 @@ def _parse_coverage_output(coverage_output: str) -> Dict[str, Dict[str, Any]]:
     lines = coverage_output.split("\n")
 
     for line in lines:
-        if "TOTAL" in line and "%" in line:
-            # Extract overall coverage percentage
+        line = line.strip()
+        if not line or "---" in line:
+            continue
+
+        # Parse individual file coverage
+        if (
+            "%" in line
+            and ":" not in line
+            and "TOTAL" not in line
+            and "Name" not in line
+            and "---" not in line
+        ):
+            parts = line.split()
+            if len(parts) >= 4:
+                try:
+                    file_name = parts[0]
+                    coverage_str = parts[3].replace("%", "")
+                    coverage_percent = float(coverage_str)
+
+                    # Extract missing lines if present
+                    missing_lines = []
+                    if len(parts) > 4:
+                        missing_str = parts[4]
+                        if missing_str and missing_str != "-":
+                            # Parse missing lines (e.g., "8, 12" or "15-19")
+                            for part in missing_str.split(","):
+                                part = part.strip()
+                                if "-" in part:
+                                    try:
+                                        start, end = map(int, part.split("-"))
+                                        missing_lines.extend(range(start, end + 1))
+                                    except ValueError:
+                                        pass
+                                else:
+                                    try:
+                                        missing_lines.append(int(part))
+                                    except ValueError:
+                                        pass
+
+                    coverage_data[file_name] = {
+                        "coverage": coverage_percent,
+                        "uncovered_lines": missing_lines,
+                    }
+                except (ValueError, IndexError):
+                    pass
+
+        # Parse overall coverage
+        elif "TOTAL" in line and "%" in line:
             try:
                 percent_str = line.split("%")[0].split()[-1]
                 percent = float(percent_str)
                 coverage_data["overall"] = {
-                    "coverage_percent": percent,
+                    "coverage": percent,
                     "uncovered_lines": [],
                 }
             except (ValueError, IndexError):
@@ -551,7 +622,7 @@ def _parse_coverage_output(coverage_output: str) -> Dict[str, Dict[str, Any]]:
     return coverage_data
 
 
-def parse_lint_output(lint_output: str) -> List[CodeIssue]:
+def parse_lint_output(lint_output: Optional[str]) -> List[CodeIssue]:
     """Parse lint output and return list of CodeIssue objects.
 
     Args:
@@ -561,33 +632,63 @@ def parse_lint_output(lint_output: str) -> List[CodeIssue]:
         List of CodeIssue objects
     """
     issues = []
+
+    if lint_output is None:
+        return issues
+
     lines = lint_output.split("\n")
 
     for line in lines:
-        if ":" in line and any(rule in line for rule in ["E", "W", "F"]):
+        line = line.strip()
+        if not line:
+            continue
+
+        if ":" in line and any(rule in line for rule in ["E", "W", "F", "I"]):
             parts = line.split(":")
             if len(parts) >= 3:
                 file_path = parts[0]
-                line_num = int(parts[1]) if parts[1].isdigit() else 0
-                message = ":".join(parts[2:]).strip()
+                try:
+                    line_num = (
+                        int(parts[1]) if parts[1].isdigit() and int(parts[1]) > 0 else 0
+                    )
+                    # Skip if line number is negative or zero
+                    if line_num <= 0:
+                        continue
+                except ValueError:
+                    continue
+
+                # Try to parse column number
+                column_num = 0
+                if len(parts) >= 3 and parts[2].isdigit():
+                    column_num = int(parts[2])
+                    message = ":".join(parts[3:]).strip()
+                else:
+                    message = ":".join(parts[2:]).strip()
 
                 # Extract rule ID if present
                 rule_id = "unknown"
                 for part in parts[2:]:
-                    if any(rule in part for rule in ["E", "W", "F"]):
+                    if any(rule in part for rule in ["E", "W", "F", "I"]):
                         rule_parts = part.split()
                         for word in rule_parts:
-                            if any(rule in word for rule in ["E", "W", "F"]):
+                            if any(rule in word for rule in ["E", "W", "F", "I"]):
                                 rule_id = word
                                 break
                         break
+
+                # Determine severity based on rule type
+                severity = "warning"
+                if rule_id.startswith("E"):
+                    severity = "error"
+                elif rule_id.startswith("I"):
+                    severity = "info"
 
                 issues.append(
                     CodeIssue(
                         file_path=file_path,
                         line_number=line_num,
-                        column=0,
-                        severity="warning",
+                        column=column_num,
+                        severity=severity,
                         message=message,
                         rule_id=rule_id,
                     )
@@ -603,27 +704,33 @@ def parse_mypy_output(mypy_output: str) -> List[CodeIssue]:
         mypy_output: Raw output from mypy
 
     Returns:
-        List of CodeIssue objects
+        List of CodeIssue objects (only errors, not notes)
     """
     issues = []
     lines = mypy_output.split("\n")
 
     for line in lines:
-        if ":" in line and ("error:" in line or "note:" in line):
+        line = line.strip()
+        if not line:
+            continue
+
+        if ":" in line and "error:" in line:
             parts = line.split(":")
             if len(parts) >= 3:
                 file_path = parts[0]
-                line_num = int(parts[1]) if parts[1].isdigit() else 0
-                message = ":".join(parts[2:]).strip()
+                try:
+                    line_num = int(parts[1]) if parts[1].isdigit() else 0
+                except ValueError:
+                    line_num = 0
 
-                severity = "error" if "error:" in line else "info"
+                message = ":".join(parts[2:]).strip()
 
                 issues.append(
                     CodeIssue(
                         file_path=file_path,
                         line_number=line_num,
                         column=0,
-                        severity=severity,
+                        severity="error",
                         message=message,
                         rule_id="mypy",
                     )
@@ -645,36 +752,414 @@ def parse_bandit_output(bandit_output: str) -> List[CodeIssue]:
     lines = bandit_output.split("\n")
 
     for line in lines:
-        if ">> Issue:" in line:
-            # Extract security issue information
-            parts = line.split(">> Issue:")
-            if len(parts) >= 2:
-                issue_info = parts[1].strip()
-                # Parse file and line if available
-                if ":" in issue_info:
-                    file_part, message = issue_info.split(":", 1)
-                    if ":" in file_part:
-                        file_path, line_str = file_part.rsplit(":", 1)
-                        try:
-                            line_num = int(line_str)
-                        except ValueError:
-                            line_num = 0
-                    else:
-                        file_path = file_part
-                        line_num = 0
+        line = line.strip()
+        if not line:
+            continue
 
-                    issues.append(
-                        CodeIssue(
-                            file_path=file_path.strip(),
-                            line_number=line_num,
-                            column=0,
-                            severity="medium",
-                            message=message.strip(),
-                            rule_id="security_scan",
+        # Look for bandit issue patterns
+        if ":" in line and ("B" in line or ">> Issue:" in line):
+            # Handle different bandit output formats
+            if ">> Issue:" in line:
+                # Extract security issue information
+                parts = line.split(">> Issue:")
+                if len(parts) >= 2:
+                    issue_info = parts[1].strip()
+                    # Parse file and line if available
+                    if ":" in issue_info:
+                        file_part, message = issue_info.split(":", 1)
+                        if ":" in file_part:
+                            file_path, line_str = file_part.rsplit(":", 1)
+                            try:
+                                line_num = int(line_str)
+                            except ValueError:
+                                line_num = 0
+                        else:
+                            file_path = file_part
+                            line_num = 0
+
+                        issues.append(
+                            CodeIssue(
+                                file_path=file_path.strip(),
+                                line_number=line_num,
+                                column=0,
+                                severity="medium",
+                                message=message.strip(),
+                                rule_id="security_scan",
+                            )
                         )
-                    )
+            else:
+                # Handle standard bandit output format: file:line:column: BXXX: message
+                parts = line.split(":")
+                if len(parts) >= 4:
+                    file_path = parts[0]
+                    try:
+                        line_num = int(parts[1]) if parts[1].isdigit() else 0
+                        column_num = int(parts[2]) if parts[2].isdigit() else 0
+                    except ValueError:
+                        line_num = 0
+                        column_num = 0
+
+                    # Extract rule ID and message
+                    remaining = ":".join(parts[3:]).strip()
+                    if "B" in remaining:
+                        rule_parts = remaining.split()
+                        rule_id = "unknown"
+                        for part in rule_parts:
+                            if part.startswith("B") and len(part) >= 2:
+                                rule_id = part
+                                break
+
+                        message = remaining.replace(rule_id, "").strip()
+                        # Clean up rule_id (remove colon if present)
+                        rule_id = rule_id.rstrip(":")
+
+                        # Determine severity based on rule ID
+                        severity = "error"
+                        if rule_id.startswith("B1"):
+                            severity = "error"  # High severity security issues
+                        elif rule_id.startswith("B2"):
+                            severity = "warning"  # Medium severity
+                        else:
+                            severity = "medium"
+
+                        issues.append(
+                            CodeIssue(
+                                file_path=file_path.strip(),
+                                line_number=line_num,
+                                column=column_num,
+                                severity=severity,
+                                message=message,
+                                rule_id=rule_id,
+                            )
+                        )
 
     return issues
+
+
+def create_pr_annotation(
+    path: str, line: int, level: str, message: str, title: Optional[str] = None
+) -> Dict[str, Any]:
+    """Create a PR annotation dictionary.
+
+    Args:
+        path: File path
+        line: Line number
+        level: Annotation level (notice, warning, failure)
+        message: Annotation message
+        title: Optional title
+
+    Returns:
+        PR annotation dictionary
+    """
+    # Map level to GitHub annotation level
+    level_mapping = {
+        "error": "failure",
+        "warning": "warning",
+        "info": "notice",
+        "notice": "notice",
+        "failure": "failure",
+    }
+
+    annotation_level = level_mapping.get(level.lower(), "notice")
+
+    return {
+        "path": path,
+        "line": line,
+        "annotation_level": annotation_level,
+        "message": message,
+        "title": title or "AI-Guard Analysis",
+    }
+
+
+def get_annotation_level(level: str) -> str:
+    """Get the GitHub annotation level from a severity level.
+
+    Args:
+        level: Severity level (error, warning, info)
+
+    Returns:
+        GitHub annotation level (failure, warning, notice)
+    """
+    level_mapping = {"error": "failure", "warning": "warning", "info": "notice"}
+
+    return level_mapping.get(level.lower(), "notice")
+
+
+def create_quality_gate_annotation(
+    path: str, line: int, gate_name: str, status: str, message: str
+) -> Dict[str, Any]:
+    """Create a quality gate annotation.
+
+    Args:
+        path: File path
+        line: Line number
+        gate_name: Name of the quality gate
+        status: Gate status (passed, failed)
+        message: Status message
+
+    Returns:
+        PR annotation dictionary
+    """
+    level = "notice" if status == "passed" else "failure"
+
+    return create_pr_annotation(
+        path=path,
+        line=line,
+        level=level,
+        message=f"Quality Gate '{gate_name}': {status} - {message}",
+        title=f"Quality Gate: {gate_name}",
+    )
+
+
+def create_coverage_annotation(
+    path: str, coverage_percent: float, threshold: float
+) -> Dict[str, Any]:
+    """Create a coverage annotation.
+
+    Args:
+        path: File path
+        coverage_percent: Current coverage percentage
+        threshold: Coverage threshold
+
+    Returns:
+        PR annotation dictionary
+    """
+    level = "notice" if coverage_percent >= threshold else "warning"
+
+    message = f"Coverage: {coverage_percent:.1f}%"
+    if coverage_percent < threshold:
+        message += f" (below threshold of {threshold:.1f}%)"
+
+    return create_pr_annotation(
+        path=path, line=1, level=level, message=message, title="Coverage Analysis"
+    )
+
+
+def create_security_annotation(
+    path: str, line: int, severity: str, vulnerability: str, description: str
+) -> Dict[str, Any]:
+    """Create a security annotation.
+
+    Args:
+        path: File path
+        line: Line number
+        severity: Vulnerability severity (high, medium, low)
+        vulnerability: Vulnerability type
+        description: Vulnerability description
+
+    Returns:
+        PR annotation dictionary
+    """
+    level_mapping = {"high": "failure", "medium": "warning", "low": "notice"}
+
+    level = level_mapping.get(severity.lower(), "warning")
+
+    return create_pr_annotation(
+        path=path,
+        line=line,
+        level=level,
+        message=f"Security Issue ({severity.upper()}): {vulnerability} - {description}",
+        title=f"Security: {vulnerability}",
+    )
+
+
+def create_performance_annotation(
+    path: str, line: int, function_name: str, execution_time: float, threshold: float
+) -> Dict[str, Any]:
+    """Create a performance annotation.
+
+    Args:
+        path: File path
+        line: Line number
+        function_name: Name of the function
+        execution_time: Execution time in seconds
+        threshold: Performance threshold in seconds
+
+    Returns:
+        PR annotation dictionary
+    """
+    level = "notice" if execution_time < threshold else "warning"
+
+    return create_pr_annotation(
+        path=path,
+        line=line,
+        level=level,
+        message=(
+            f"Performance: {function_name} took {execution_time:.3f}s "
+            f"(threshold: {threshold}s)"
+        ),
+        title=f"Performance: {function_name}",
+    )
+
+
+def create_test_annotation(
+    path: str,
+    line: int,
+    test_name: str,
+    status: str,
+    duration: float,
+    error_message: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Create a test annotation.
+
+    Args:
+        path: File path
+        line: Line number
+        test_name: Name of the test
+        status: Test status (passed, failed)
+        duration: Test duration in seconds
+        error_message: Optional error message for failed tests
+
+    Returns:
+        PR annotation dictionary
+    """
+    level = "notice" if status == "passed" else "failure"
+
+    message = f"Test '{test_name}': {status} ({duration:.3f}s)"
+    if error_message:
+        message += f"\nError: {error_message}"
+
+    return create_pr_annotation(
+        path=path, line=line, level=level, message=message, title=f"Test: {test_name}"
+    )
+
+
+class PRAnnotationManager:
+    """Manager for PR annotations."""
+
+    def __init__(self, max_annotations: int = 50):
+        """Initialize the annotation manager.
+
+        Args:
+            max_annotations: Maximum number of annotations to store
+        """
+        self.annotations = []
+        self.max_annotations = max_annotations
+
+    def add_annotation(self, annotation: Dict[str, Any]) -> None:
+        """Add an annotation to the manager.
+
+        Args:
+            annotation: Annotation dictionary
+        """
+        if len(self.annotations) < self.max_annotations:
+            self.annotations.append(annotation)
+
+    def get_annotations_by_level(self, level: str) -> List[Dict[str, Any]]:
+        """Get annotations by level.
+
+        Args:
+            level: Annotation level
+
+        Returns:
+            List of annotations with the specified level
+        """
+        return [ann for ann in self.annotations if ann.get("annotation_level") == level]
+
+    def get_annotations_by_path(self, path: str) -> List[Dict[str, Any]]:
+        """Get annotations by file path.
+
+        Args:
+            path: File path
+
+        Returns:
+            List of annotations for the specified path
+        """
+        return [ann for ann in self.annotations if ann.get("path") == path]
+
+    def clear_annotations(self) -> None:
+        """Clear all annotations."""
+        self.annotations.clear()
+
+    def get_summary(self) -> Dict[str, int]:
+        """Get annotation summary.
+
+        Returns:
+            Dictionary with counts by level
+        """
+        summary = {"total": len(self.annotations)}
+
+        for level in ["failure", "warning", "notice"]:
+            count = len(self.get_annotations_by_level(level))
+            summary[level + "s"] = count
+
+        return summary
+
+
+class AnnotationFormatter:
+    """Formatter for PR annotations."""
+
+    def __init__(self, max_message_length: int = 65535, include_timestamp: bool = True):
+        """Initialize the formatter.
+
+        Args:
+            max_message_length: Maximum message length
+            include_timestamp: Whether to include timestamps
+        """
+        self.max_message_length = max_message_length
+        self.include_timestamp = include_timestamp
+
+    def format_annotation(self, annotation: Dict[str, Any]) -> Dict[str, Any]:
+        """Format an annotation.
+
+        Args:
+            annotation: Annotation dictionary
+
+        Returns:
+            Formatted annotation dictionary
+        """
+        formatted = annotation.copy()
+
+        if len(formatted.get("message", "")) > self.max_message_length:
+            formatted["message"] = (
+                formatted["message"][: self.max_message_length - 3] + "..."
+            )
+
+        return formatted
+
+    def format_annotations(
+        self, annotations: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """Format multiple annotations.
+
+        Args:
+            annotations: List of annotation dictionaries
+
+        Returns:
+            List of formatted annotation dictionaries
+        """
+        return [self.format_annotation(ann) for ann in annotations]
+
+
+# Annotation classes for type hints
+class QualityGateAnnotation:
+    """Quality gate annotation."""
+
+    pass
+
+
+class CoverageAnnotation:
+    """Coverage annotation."""
+
+    pass
+
+
+class SecurityAnnotation:
+    """Security annotation."""
+
+    pass
+
+
+class PerformanceAnnotation:
+    """Performance annotation."""
+
+    pass
+
+
+class TestAnnotation:
+    """Test annotation."""
+
+    pass
 
 
 def create_github_annotation(issue: CodeIssue) -> Dict[str, Any]:
@@ -701,7 +1186,7 @@ def create_github_annotation(issue: CodeIssue) -> Dict[str, Any]:
         "start_line": issue.line_number,
         "end_line": issue.line_number,
         "annotation_level": annotation_level,
-        "message": format_annotation_message(issue),
+        "message": format_annotation_message_from_issue(issue),
         "title": f"{issue.rule_id}: {issue.message}",
     }
 
@@ -712,7 +1197,38 @@ def create_github_annotation(issue: CodeIssue) -> Dict[str, Any]:
     return annotation
 
 
-def format_annotation_message(issue: CodeIssue) -> str:
+def format_annotation_message(
+    message: str,
+    details: Optional[str] = None,
+    suggestion: Optional[str] = None,
+    code_example: Optional[str] = None,
+) -> str:
+    """Format an annotation message with optional details and suggestions.
+
+    Args:
+        message: Main message
+        details: Optional additional details
+        suggestion: Optional suggestion
+        code_example: Optional code example
+
+    Returns:
+        Formatted message string
+    """
+    message_parts = [message]
+
+    if details:
+        message_parts.append(f"\n**Details:** {details}")
+
+    if suggestion:
+        message_parts.append(f"\n💡 **Suggestion:** {suggestion}")
+
+    if code_example:
+        message_parts.append(f"\n**Code:**\n```\n{code_example}\n```")
+
+    return "\n".join(message_parts)
+
+
+def format_annotation_message_from_issue(issue: CodeIssue) -> str:
     """Format a CodeIssue into a readable annotation message.
 
     Args:

@@ -1,4 +1,44 @@
 [gates]
 min_coverage = 80
+max_complexity = 10
+security_level = "high"
+enable_performance_checks = true
+enable_security_scanning = true
 
+[testing]
+parallel_workers = 4
+timeout = 300
+generate_tests = true
+test_pattern = "test_*.py"
+coverage_threshold = 80
 
+[performance]
+enable_profiling = true
+memory_threshold = 100  # MB
+execution_timeout = 30  # seconds
+cache_enabled = true
+cache_ttl = 3600  # seconds
+
+[reports]
+format = "sarif"
+output_path = "ai-guard.sarif"
+include_performance = true
+include_security = true
+include_coverage = true
+
+[security]
+bandit_enabled = true
+safety_enabled = true
+dependency_audit = true
+custom_rules = []
+
+[cache]
+enabled = true
+directory = ".ai_guard_cache"
+ttl = 3600
+max_size = 100
+
+[logging]
+level = "INFO"
+format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+file = "ai-guard.log"

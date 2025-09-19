@@ -7,6 +7,7 @@ from enum import Enum
 
 class ErrorSeverity(str, Enum):
     """Standard error severity levels."""
+
     DEBUG = "debug"
     INFO = "info"
     WARNING = "warning"
@@ -16,6 +17,7 @@ class ErrorSeverity(str, Enum):
 
 class ErrorCategory(str, Enum):
     """Standard error categories."""
+
     CONFIGURATION = "configuration"
     EXECUTION = "execution"
     PARSING = "parsing"
@@ -28,11 +30,16 @@ class ErrorCategory(str, Enum):
     TESTING = "testing"
     LINT = "lint"
     TYPE = "type"
+    LOGIC = "logic"
+    SYNTAX = "syntax"
+    STYLE = "style"
+    UNKNOWN = "unknown"
 
 
 @dataclass
 class ErrorContext:
     """Context information for error formatting."""
+
     module: str
     function: str
     file_path: Optional[str] = None
@@ -78,6 +85,12 @@ class ErrorFormatter:
             ErrorCategory.PERFORMANCE: "Performance",
             ErrorCategory.COVERAGE: "Coverage",
             ErrorCategory.TESTING: "Testing",
+            ErrorCategory.LINT: "Lint",
+            ErrorCategory.TYPE: "Type",
+            ErrorCategory.LOGIC: "Logic",
+            ErrorCategory.SYNTAX: "Syntax",
+            ErrorCategory.STYLE: "Style",
+            ErrorCategory.UNKNOWN: "Unknown",
         }
 
     def format_error(
@@ -311,8 +324,10 @@ class ErrorFormatter:
         status = "PASSED" if execution_time < threshold else "FAILED"
         emoji = "✅" if execution_time < threshold else "⚠️"
 
-        return (f"{emoji} Performance: {function_name} took {execution_time:.3f}s "
-                f"(threshold: {threshold}s) - {status}")
+        return (
+            f"{emoji} Performance: {function_name} took {execution_time:.3f}s "
+            f"(threshold: {threshold}s) - {status}"
+        )
 
 
 # Global error formatter instance
@@ -358,7 +373,9 @@ def format_gate_result_message(
     context: Optional[ErrorContext] = None,
 ) -> str:
     """Format a gate result message using the global formatter."""
-    return error_formatter.format_gate_result_message(gate_name, passed, details, context)
+    return error_formatter.format_gate_result_message(
+        gate_name, passed, details, context
+    )
 
 
 def format_coverage_message(
@@ -367,7 +384,9 @@ def format_coverage_message(
     file_path: Optional[str] = None,
 ) -> str:
     """Format a coverage message using the global formatter."""
-    return error_formatter.format_coverage_message(current_coverage, target_coverage, file_path)
+    return error_formatter.format_coverage_message(
+        current_coverage, target_coverage, file_path
+    )
 
 
 def format_security_message(
@@ -385,4 +404,148 @@ def format_performance_message(
     threshold: float = 1.0,
 ) -> str:
     """Format a performance message using the global formatter."""
-    return error_formatter.format_performance_message(function_name, execution_time, threshold)
+    return error_formatter.format_performance_message(
+        function_name, execution_time, threshold
+    )
+
+
+def format_error_message(
+    message: str,
+    context: Optional[Dict[str, Any]] = None,
+    suggestion: Optional[str] = None,
+    severity: str = "error",
+) -> str:
+    """Format an error message with context and suggestion.
+
+    Args:
+        message: Main error message
+        context: Optional context dictionary
+        suggestion: Optional suggestion
+        severity: Error severity level
+
+    Returns:
+        Formatted error message
+    """
+    parts = [message]
+
+    if context:
+        context_parts = []
+        for key, value in context.items():
+            context_parts.append(f"{key}={value}")
+        if context_parts:
+            parts.append(f"Context: {', '.join(context_parts)}")
+
+    if suggestion:
+        parts.append(f"Suggestion: {suggestion}")
+
+    if severity:
+        parts.insert(0, f"[{severity.upper()}]")
+
+    return " | ".join(parts)
+
+
+def format_exception(exception: Exception, include_traceback: bool = False) -> str:
+    """Format an exception with optional traceback.
+
+    Args:
+        exception: Exception to format
+        include_traceback: Whether to include traceback
+
+    Returns:
+        Formatted exception message
+    """
+    parts = [f"{type(exception).__name__}: {str(exception)}"]
+
+    if include_traceback:
+        import traceback
+
+        tb = traceback.format_exc()
+        parts.append(f"Traceback:\n{tb}")
+
+    return "\n".join(parts)
+
+
+def format_traceback(traceback_str: str) -> str:
+    """Format a traceback string.
+
+    Args:
+        traceback_str: Raw traceback string
+
+    Returns:
+        Formatted traceback
+    """
+    return f"Traceback:\n{traceback_str}"
+
+
+class ExceptionFormatter:
+    """Formatter for exceptions."""
+
+    def __init__(self, include_traceback: bool = True, max_traceback_lines: int = 10):
+        """Initialize the exception formatter.
+
+        Args:
+            include_traceback: Whether to include traceback
+            max_traceback_lines: Maximum traceback lines
+        """
+        self.include_traceback = include_traceback
+        self.max_traceback_lines = max_traceback_lines
+
+    def format_exception(
+        self, exception: Exception, context: Optional[Dict[str, Any]] = None
+    ) -> str:
+        """Format an exception.
+
+        Args:
+            exception: Exception to format
+            context: Optional context
+
+        Returns:
+            Formatted exception message
+        """
+        parts = [f"{type(exception).__name__}: {str(exception)}"]
+
+        if context:
+            context_parts = []
+            for key, value in context.items():
+                context_parts.append(f"{key}={value}")
+            if context_parts:
+                parts.append(f"Context: {', '.join(context_parts)}")
+
+        if self.include_traceback:
+            import traceback
+
+            tb_lines = traceback.format_exc().split("\n")
+            if len(tb_lines) > self.max_traceback_lines:
+                tb_lines = tb_lines[: self.max_traceback_lines] + ["..."]
+            parts.append("Traceback:\n" + "\n".join(tb_lines))
+
+        return "\n".join(parts)
+
+
+class TracebackFormatter:
+    """Formatter for tracebacks."""
+
+    def __init__(self, max_lines: int = 20, include_locals: bool = False):
+        """Initialize the traceback formatter.
+
+        Args:
+            max_lines: Maximum lines to include
+            include_locals: Whether to include local variables
+        """
+        self.max_lines = max_lines
+        self.include_locals = include_locals
+
+    def format_traceback(self, traceback_str: str) -> str:
+        """Format a traceback string.
+
+        Args:
+            traceback_str: Raw traceback string
+
+        Returns:
+            Formatted traceback
+        """
+        lines = traceback_str.split("\n")
+        if len(lines) > self.max_lines:
+            lines = lines[: self.max_lines] + ["..."]
+
+        return "\n".join(lines)

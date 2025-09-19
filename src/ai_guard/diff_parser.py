@@ -4,7 +4,7 @@ import json
 from typing import List, Tuple, Dict, Any, Optional
 
 
-def get_file_extensions(file_paths: List[str]) -> List[str]:
+def get_file_extensions(file_paths: Optional[List[str]]) -> List[str]:
     """Extract file extensions from a list of file paths.
 
     Args:
@@ -13,6 +13,8 @@ def get_file_extensions(file_paths: List[str]) -> List[str]:
     Returns:
         List of unique file extensions (without the dot)
     """
+    if file_paths is None:
+        return []
     extensions = set()
     for file_path in file_paths:
         if "." in file_path:
@@ -20,12 +22,17 @@ def get_file_extensions(file_paths: List[str]) -> List[str]:
             parts = file_path.split(".")
             if len(parts) > 1:
                 ext = parts[-1].lower()
-                if ext and ext.isalnum():  # Only add if extension is alphanumeric
+                # Only add if extension is alphanumeric and not a backup/temp file
+                if (
+                    ext
+                    and ext.isalnum()
+                    and not ext.endswith(("~", "bak", "tmp", "temp"))
+                ):
                     extensions.add(ext)
     return sorted(list(extensions))
 
 
-def filter_python_files(file_paths: List[str]) -> List[str]:
+def filter_python_files(file_paths: Optional[List[str]]) -> List[str]:
     """Filter a list of file paths to only include Python files.
 
     Args:
@@ -34,10 +41,12 @@ def filter_python_files(file_paths: List[str]) -> List[str]:
     Returns:
         List of Python file paths only
     """
+    if file_paths is None:
+        return []
     return [f for f in file_paths if f.endswith(".py")]
 
 
-def parse_diff_output(diff_output: str) -> List[str]:
+def parse_diff_output(diff_output: Optional[str]) -> List[str]:
     """Parse git diff output to extract changed file paths.
 
     Args:
@@ -46,6 +55,8 @@ def parse_diff_output(diff_output: str) -> List[str]:
     Returns:
         List of changed file paths
     """
+    if diff_output is None:
+        return []
     files = []
     lines = diff_output.split("\n")
 
@@ -60,17 +71,21 @@ def parse_diff_output(diff_output: str) -> List[str]:
     return files
 
 
-def changed_python_files(event_path: str | None = None) -> List[str]:
+def changed_python_files(event_path: str | List[str] | None = None) -> List[str]:
     """Get list of changed Python files.
 
     Args:
-        event_path: Path to GitHub event JSON file
+        event_path: Path to GitHub event JSON file, or list of files to filter
 
     Returns:
         List of Python file paths that have changed
     """
+    # If a list of files is provided, filter for Python files
+    if isinstance(event_path, list):
+        return [f for f in event_path if f and f.endswith(".py")]
+
     # If GitHub event is provided and has base/head, use precise diff
-    if event_path:
+    if event_path is not None:
         try:
             base_head = _get_base_head_from_event(event_path)
             if base_head is not None:
@@ -81,7 +96,7 @@ def changed_python_files(event_path: str | None = None) -> List[str]:
         except Exception as e:
             print(f"Warning: Error parsing GitHub event: {e}")
 
-    # Fallback: all tracked Python files
+    # Fallback: all tracked Python files (including when event_path is None)
     try:
         return [p for p in _git_ls_files() if p.endswith(".py")]
     except Exception as e:
@@ -98,7 +113,12 @@ def _git_ls_files() -> List[str]:
         out = subprocess.check_output(["git", "ls-files"], text=True)
         tracked_files = [line.strip() for line in out.splitlines() if line.strip()]
         # Filter out deleted files - only return files that still exist
-        return [f for f in tracked_files if os.path.exists(f)]
+        # Also filter out empty lines and whitespace-only lines
+        existing_files = []
+        for f in tracked_files:
+            if f and os.path.exists(f):
+                existing_files.append(f)
+        return existing_files
     except (subprocess.CalledProcessError, FileNotFoundError):
         # Fallback if git is not available
         return []
@@ -168,10 +188,13 @@ def _get_base_head_from_event(event_path: str) -> Tuple[str, str] | None:
     # Handle pull_request events
     pr = event.get("pull_request")
     if isinstance(pr, dict):
-        base_sha = pr.get("base", {}).get("sha")
-        head_sha = pr.get("head", {}).get("sha")
-        if isinstance(base_sha, str) and isinstance(head_sha, str):
-            return base_sha, head_sha
+        base = pr.get("base", {})
+        head = pr.get("head", {})
+        if isinstance(base, dict) and isinstance(head, dict):
+            base_sha = base.get("sha")
+            head_sha = head.get("sha")
+            if isinstance(base_sha, str) and isinstance(head_sha, str):
+                return base_sha, head_sha
 
     # Handle push events
     if event.get("before") and event.get("after"):
@@ -238,7 +261,7 @@ class DiffParser:
         return filter_python_files(file_paths)
 
 
-def parse_diff(diff_content: str) -> List[str]:
+def parse_diff(diff_content: Optional[str]) -> List[str]:
     """Parse diff content to extract changed file paths.
 
     Args:

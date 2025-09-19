@@ -1,66 +1,121 @@
-"""Basic tests for the AI-Guard analyzer module."""
+"""Basic tests for analyzer.py module."""
 
 import pytest
-from unittest.mock import patch, MagicMock
-from src.ai_guard.analyzer import main, CodeAnalyzer
+import tempfile
+import os
+from unittest.mock import patch, mock_open, MagicMock
+
+from src.ai_guard.analyzer import (
+    RuleIdStyle,
+    _rule_style,
+    AnalysisConfig,
+    AnalysisResult,
+    SecurityAnalyzer,
+    PerformanceAnalyzer,
+    QualityAnalyzer,
+    CoverageAnalyzer,
+    CodeAnalyzer,
+    run_analysis,
+    generate_report,
+)
 
 
-def test_analyzer_import():
-    """Test that the analyzer module can be imported."""
-    from src.ai_guard import analyzer
-    assert analyzer is not None
+class TestRuleIdStyle:
+    """Test RuleIdStyle enum."""
+
+    def test_rule_id_style_values(self):
+        """Test RuleIdStyle enum values."""
+        assert RuleIdStyle.BARE == "bare"
+        assert RuleIdStyle.TOOL == "tool"
 
 
-def test_analyzer_main_function_exists():
-    """Test that the main function exists."""
-    from src.ai_guard.analyzer import main
-    assert callable(main)
+class TestRuleStyle:
+    """Test _rule_style function."""
+
+    def test_rule_style_default(self):
+        """Test default rule style."""
+        style = _rule_style()
+        assert style in [RuleIdStyle.BARE, RuleIdStyle.TOOL]
 
 
-def test_code_analyzer_class():
-    """Test that CodeAnalyzer class exists and can be instantiated."""
-    analyzer = CodeAnalyzer()
-    assert analyzer is not None
+class TestAnalysisConfig:
+    """Test AnalysisConfig dataclass."""
+
+    def test_analysis_config_default(self):
+        """Test default AnalysisConfig creation."""
+        config = AnalysisConfig()
+        assert config.enable_security_analysis is True
+        assert config.enable_performance_analysis is True
+        assert config.enable_quality_analysis is True
+        assert config.enable_coverage_analysis is True
+
+    def test_analysis_config_custom(self):
+        """Test custom AnalysisConfig creation."""
+        config = AnalysisConfig(
+            enable_security_analysis=False,
+            enable_performance_analysis=True,
+            enable_quality_analysis=False,
+            enable_coverage_analysis=True
+        )
+        assert config.enable_security_analysis is False
+        assert config.enable_performance_analysis is True
+        assert config.enable_quality_analysis is False
+        assert config.enable_coverage_analysis is True
+
+    def test_analysis_config_from_dict(self):
+        """Test AnalysisConfig creation from dictionary."""
+        data = {
+            "enable_security_analysis": False,
+            "enable_performance_analysis": True,
+            "enable_quality_analysis": False,
+            "enable_coverage_analysis": True
+        }
+        config = AnalysisConfig.from_dict(data)
+        assert config.enable_security_analysis is False
+        assert config.enable_performance_analysis is True
+        assert config.enable_quality_analysis is False
+        assert config.enable_coverage_analysis is True
 
 
-@patch('src.ai_guard.analyzer.run_lint_check')
-def test_run_lint_check_basic(mock_lint_check):
-    """Test basic functionality of run_lint_check."""
-    mock_lint_check.return_value = {
-        'passed': True,
-        'issues': []
-    }
-    
-    result = mock_lint_check('src')
-    assert result is not None
-    assert result['passed'] is True
+class TestAnalysisResult:
+    """Test AnalysisResult dataclass."""
 
+    def test_analysis_result_default(self):
+        """Test default AnalysisResult creation."""
+        result = AnalysisResult()
+        assert result.security_issues == []
+        assert result.performance_issues == []
+        assert result.quality_issues == []
+        assert result.coverage_data == {}
+        assert result.execution_time == 0.0
 
-@patch('src.ai_guard.analyzer.run_coverage_check')
-def test_run_coverage_check_basic(mock_coverage_check):
-    """Test basic functionality of run_coverage_check."""
-    mock_coverage_check.return_value = {
-        'passed': True,
-        'coverage': 85.0
-    }
-    
-    result = mock_coverage_check('src', 80)
-    assert result is not None
-    assert result['passed'] is True
+    def test_analysis_result_custom(self):
+        """Test custom AnalysisResult creation."""
+        result = AnalysisResult(
+            security_issues=["issue1"],
+            performance_issues=["issue2"],
+            quality_issues=["issue3"],
+            coverage_data={"file1": 85.0},
+            execution_time=1.5
+        )
+        assert result.security_issues == ["issue1"]
+        assert result.performance_issues == ["issue2"]
+        assert result.quality_issues == ["issue3"]
+        assert result.coverage_data == {"file1": 85.0}
+        assert result.execution_time == 1.5
 
-
-def test_analyzer_config_loading():
-    """Test that the analyzer can load configuration."""
-    from src.ai_guard.config import load_config
-    config = load_config()
-    assert config is not None
-
-
-def test_analyzer_diff_parser():
-    """Test diff parser functionality."""
-    from src.ai_guard.diff_parser import parse_diff
-    
-    # Test with empty diff
-    result = parse_diff("")
-    assert result is not None
-    assert isinstance(result, list)
+    def test_analysis_result_to_dict(self):
+        """Test AnalysisResult to_dict method."""
+        result = AnalysisResult(
+            security_issues=["issue1"],
+            performance_issues=["issue2"],
+            quality_issues=["issue3"],
+            coverage_data={"file1": 85.0},
+            execution_time=1.5
+        )
+        data = result.to_dict()
+        assert data["security_issues"] == ["issue1"]
+        assert data["performance_issues"] == ["issue2"]
+        assert data["quality_issues"] == ["issue3"]
+        assert data["coverage_data"] == {"file1": 85.0}
+        assert data["execution_time"] == 1.5

@@ -75,7 +75,7 @@ source = ["src"]
 omit = ["tests/*", "**/__main__.py", "**/contrib/**"]
 
 [tool.coverage.report]
-fail_under = 5
+fail_under = 80
 show_missing = true
 skip_covered = false
 exclude_lines = [
@@ -90,3 +90,43 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["ai_guard"]
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    ".eggs"
+]
+
+[tool.bandit]
+exclude_dirs = ["tests", "test"]
+skips = ["B101", "B601"]

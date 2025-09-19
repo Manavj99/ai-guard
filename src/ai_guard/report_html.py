@@ -91,7 +91,7 @@ def write_html(
 
         findings_rows.append(
             f"<tr>"
-            f"<td><code>{escape(path)}:{str(line) if line else ''}</code></td>"
+            f"<td><code>{escape(path)}:{str(line) if line is not None else ''}</code></td>"
             f"<td class='{cls(level)}'>{escape(level.upper())}</td>"
             f"<td><code>{escape(rule_id)}</code></td>"
             f"<td>{escape(message)}</td>"
@@ -160,15 +160,162 @@ class HTMLReportGenerator:
         <div class="summary">
             <h2>Quality Gates Summary</h2>
             <p>Total: {len(results)}</p>
-            <p>Passed: <span class="badge pass">{len(passed)}</span></p>
-            <p>Failed: <span class="badge fail">{len(failed)}</span></p>
+            <p>Passed: {len(passed)} <span class="badge pass">{len(passed)}</span></p>
+            <p>Failed: {len(failed)}{f' <span class="badge fail">{len(failed)}</span>'
+                if failed else ''}</p>
         </div>
         """
+
+        if passed:
+            html += "<div class='passed-gates'><h3>Passed Gates:</h3><ul>"
+            for result in passed:
+                details = result.details or ""
+                html += f"<li>{escape(result.name)}: {escape(details)}</li>"
+            html += "</ul></div>"
 
         if failed:
             html += "<div class='failed-gates'><h3>Failed Gates:</h3><ul>"
             for result in failed:
-                html += f"<li>{result.name}: {result.details}</li>"
+                details = result.details or ""
+                html += f"<li>{escape(result.name)}: {escape(details)}</li>"
             html += "</ul></div>"
 
         return html
+
+
+def generate_html_report(analysis_results: Dict[str, Any]) -> Dict[str, Any]:
+    """Generate an HTML report from analysis results.
+
+    Args:
+        analysis_results: Analysis results dictionary
+
+    Returns:
+        Dictionary with HTML report data
+    """
+    files_analyzed = analysis_results.get("files_analyzed", 0)
+    total_issues = analysis_results.get("total_issues", 0)
+    issues = analysis_results.get("issues", [])
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>AI-Guard Report</title>
+        <style>{_BASE_CSS}</style>
+    </head>
+    <body>
+        <h1>AI-Guard Analysis Report</h1>
+        <p>Files analyzed: {files_analyzed}</p>
+        <p>Total issues: {total_issues}</p>
+
+        <h2>Issues</h2>
+        <table>
+            <thead>
+                <tr><th>Type</th><th>Message</th><th>File</th><th>Line</th></tr>
+            </thead>
+            <tbody>
+    """
+
+    for issue in issues:
+        issue_type = issue.get("type", "unknown")
+        message = issue.get("message", "")
+        file_path = issue.get("file", "")
+        line = issue.get("line", "")
+
+        html_content += f"""
+                <tr>
+                    <td class="finding-{issue_type}">{escape(issue_type.upper())}</td>
+                    <td>{escape(message)}</td>
+                    <td><code>{escape(file_path)}</code></td>
+                    <td>{escape(str(line))}</td>
+                </tr>
+        """
+
+    html_content += """
+            </tbody>
+        </table>
+    </body>
+    </html>
+    """
+
+    return {
+        "success": True,
+        "format": "html",
+        "content": html_content,
+        "files_analyzed": files_analyzed,
+        "total_issues": total_issues,
+    }
+
+
+def format_html_summary(report_data: Dict[str, Any]) -> str:
+    """Format a report summary as HTML.
+
+    Args:
+        report_data: Report data dictionary
+
+    Returns:
+        HTML formatted summary
+    """
+    files_count = report_data.get("files_analyzed", 0)
+    issues_count = report_data.get("total_issues", 0)
+    issues_by_type = report_data.get("issues_by_type", {})
+
+    html = f"""
+    <div class="summary">
+        <h2>Analysis Summary</h2>
+        <p>Files analyzed: {files_count}</p>
+        <p>Total issues: {issues_count}</p>
+    """
+
+    for issue_type, count in issues_by_type.items():
+        html += f"<p>{issue_type.title()}s: {count}</p>"
+
+    html += "</div>"
+    return html
+
+
+def create_html_table(data: List[Dict[str, Any]], columns: List[str]) -> str:
+    """Create an HTML table from data.
+
+    Args:
+        data: List of dictionaries containing row data
+        columns: List of column names
+
+    Returns:
+        HTML table string
+    """
+    html = "<table>\n<thead>\n<tr>"
+
+    for column in columns:
+        html += f"<th>{escape(column.title())}</th>"
+
+    html += "</tr>\n</thead>\n<tbody>\n"
+
+    for row in data:
+        html += "<tr>"
+        for column in columns:
+            value = row.get(column, "")
+            html += f"<td>{escape(str(value))}</td>"
+        html += "</tr>\n"
+
+    html += "</tbody>\n</table>"
+    return html
+
+
+class HTMLReportGeneratorV2:
+    """Enhanced HTML report generator class."""
+
+    def __init__(self) -> None:
+        """Initialize the HTML report generator."""
+        pass
+
+    def generate_report(self, analysis_results: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate an HTML report.
+
+        Args:
+            analysis_results: Analysis results dictionary
+
+        Returns:
+            Dictionary with HTML report data
+        """
+        return generate_html_report(analysis_results)

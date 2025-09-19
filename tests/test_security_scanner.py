@@ -1,112 +1,80 @@
-"""Comprehensive tests for the AI-Guard security scanner module."""
+"""Tests for AI Guard security scanner."""
 
+import tempfile
+import os
 import pytest
-from unittest.mock import patch, MagicMock
-from pathlib import Path
-
-from src.ai_guard.security_scanner import (
-    SecurityScanner, run_bandit, run_safety_check
+from src.ai_guard.security.advanced_scanner import (
+    AdvancedSecurityScanner,
+    SecurityVulnerability,
+    DependencyVulnerability,
+    SeverityLevel
 )
 
 
-class TestSecurityScanner:
-    """Test SecurityScanner class."""
+class TestAdvancedSecurityScanner:
+    """Test AdvancedSecurityScanner class."""
 
-    def test_security_scanner_init(self):
-        """Test SecurityScanner initialization."""
-        scanner = SecurityScanner()
-        assert scanner is not None
+    def test_scanner_initialization(self):
+        """Test scanner initialization."""
+        scanner = AdvancedSecurityScanner()
+        
+        assert scanner.config == {}
+        assert scanner.vulnerabilities == []
+        assert scanner.dependency_vulnerabilities == []
+        assert 'sql_injection' in scanner.security_patterns
 
-    def test_security_scanner_scan(self):
-        """Test SecurityScanner scan method."""
-        scanner = SecurityScanner()
-        # This should not raise an exception
-        result = scanner.run_all_security_checks()
-        assert isinstance(result, int)
+    def test_scan_file_sql_injection(self):
+        """Test scanning file for SQL injection."""
+        scanner = AdvancedSecurityScanner()
+        
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+            f.write('query = "SELECT * FROM users WHERE id = " + user_id\n')
+            temp_file = f.name
+        
+        try:
+            vulnerabilities = scanner.scan_file(temp_file)
+            
+            # Should find SQL injection vulnerability
+            sql_vulns = [v for v in vulnerabilities if 'SQL_INJECTION' in v.rule_id]
+            assert len(sql_vulns) > 0
+            
+            vuln = sql_vulns[0]
+            assert vuln.severity == SeverityLevel.HIGH
+            assert vuln.file_path == temp_file
+        
+        finally:
+            os.unlink(temp_file)
 
+    def test_scan_file_safe_code(self):
+        """Test scanning safe code."""
+        scanner = AdvancedSecurityScanner()
+        
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+            f.write('def safe_function():\n    return "safe code"\n')
+            temp_file = f.name
+        
+        try:
+            vulnerabilities = scanner.scan_file(temp_file)
+            
+            # Should not find vulnerabilities in safe code
+            assert len(vulnerabilities) == 0
+        
+        finally:
+            os.unlink(temp_file)
 
-class TestRunBandit:
-    """Test bandit security scanner functionality."""
+    def test_get_security_score_no_vulnerabilities(self):
+        """Test security score with no vulnerabilities."""
+        scanner = AdvancedSecurityScanner()
+        
+        score = scanner.get_security_score()
+        assert score == 100.0
 
-    @patch('subprocess.call')
-    def test_run_bandit_success(self, mock_call):
-        """Test successful bandit run."""
-        mock_call.return_value = 0
-        result = run_bandit()
-        assert result == 0
-
-    @patch('subprocess.call')
-    def test_run_bandit_with_extra_args(self, mock_call):
-        """Test bandit run with extra arguments."""
-        mock_call.return_value = 0
-        result = run_bandit(["-f", "json"])
-        assert result == 0
-
-    @patch('subprocess.call')
-    def test_run_bandit_failure(self, mock_call):
-        """Test bandit run with failures."""
-        mock_call.return_value = 1
-        result = run_bandit()
-        assert result == 1
-
-    @patch('os.path.exists')
-    @patch('subprocess.call')
-    def test_run_bandit_with_config(self, mock_call, mock_exists):
-        """Test bandit run with config file."""
-        mock_exists.return_value = True
-        mock_call.return_value = 0
-        result = run_bandit()
-        assert result == 0
-
-
-class TestRunSafetyCheck:
-    """Test safety check functionality."""
-
-    @patch('subprocess.call')
-    def test_run_safety_check_success(self, mock_call):
-        """Test successful safety check."""
-        mock_call.return_value = 0
-        result = run_safety_check()
-        assert result == 0
-
-    @patch('subprocess.call')
-    def test_run_safety_check_failure(self, mock_call):
-        """Test safety check with failures."""
-        mock_call.return_value = 1
-        result = run_safety_check()
-        assert result == 1
-
-    @patch('subprocess.call')
-    def test_run_safety_check_not_found(self, mock_call):
-        """Test safety check when command not found."""
-        mock_call.side_effect = FileNotFoundError("safety not found")
-        result = run_safety_check()
-        assert result == 0  # Should return 0 when safety is not installed
-
-
-class TestEdgeCases:
-    """Test edge cases and error handling."""
-
-    def test_security_scanner_with_empty_paths(self):
-        """Test SecurityScanner with empty paths."""
-        scanner = SecurityScanner()
-        result = scanner.run_all_security_checks()
-        assert isinstance(result, int)
-
-    def test_security_scanner_with_none_paths(self):
-        """Test SecurityScanner with None paths."""
-        scanner = SecurityScanner()
-        result = scanner.run_all_security_checks()
-        assert isinstance(result, int)
-
-    def test_run_bandit_with_none_args(self):
-        """Test run_bandit with None arguments."""
-        result = run_bandit(None)
-        assert isinstance(result, int)
-
-    def test_run_safety_check_exception_handling(self):
-        """Test run_safety_check exception handling."""
-        with patch('subprocess.call') as mock_call:
-            mock_call.side_effect = Exception("Unexpected error")
-            result = run_safety_check()
-            assert result == 0  # Should handle exceptions gracefully
+    def test_generate_security_report(self):
+        """Test generating security report."""
+        scanner = AdvancedSecurityScanner()
+        
+        report = scanner.generate_security_report()
+        
+        assert report['total_vulnerabilities'] == 0
+        assert report['security_score'] == 100.0
+        assert len(report['vulnerabilities']) == 0

@@ -143,3 +143,114 @@ def make_location(
         location["physicalLocation"]["region"] = region
 
     return location
+
+
+def generate_sarif_report(analysis_results: Dict[str, Any]) -> Dict[str, Any]:
+    """Generate a SARIF report from analysis results.
+
+    Args:
+        analysis_results: Analysis results dictionary
+
+    Returns:
+        Dictionary with SARIF report data
+    """
+    issues = analysis_results.get("issues", [])
+
+    # Convert issues to SARIF results
+    sarif_results = []
+    for issue in issues:
+        sarif_result = parse_issue_to_sarif(issue)
+        sarif_results.append(sarif_result)
+
+    # Create SARIF run
+    sarif_run = SarifRun(
+        tool_name="AI-Guard", tool_version="1.0.0", results=sarif_results
+    )
+
+    # Generate SARIF report
+    sarif_report = create_sarif_report([sarif_run])
+
+    return {
+        "success": True,
+        "format": "sarif",
+        "content": json.dumps(sarif_report, indent=2),
+        "files_analyzed": analysis_results.get("files_analyzed", 0),
+        "total_issues": analysis_results.get("total_issues", 0),
+    }
+
+
+def create_sarif_run(analysis_results: Dict[str, Any]) -> Dict[str, Any]:
+    """Create a SARIF run from analysis results.
+
+    Args:
+        analysis_results: Analysis results dictionary
+
+    Returns:
+        SARIF run dictionary
+    """
+    issues = analysis_results.get("issues", [])
+
+    # Convert issues to SARIF results
+    results = []
+    for issue in issues:
+        result = {
+            "ruleId": issue.get("rule_id", "unknown"),
+            "level": issue.get("type", "warning"),
+            "message": {"text": issue.get("message", "")},
+            "locations": [],
+        }
+
+        # Add location if file and line information is available
+        if "file" in issue and "line" in issue:
+            location = make_location(issue["file"], issue["line"], issue.get("column"))
+            result["locations"].append(location)
+
+        results.append(result)
+
+    return {
+        "tool": {"driver": {"name": "AI-Guard", "version": "1.0.0"}},
+        "results": results,
+    }
+
+
+def create_sarif_result(issue: Dict[str, Any]) -> Dict[str, Any]:
+    """Create a SARIF result from an issue.
+
+    Args:
+        issue: Issue dictionary
+
+    Returns:
+        SARIF result dictionary
+    """
+    result = {
+        "ruleId": issue.get("rule_id", "unknown"),
+        "level": issue.get("type", "warning"),
+        "message": {"text": issue.get("message", "")},
+        "locations": [],
+    }
+
+    # Add location if file and line information is available
+    if "file" in issue and "line" in issue:
+        location = make_location(issue["file"], issue["line"], issue.get("column"))
+        result["locations"].append(location)
+
+    return result
+
+
+class SARIFReportGenerator:
+    """SARIF report generator class."""
+
+    def __init__(self):
+        """Initialize the SARIF report generator."""
+        pass
+
+    def generate_report(self, analysis_results: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate a SARIF report.
+
+        Args:
+            analysis_results: Analysis results dictionary
+
+        Returns:
+            Dictionary with SARIF report data
+        """
+        return generate_sarif_report(analysis_results)

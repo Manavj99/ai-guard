@@ -4,17 +4,25 @@ from .enhanced_testgen import TestGenerationConfig
 import os
 from typing import Optional, Dict, Any
 
+# Import TOML libraries at module level for better testability
+try:
+    import tomllib
+
+    TOML_LIBRARY = tomllib
+except ModuleNotFoundError:
+    try:
+        import tomli as tomllib
+
+        TOML_LIBRARY = tomllib
+    except ModuleNotFoundError:
+        TOML_LIBRARY = None
+
 
 def _get_toml_loader() -> Any:
     """Get the appropriate TOML loader."""
-    try:
-        import tomllib
-
-        return tomllib
-    except ModuleNotFoundError:
-        import tomli
-
-        return tomli
+    if TOML_LIBRARY is None:
+        raise ModuleNotFoundError("Neither tomllib nor tomli is available")
+    return TOML_LIBRARY
 
 
 def load_testgen_config(config_path: Optional[str] = None) -> TestGenerationConfig:
@@ -41,13 +49,24 @@ def load_testgen_config(config_path: Optional[str] = None) -> TestGenerationConf
                 config_data = _load_toml_config(default_path)
                 break
 
-    # Override with environment variables
-    config_data.update(_load_env_config())
+    # Override with environment variables (merge nested dicts)
+    env_config = _load_env_config()
+    for key, value in env_config.items():
+        if (
+            key in config_data
+            and isinstance(config_data[key], dict)
+            and isinstance(value, dict)
+        ):
+            config_data[key].update(value)
+        else:
+            config_data[key] = value
 
     # Create configuration object
+    provider = config_data.get("llm", {}).get("provider", "openai")
+    api_key = config_data.get("llm", {}).get("api_key") or _get_env_api_key(provider)
     return TestGenerationConfig(
-        llm_provider=config_data.get("llm", {}).get("provider", "openai"),
-        llm_api_key=config_data.get("llm", {}).get("api_key") or _get_env_api_key(),
+        llm_provider=provider,
+        llm_api_key=api_key,
         llm_model=config_data.get("llm", {}).get("model", "gpt-4"),
         llm_temperature=float(config_data.get("llm", {}).get("temperature", 0.1)),
         test_framework=config_data.get("test_generation", {}).get(
@@ -106,79 +125,168 @@ def _load_env_config() -> Dict[str, Any]:
             config["llm"] = {}
         config["llm"]["provider"] = os.getenv("AI_GUARD_LLM_PROVIDER")
 
+    if os.getenv("AI_GUARD_LLM_API_KEY"):
+        if "llm" not in config:
+            config["llm"] = {}
+        config["llm"]["api_key"] = os.getenv("AI_GUARD_LLM_API_KEY")
+
     if os.getenv("AI_GUARD_LLM_MODEL"):
         if "llm" not in config:
             config["llm"] = {}
         config["llm"]["model"] = os.getenv("AI_GUARD_LLM_MODEL")
 
     if os.getenv("AI_GUARD_LLM_TEMPERATURE"):
-        if "llm" not in config:
-            config["llm"] = {}
         try:
-            config["llm"]["temperature"] = float(
-                os.getenv("AI_GUARD_LLM_TEMPERATURE", "0.1")
-            )
+            temperature = float(os.getenv("AI_GUARD_LLM_TEMPERATURE", "0.1"))
+            if "llm" not in config:
+                config["llm"] = {}
+            config["llm"]["temperature"] = temperature
         except ValueError:
-            # Use default if invalid temperature value
-            config["llm"]["temperature"] = 0.1
+            # Skip invalid temperature values - don't create llm section
+            pass
 
     # Test generation configuration
-    if os.getenv("AI_GUARD_TEST_FRAMEWORK"):
+    if os.getenv("AI_GUARD_TEST_FRAMEWORK") or os.getenv("AI_GUARD_TESTGEN_FRAMEWORK"):
         if "test_generation" not in config:
             config["test_generation"] = {}
-        config["test_generation"]["framework"] = os.getenv("AI_GUARD_TEST_FRAMEWORK")
+        config["test_generation"]["framework"] = os.getenv(
+            "AI_GUARD_TEST_FRAMEWORK"
+        ) or os.getenv("AI_GUARD_TESTGEN_FRAMEWORK")
 
-    if os.getenv("AI_GUARD_GENERATE_MOCKS"):
-        if "test_generation" not in config:
-            config["test_generation"] = {}
-        env_value = os.getenv("AI_GUARD_GENERATE_MOCKS")
-        if env_value:
-            config["test_generation"]["generate_mocks"] = env_value.lower() == "true"
+    def _parse_boolean(value: str) -> bool:
+        """Parse boolean string values."""
+        if not value:
+            return False
+        return value.lower() in ("true", "yes", "1", "on")
 
-    if os.getenv("AI_GUARD_GENERATE_EDGE_CASES"):
+    if os.getenv("AI_GUARD_GENERATE_MOCKS") or os.getenv(
+        "AI_GUARD_TESTGEN_GENERATE_MOCKS"
+    ):
         if "test_generation" not in config:
             config["test_generation"] = {}
-        env_value = os.getenv("AI_GUARD_GENERATE_EDGE_CASES")
+        env_value = os.getenv("AI_GUARD_GENERATE_MOCKS") or os.getenv(
+            "AI_GUARD_TESTGEN_GENERATE_MOCKS"
+        )
         if env_value:
-            config["test_generation"]["generate_edge_cases"] = (
-                env_value.lower() == "true"
+            config["test_generation"]["generate_mocks"] = _parse_boolean(env_value)
+
+    if os.getenv("AI_GUARD_GENERATE_PARAMETRIZED_TESTS") or os.getenv(
+        "AI_GUARD_TESTGEN_GENERATE_PARAMETRIZED_TESTS"
+    ):
+        if "test_generation" not in config:
+            config["test_generation"] = {}
+        env_value = os.getenv("AI_GUARD_GENERATE_PARAMETRIZED_TESTS") or os.getenv(
+            "AI_GUARD_TESTGEN_GENERATE_PARAMETRIZED_TESTS"
+        )
+        if env_value:
+            config["test_generation"]["generate_parametrized_tests"] = _parse_boolean(
+                env_value
             )
+
+    if os.getenv("AI_GUARD_GENERATE_EDGE_CASES") or os.getenv(
+        "AI_GUARD_TESTGEN_GENERATE_EDGE_CASES"
+    ):
+        if "test_generation" not in config:
+            config["test_generation"] = {}
+        env_value = os.getenv("AI_GUARD_GENERATE_EDGE_CASES") or os.getenv(
+            "AI_GUARD_TESTGEN_GENERATE_EDGE_CASES"
+        )
+        if env_value:
+            config["test_generation"]["generate_edge_cases"] = _parse_boolean(env_value)
+
+    if os.getenv("AI_GUARD_TESTGEN_MAX_TESTS_PER_FILE"):
+        try:
+            value = int(os.getenv("AI_GUARD_TESTGEN_MAX_TESTS_PER_FILE"))
+            if "test_generation" not in config:
+                config["test_generation"] = {}
+            config["test_generation"]["max_tests_per_file"] = value
+        except ValueError:
+            pass
+
+    if os.getenv("AI_GUARD_TESTGEN_INCLUDE_DOCSTRINGS"):
+        if "test_generation" not in config:
+            config["test_generation"] = {}
+        config["test_generation"]["include_docstrings"] = _parse_boolean(
+            os.getenv("AI_GUARD_TESTGEN_INCLUDE_DOCSTRINGS")
+        )
+
+    if os.getenv("AI_GUARD_TESTGEN_INCLUDE_TYPE_HINTS"):
+        if "test_generation" not in config:
+            config["test_generation"] = {}
+        config["test_generation"]["include_type_hints"] = _parse_boolean(
+            os.getenv("AI_GUARD_TESTGEN_INCLUDE_TYPE_HINTS")
+        )
 
     # Coverage configuration
-    if os.getenv("AI_GUARD_ANALYZE_COVERAGE"):
+    if os.getenv("AI_GUARD_ANALYZE_COVERAGE") or os.getenv(
+        "AI_GUARD_TESTGEN_ANALYZE_COVERAGE_GAPS"
+    ):
         if "coverage_analysis" not in config:
             config["coverage_analysis"] = {}
-        env_value = os.getenv("AI_GUARD_ANALYZE_COVERAGE")
+        env_value = os.getenv("AI_GUARD_ANALYZE_COVERAGE") or os.getenv(
+            "AI_GUARD_TESTGEN_ANALYZE_COVERAGE_GAPS"
+        )
         if env_value:
-            config["coverage_analysis"]["analyze_coverage_gaps"] = (
-                env_value.lower() == "true"
+            config["coverage_analysis"]["analyze_coverage_gaps"] = _parse_boolean(
+                env_value
             )
 
-    if os.getenv("AI_GUARD_MIN_COVERAGE"):
+    if os.getenv("AI_GUARD_MIN_COVERAGE") or os.getenv(
+        "AI_GUARD_TESTGEN_MIN_COVERAGE_THRESHOLD"
+    ):
         if "coverage_analysis" not in config:
             config["coverage_analysis"] = {}
         try:
+            coverage_value = os.getenv("AI_GUARD_MIN_COVERAGE") or os.getenv(
+                "AI_GUARD_TESTGEN_MIN_COVERAGE_THRESHOLD"
+            )
             config["coverage_analysis"]["min_coverage_threshold"] = float(
-                os.getenv("AI_GUARD_MIN_COVERAGE", "80.0")
+                coverage_value
             )
         except ValueError:
-            # Use default if invalid coverage value
-            config["coverage_analysis"]["min_coverage_threshold"] = 80.0
+            # Skip invalid coverage values
+            pass
 
     # Output configuration
-    if os.getenv("AI_GUARD_OUTPUT_DIR"):
+    if os.getenv("AI_GUARD_OUTPUT_DIR") or os.getenv(
+        "AI_GUARD_TESTGEN_OUTPUT_DIRECTORY"
+    ):
         if "output" not in config:
             config["output"] = {}
-        config["output"]["output_directory"] = os.getenv("AI_GUARD_OUTPUT_DIR")
+        config["output"]["output_directory"] = os.getenv(
+            "AI_GUARD_OUTPUT_DIR"
+        ) or os.getenv("AI_GUARD_TESTGEN_OUTPUT_DIRECTORY")
+
+    if os.getenv("AI_GUARD_TESTGEN_TEST_FILE_SUFFIX"):
+        if "output" not in config:
+            config["output"] = {}
+        config["output"]["test_file_suffix"] = os.getenv(
+            "AI_GUARD_TESTGEN_TEST_FILE_SUFFIX"
+        )
 
     return config
 
 
-def _get_env_api_key() -> Optional[str]:
-    """Get API key from environment variables."""
-    # Try provider-specific environment variables first
-    for provider in ["openai", "anthropic"]:
+def _get_env_api_key(provider: Optional[str] = None) -> Optional[str]:
+    """Get API key from environment variables.
+
+    Args:
+        provider: Specific provider to get key for. If None, tries all providers.
+
+    Returns:
+        API key if found, None otherwise
+    """
+    if provider:
+        # Try provider-specific environment variables
         key = os.getenv(f"{provider.upper()}_API_KEY")
+        if key:
+            return key
+        # Try generic AI-Guard API key as fallback
+        return os.getenv("AI_GUARD_API_KEY")
+
+    # Try provider-specific environment variables first
+    for prov in ["openai", "anthropic"]:
+        key = os.getenv(f"{prov.upper()}_API_KEY")
         if key:
             return key
 

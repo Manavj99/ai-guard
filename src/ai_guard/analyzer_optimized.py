@@ -37,7 +37,6 @@ class RuleIdStyle(str, Enum):
     TOOL = "tool"  # "flake8:E501", "mypy:name-defined", "bandit:B101"
 
 
-@cached(ttl_seconds=300)  # Cache for 5 minutes
 def _rule_style() -> RuleIdStyle:
     v = os.getenv("AI_GUARD_RULE_ID_STYLE", "bare").strip().lower()
     return RuleIdStyle.TOOL if v == "tool" else RuleIdStyle.BARE
@@ -48,7 +47,6 @@ def _make_rule_id(tool: str, code: str | None) -> str:
     return f"{tool}:{code}" if _rule_style() == RuleIdStyle.TOOL else code
 
 
-@cached(ttl_seconds=300)
 def _strict_subprocess_fail() -> bool:
     return os.getenv("AI_GUARD_STRICT_SUBPROCESS_ERRORS", "").strip().lower() in {
         "1",
@@ -275,14 +273,18 @@ def _run_subprocess_optimized(
         # Create a CompletedProcess-like object for backward compatibility
 
         class SuccessProcessResult(subprocess.CompletedProcess[str]):
-            def __init__(self, args: List[str], returncode: int, stdout: str, stderr: str = ""):
+            def __init__(
+                self, args: List[str], returncode: int, stdout: str, stderr: str = ""
+            ):
                 super().__init__(args, returncode, stdout, stderr)
 
         return SuccessProcessResult(cmd, returncode, output)
     except ToolExecutionError as e:
         # Return a failed process result
         class ErrorProcessResult(subprocess.CompletedProcess[str]):
-            def __init__(self, args: List[str], returncode: int, stdout: str, stderr: str = ""):
+            def __init__(
+                self, args: List[str], returncode: int, stdout: str, stderr: str = ""
+            ):
                 super().__init__(args, returncode, stdout, stderr)
 
         return ErrorProcessResult(cmd, 1, "", str(e))
@@ -351,14 +353,31 @@ def _parse_bandit_json(output: Any) -> List[SarifResult]:
     if isinstance(output, (bytes, bytearray)):
         output = output.decode("utf-8", errors="replace")
     elif not isinstance(output, str):
-        output = str(output)
+        # If it's already a dict/list, use it directly
+        if isinstance(output, (dict, list)):
+            data = output
+        else:
+            output = str(output)
+            try:
+                data = json.loads(output or "{}")
+            except Exception:
+                return []
+        return _process_bandit_data(data)
 
     try:
         data = json.loads(output or "{}")
     except Exception:
         return []
 
-    results = (data or {}).get("results") or []
+    return _process_bandit_data(data)
+
+
+def _process_bandit_data(data: Any) -> List[SarifResult]:
+    """Process bandit data and return SarifResult objects."""
+    if not isinstance(data, dict):
+        return []
+
+    results = data.get("results") or []
     if not results:
         return []
 

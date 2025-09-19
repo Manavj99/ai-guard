@@ -30,7 +30,9 @@ def parse_eslint(output: str) -> List[Dict[str, Any]]:
                         "file": file_path,
                         "line": int(msg.get("line", 1) or 1),
                         "col": int(msg.get("column", 1) or 1),
-                        "rule": normalize_rule("eslint", msg.get("ruleId") or "unknown"),
+                        "rule": normalize_rule(
+                            "eslint", msg.get("ruleId") or "unknown"
+                        ),
                         "message": msg.get("message", ""),
                         "severity": severity,
                     }
