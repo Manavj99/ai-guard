@@ -4,7 +4,7 @@ import pytest
 from src.ai_guard.parsers.common import (
     _extract_mypy_rule,
     _RULE_NORMALIZERS,
-    normalize_rule
+    normalize_rule,
 )
 
 

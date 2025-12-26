@@ -4,8 +4,12 @@ import pytest
 from unittest.mock import patch, mock_open
 
 from src.ai_guard.config import (
-    load_config, get_default_config, Config, Gates, 
-    validate_config, merge_configs
+    load_config,
+    get_default_config,
+    Config,
+    Gates,
+    validate_config,
+    merge_configs,
 )
 
 
@@ -96,10 +100,10 @@ class TestConfigBasic:
         """Test config validation edge cases."""
         # Test with None
         assert validate_config(None) is False
-        
+
         # Test with empty dict
         assert validate_config({}) is True  # Now allows empty dict
-        
+
         # Test with valid but different structure
         config = {"min_coverage": 80, "extra_field": "value"}
         assert validate_config(config) is True

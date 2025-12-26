@@ -35,7 +35,7 @@ class TestCodeAnalyzer:
         """Test analyzing non-existent file."""
         analyzer = CodeAnalyzer()
         result = analyzer.analyze_file("nonexistent.py")
-        
+
         assert isinstance(result, AnalysisResult)
         assert result.security_issues == ["File not found: nonexistent.py"]
         assert result.performance_issues == ["File not found: nonexistent.py"]
@@ -46,11 +46,11 @@ class TestCodeAnalyzer:
         """Test analyzing file with security analysis disabled."""
         config = AnalysisConfig(enable_security_analysis=False)
         analyzer = CodeAnalyzer(config)
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("import os\nos.system('ls')\n")
             temp_file = f.name
-        
+
         try:
             result = analyzer.analyze_file(temp_file)
             assert result.security_issues == []
@@ -68,13 +68,13 @@ class TestCodeAnalyzer:
     def test_code_analyzer_analyze_directory(self):
         """Test analyzing directory."""
         analyzer = CodeAnalyzer()
-        
+
         with tempfile.TemporaryDirectory() as temp_dir:
             # Create a test Python file
             test_file = os.path.join(temp_dir, "test.py")
-            with open(test_file, 'w') as f:
+            with open(test_file, "w") as f:
                 f.write("print('Hello World')\n")
-            
+
             results = analyzer.analyze_directory(temp_dir)
             assert len(results) == 1
             assert isinstance(results[0], AnalysisResult)
@@ -82,26 +82,26 @@ class TestCodeAnalyzer:
     def test_code_analyzer_generate_summary(self):
         """Test generating summary from results."""
         analyzer = CodeAnalyzer()
-        
+
         # Create mock results
         result1 = AnalysisResult(
             security_issues=["issue1"],
             performance_issues=["issue2"],
             quality_issues=["issue3"],
             coverage_data={"file1": 85.0},
-            execution_time=1.0
+            execution_time=1.0,
         )
-        
+
         result2 = AnalysisResult(
             security_issues=["issue4"],
             performance_issues=["issue5"],
             quality_issues=["issue6"],
             coverage_data={"file2": 90.0},
-            execution_time=2.0
+            execution_time=2.0,
         )
-        
+
         summary = analyzer.generate_summary([result1, result2])
-        
+
         assert summary["total_files"] == 2
         assert summary["total_security_issues"] == 2
         assert summary["total_performance_issues"] == 2
@@ -117,7 +117,7 @@ class TestRunAnalysis:
         """Test running analysis on empty file list."""
         config = AnalysisConfig()
         result = run_analysis([], config)
-        
+
         assert isinstance(result, AnalysisResult)
         assert result.security_issues == []
         assert result.performance_issues == []
@@ -128,11 +128,11 @@ class TestRunAnalysis:
     def test_run_analysis_with_files(self):
         """Test running analysis on files."""
         config = AnalysisConfig()
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("print('Hello World')\n")
             temp_file = f.name
-        
+
         try:
             result = run_analysis([temp_file], config)
             assert isinstance(result, AnalysisResult)
@@ -150,9 +150,9 @@ class TestGenerateReport:
             performance_issues=["issue2"],
             quality_issues=["issue3"],
             coverage_data={"file1": 85.0},
-            execution_time=1.5
+            execution_time=1.5,
         )
-        
+
         report = generate_report(result, "json")
         assert isinstance(report, str)
         assert "issue1" in report
@@ -164,9 +164,9 @@ class TestGenerateReport:
             performance_issues=["issue2"],
             quality_issues=["issue3"],
             coverage_data={"file1": 85.0},
-            execution_time=1.5
+            execution_time=1.5,
         )
-        
+
         report = generate_report(result, "dict")
         assert isinstance(report, str)  # generate_report returns string representation
         assert "issue1" in report

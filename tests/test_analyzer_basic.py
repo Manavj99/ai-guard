@@ -55,7 +55,7 @@ class TestAnalysisConfig:
             enable_security_analysis=False,
             enable_performance_analysis=True,
             enable_quality_analysis=False,
-            enable_coverage_analysis=True
+            enable_coverage_analysis=True,
         )
         assert config.enable_security_analysis is False
         assert config.enable_performance_analysis is True
@@ -68,7 +68,7 @@ class TestAnalysisConfig:
             "enable_security_analysis": False,
             "enable_performance_analysis": True,
             "enable_quality_analysis": False,
-            "enable_coverage_analysis": True
+            "enable_coverage_analysis": True,
         }
         config = AnalysisConfig.from_dict(data)
         assert config.enable_security_analysis is False
@@ -96,7 +96,7 @@ class TestAnalysisResult:
             performance_issues=["issue2"],
             quality_issues=["issue3"],
             coverage_data={"file1": 85.0},
-            execution_time=1.5
+            execution_time=1.5,
         )
         assert result.security_issues == ["issue1"]
         assert result.performance_issues == ["issue2"]
@@ -111,7 +111,7 @@ class TestAnalysisResult:
             performance_issues=["issue2"],
             quality_issues=["issue3"],
             coverage_data={"file1": 85.0},
-            execution_time=1.5
+            execution_time=1.5,
         )
         data = result.to_dict()
         assert data["security_issues"] == ["issue1"]

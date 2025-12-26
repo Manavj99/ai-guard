@@ -227,7 +227,7 @@ def _parse_mypy_output(text: str) -> List[SarifResult]:
         m = re.match(pattern, ln.strip())
         if not m:
             continue
-        if m["sev"].lower() not in {"error", "note", "warning"}:
+        if m["sev"].lower() not in {"error", "warning"}:
             continue
         code = (m["code"] or "").strip()
         file = m["file"]
@@ -303,16 +303,16 @@ def run_lint_check(paths: list[str] | None) -> tuple[GateResult, SarifResult | N
     sarif_results = _parse_flake8_output(combined)
     first_result = sarif_results[0] if sarif_results else None
 
-    # If non-zero AND we did parse a finding → fail with the finding message.
+    # If non-zero AND we did parse a finding  fail with the finding message.
     if proc.returncode != 0 and first_result is not None:
         return GateResult("Lint (flake8)", False, first_result.message, 0), first_result
 
-    # If non-zero AND no parseable output → treat as tool error and show stderr.
+    # If non-zero AND no parseable output  treat as tool error and show stderr.
     if proc.returncode != 0 and (first_result is None):
         details = ("flake8 error: " + _to_text(proc.stderr).strip()) or "flake8 error"
         return GateResult("Lint (flake8)", False, details, 0), None
 
-    # Zero returncode → pass
+    # Zero returncode  pass
     details = "No issues" if first_result is None else first_result.message
     return GateResult("Lint (flake8)", True, details, 0), first_result
 
@@ -515,7 +515,7 @@ def run_coverage_check(
             exit_code=0,
         )
 
-    # If min_coverage is None, don't enforce a threshold—report informationally.
+    # If min_coverage is None, don't enforce a thresholdreport informationally.
     if min_coverage is None:
         return GateResult(
             name="Coverage",
@@ -703,7 +703,7 @@ def run(argv: list[str] | None = None) -> int:
 
     # Run quality checks (parallel or sequential)
     if args.parallel and changed_py:
-        print("🚀 Running quality checks in parallel...")
+        print(" Running quality checks in parallel...")
         quality_results, quality_sarif = _run_quality_checks_parallel(changed_py)
         results.extend(quality_results)
         sarif_diagnostics.extend(quality_sarif)
@@ -734,7 +734,7 @@ def run(argv: list[str] | None = None) -> int:
 
     # Enhanced test generation (if enabled)
     if args.enhanced_testgen and changed_py:
-        print("🔧 Running enhanced test generation...")
+        print(" Running enhanced test generation...")
         try:
             # Initialize enhanced test generator
             testgen_config = TestGenConfig(
@@ -761,7 +761,7 @@ def run(argv: list[str] | None = None) -> int:
                 with open(test_output_path, "w", encoding="utf-8") as f:
                     f.write(test_content)
 
-                print(f"✅ Enhanced tests generated: {test_output_path}")
+                print(f" Enhanced tests generated: {test_output_path}")
                 results.append(
                     GateResult(
                         "Enhanced Test Generation",
@@ -770,20 +770,20 @@ def run(argv: list[str] | None = None) -> int:
                     )
                 )
             else:
-                print("ℹ️ No enhanced tests generated")
+                print(" No enhanced tests generated")
                 results.append(
                     GateResult("Enhanced Test Generation", True, "No tests needed")
                 )
 
         except Exception as e:
-            print(f"⚠️ Enhanced test generation failed: {e}")
+            print(f" Enhanced test generation failed: {e}")
             results.append(
                 GateResult("Enhanced Test Generation", False, f"Generation failed: {e}")
             )
 
     # PR Annotations (if enabled)
     if args.pr_annotations:
-        print("📝 Generating PR annotations...")
+        print(" Generating PR annotations...")
         try:
             # Initialize PR annotator
             annotator = PRAnnotator()
@@ -820,9 +820,9 @@ def run(argv: list[str] | None = None) -> int:
             summary = annotator.generate_review_summary()
             annotator.save_annotations(args.annotations_output)
 
-            print(f"✅ PR annotations generated: {args.annotations_output}")
-            print(f"📊 Review status: {summary.overall_status}")
-            print(f"🎯 Quality score: {summary.quality_score:.1%}")
+            print(f" PR annotations generated: {args.annotations_output}")
+            print(f" Review status: {summary.overall_status}")
+            print(f" Quality score: {summary.quality_score:.1%}")
 
             results.append(
                 GateResult(
@@ -833,7 +833,7 @@ def run(argv: list[str] | None = None) -> int:
             )
 
         except Exception as e:
-            print(f"⚠️ PR annotation generation failed: {e}")
+            print(f" PR annotation generation failed: {e}")
             results.append(
                 GateResult("PR Annotations", False, f"Generation failed: {e}")
             )
@@ -878,7 +878,7 @@ def run(argv: list[str] | None = None) -> int:
     # Generate performance report if requested
     if args.performance_report:
         perf_summary = get_performance_summary()
-        print("\n📊 Performance Summary:")
+        print("\n Performance Summary:")
         print(f"  Total metrics recorded: {perf_summary['total_metrics']}")
         print(f"  Cache size: {perf_summary['cache_size']}")
         print(f"  Functions tracked: {perf_summary['functions_tracked']}")

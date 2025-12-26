@@ -4,11 +4,7 @@ import pytest
 import tempfile
 import json
 from unittest.mock import patch, mock_open
-from ai_guard.report import (
-    GateResult,
-    summarize,
-    ReportGenerator
-)
+from ai_guard.report import GateResult, summarize, ReportGenerator
 
 
 class TestGateResult:
@@ -16,11 +12,8 @@ class TestGateResult:
 
     def test_gate_result_minimal(self):
         """Test creating GateResult with minimal data."""
-        result = GateResult(
-            name="Test Gate",
-            passed=True
-        )
-        
+        result = GateResult(name="Test Gate", passed=True)
+
         assert result.name == "Test Gate"
         assert result.passed is True
         assert result.details == ""
@@ -32,9 +25,9 @@ class TestGateResult:
             name="Test Gate",
             passed=False,
             details="Gate failed due to low coverage",
-            exit_code=1
+            exit_code=1,
         )
-        
+
         assert result.name == "Test Gate"
         assert result.passed is False
         assert result.details == "Gate failed due to low coverage"
@@ -69,12 +62,12 @@ class TestSummarize:
         results = [
             GateResult("Gate 1", True, "All good"),
             GateResult("Gate 2", True, "Perfect"),
-            GateResult("Gate 3", True, "Excellent")
+            GateResult("Gate 3", True, "Excellent"),
         ]
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 0
         assert mock_print.call_count >= 4  # Header + 3 gates + summary
 
@@ -83,12 +76,12 @@ class TestSummarize:
         results = [
             GateResult("Gate 1", True, "All good"),
             GateResult("Gate 2", False, "Failed check"),
-            GateResult("Gate 3", True, "Perfect")
+            GateResult("Gate 3", True, "Perfect"),
         ]
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 1
         assert mock_print.call_count >= 4  # Header + 3 gates + summary
 
@@ -97,34 +90,32 @@ class TestSummarize:
         results = [
             GateResult("Gate 1", False, "Failed check 1"),
             GateResult("Gate 2", False, "Failed check 2"),
-            GateResult("Gate 3", False, "Failed check 3")
+            GateResult("Gate 3", False, "Failed check 3"),
         ]
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 1
         assert mock_print.call_count >= 4  # Header + 3 gates + summary
 
     def test_summarize_empty_list(self):
         """Test summarize with empty results list."""
         results = []
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 0
         assert mock_print.call_count >= 2  # Header + summary
 
     def test_summarize_single_result(self):
         """Test summarize with single result."""
-        results = [
-            GateResult("Single Gate", True, "Only one gate")
-        ]
-        
-        with patch('builtins.print') as mock_print:
+        results = [GateResult("Single Gate", True, "Only one gate")]
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 0
         assert mock_print.call_count >= 2  # Header + gate + summary
 
@@ -133,16 +124,16 @@ class TestSummarize:
         results = [
             GateResult("Gate 1", True, "Coverage: 85%"),
             GateResult("Gate 2", False, "Coverage: 65% (threshold: 80%)"),
-            GateResult("Gate 3", True, "No issues found")
+            GateResult("Gate 3", True, "No issues found"),
         ]
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 1
-        
+
         # Check that details were printed
-        printed_text = ' '.join([str(call) for call in mock_print.call_args_list])
+        printed_text = " ".join([str(call) for call in mock_print.call_args_list])
         assert "Coverage: 85%" in printed_text
         assert "Coverage: 65%" in printed_text
         assert "No issues found" in printed_text
@@ -152,12 +143,12 @@ class TestSummarize:
         results = [
             GateResult("Gate 1", True),
             GateResult("Gate 2", False),
-            GateResult("Gate 3", True)
+            GateResult("Gate 3", True),
         ]
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 1
 
     def test_summarize_mixed_details(self):
@@ -165,12 +156,12 @@ class TestSummarize:
         results = [
             GateResult("Gate 1", True, "Has details"),
             GateResult("Gate 2", False),
-            GateResult("Gate 3", True, "Also has details")
+            GateResult("Gate 3", True, "Also has details"),
         ]
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 1
 
     def test_summarize_exit_codes(self):
@@ -178,12 +169,12 @@ class TestSummarize:
         results = [
             GateResult("Gate 1", True, exit_code=0),
             GateResult("Gate 2", False, exit_code=1),
-            GateResult("Gate 3", False, exit_code=2)
+            GateResult("Gate 3", False, exit_code=2),
         ]
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 1
 
 
@@ -201,11 +192,11 @@ class TestReportGenerator:
         results = [
             GateResult("Gate 1", True, "All good"),
             GateResult("Gate 2", True, "Perfect"),
-            GateResult("Gate 3", True, "Excellent")
+            GateResult("Gate 3", True, "Excellent"),
         ]
-        
+
         summary = generator.generate_summary(results)
-        
+
         assert "Quality Gates Summary:" in summary
         assert "Total: 3" in summary
         assert "Passed: 3" in summary
@@ -218,11 +209,11 @@ class TestReportGenerator:
         results = [
             GateResult("Gate 1", True, "All good"),
             GateResult("Gate 2", False, "Failed check"),
-            GateResult("Gate 3", False, "Another failure")
+            GateResult("Gate 3", False, "Another failure"),
         ]
-        
+
         summary = generator.generate_summary(results)
-        
+
         assert "Quality Gates Summary:" in summary
         assert "Total: 3" in summary
         assert "Passed: 1" in summary
@@ -236,11 +227,11 @@ class TestReportGenerator:
         generator = ReportGenerator()
         results = [
             GateResult("Gate 1", False, "Failed check 1"),
-            GateResult("Gate 2", False, "Failed check 2")
+            GateResult("Gate 2", False, "Failed check 2"),
         ]
-        
+
         summary = generator.generate_summary(results)
-        
+
         assert "Total: 2" in summary
         assert "Passed: 0" in summary
         assert "Failed: 2" in summary
@@ -252,9 +243,9 @@ class TestReportGenerator:
         """Test generating summary with empty results."""
         generator = ReportGenerator()
         results = []
-        
+
         summary = generator.generate_summary(results)
-        
+
         assert "Total: 0" in summary
         assert "Passed: 0" in summary
         assert "Failed: 0" in summary
@@ -263,12 +254,10 @@ class TestReportGenerator:
     def test_generate_summary_single_result(self):
         """Test generating summary with single result."""
         generator = ReportGenerator()
-        results = [
-            GateResult("Single Gate", True, "Only one gate")
-        ]
-        
+        results = [GateResult("Single Gate", True, "Only one gate")]
+
         summary = generator.generate_summary(results)
-        
+
         assert "Total: 1" in summary
         assert "Passed: 1" in summary
         assert "Failed: 0" in summary
@@ -276,13 +265,10 @@ class TestReportGenerator:
     def test_generate_summary_without_details(self):
         """Test generating summary with results without details."""
         generator = ReportGenerator()
-        results = [
-            GateResult("Gate 1", True),
-            GateResult("Gate 2", False)
-        ]
-        
+        results = [GateResult("Gate 1", True), GateResult("Gate 2", False)]
+
         summary = generator.generate_summary(results)
-        
+
         assert "Total: 2" in summary
         assert "Passed: 1" in summary
         assert "Failed: 1" in summary
@@ -294,11 +280,11 @@ class TestReportGenerator:
         generator = ReportGenerator()
         results = [
             GateResult("Gate 1", True, "All good", 0),
-            GateResult("Gate 2", True, "Perfect", 0)
+            GateResult("Gate 2", True, "Perfect", 0),
         ]
-        
+
         report = generator.generate_detailed_report(results)
-        
+
         assert "AI-Guard Quality Gates Detailed Report" in report
         assert "=" in report
         assert "Gate: Gate 1" in report
@@ -314,11 +300,11 @@ class TestReportGenerator:
         generator = ReportGenerator()
         results = [
             GateResult("Gate 1", True, "All good", 0),
-            GateResult("Gate 2", False, "Failed check", 1)
+            GateResult("Gate 2", False, "Failed check", 1),
         ]
-        
+
         report = generator.generate_detailed_report(results)
-        
+
         assert "Gate: Gate 1" in report
         assert "Status: PASSED" in report
         assert "Gate: Gate 2" in report
@@ -330,9 +316,9 @@ class TestReportGenerator:
         """Test generating detailed report with empty results."""
         generator = ReportGenerator()
         results = []
-        
+
         report = generator.generate_detailed_report(results)
-        
+
         assert "AI-Guard Quality Gates Detailed Report" in report
         assert "=" in report
         # Should not contain any gate information
@@ -342,11 +328,11 @@ class TestReportGenerator:
         generator = ReportGenerator()
         results = [
             GateResult("Gate 1", True, "", 0),
-            GateResult("Gate 2", False, "", 1)
+            GateResult("Gate 2", False, "", 1),
         ]
-        
+
         report = generator.generate_detailed_report(results)
-        
+
         assert "Gate: Gate 1" in report
         assert "Gate: Gate 2" in report
         # Details should be empty but still present
@@ -357,11 +343,11 @@ class TestReportGenerator:
         results = [
             GateResult("Gate 1", True, "Success", 0),
             GateResult("Gate 2", False, "Warning", 1),
-            GateResult("Gate 3", False, "Error", 2)
+            GateResult("Gate 3", False, "Error", 2),
         ]
-        
+
         report = generator.generate_detailed_report(results)
-        
+
         assert "Exit Code: 0" in report
         assert "Exit Code: 1" in report
         assert "Exit Code: 2" in report
@@ -371,11 +357,11 @@ class TestReportGenerator:
         generator = ReportGenerator()
         results = [
             GateResult("Gate 1", True, "Details 1", 0),
-            GateResult("Gate 2", False, "Details 2", 1)
+            GateResult("Gate 2", False, "Details 2", 1),
         ]
-        
+
         report = generator.generate_detailed_report(results)
-        
+
         # Should have separators between gates
         separator_count = report.count("-" * 30)
         assert separator_count == 2  # One after each gate
@@ -389,9 +375,9 @@ class TestEdgeCases:
         result = GateResult(
             name="Gate with special chars: @#$%",
             passed=True,
-            details="Details with unicode: 中文 🎉"
+            details="Details with unicode: 中文 🎉",
         )
-        
+
         assert result.name == "Gate with special chars: @#$%"
         assert result.details == "Details with unicode: 中文 🎉"
 
@@ -399,13 +385,9 @@ class TestEdgeCases:
         """Test GateResult with long strings."""
         long_name = "A" * 1000
         long_details = "B" * 2000
-        
-        result = GateResult(
-            name=long_name,
-            passed=False,
-            details=long_details
-        )
-        
+
+        result = GateResult(name=long_name, passed=False, details=long_details)
+
         assert len(result.name) == 1000
         assert len(result.details) == 2000
 
@@ -414,10 +396,10 @@ class TestEdgeCases:
         results = []
         for i in range(100):
             results.append(GateResult(f"Gate {i}", i % 2 == 0, f"Details {i}"))
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 1  # Half should fail
         assert mock_print.call_count >= 102  # Header + 100 gates + summary
 
@@ -427,9 +409,9 @@ class TestEdgeCases:
         results = []
         for i in range(50):
             results.append(GateResult(f"Gate {i}", i % 2 == 0, f"Details {i}"))
-        
+
         summary = generator.generate_summary(results)
-        
+
         assert "Total: 50" in summary
         assert "Passed: 25" in summary
         assert "Failed: 25" in summary
@@ -440,9 +422,9 @@ class TestEdgeCases:
         results = []
         for i in range(20):
             results.append(GateResult(f"Gate {i}", i % 2 == 0, f"Details {i}", i % 3))
-        
+
         report = generator.generate_detailed_report(results)
-        
+
         assert "Gate: Gate 0" in report
         assert "Gate: Gate 19" in report
         assert len(report) > 1000  # Should be a substantial report
@@ -451,12 +433,12 @@ class TestEdgeCases:
         """Test summarize with unicode characters."""
         results = [
             GateResult("测试门", True, "所有都好"),
-            GateResult("🚀 Gate", False, "失败检查 ❌")
+            GateResult("🚀 Gate", False, "失败检查 ❌"),
         ]
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
-        
+
         assert exit_code == 1
         assert mock_print.call_count >= 4
 
@@ -465,11 +447,11 @@ class TestEdgeCases:
         generator = ReportGenerator()
         results = [
             GateResult("测试门", True, "所有都好"),
-            GateResult("🚀 Gate", False, "失败检查 ❌")
+            GateResult("🚀 Gate", False, "失败检查 ❌"),
         ]
-        
+
         summary = generator.generate_summary(results)
-        
+
         assert "测试门" in summary
         assert "🚀 Gate" in summary
         assert "所有都好" in summary
@@ -480,30 +462,30 @@ class TestEdgeCases:
         # Test with explicit True/False
         result1 = GateResult("Test 1", True)
         result2 = GateResult("Test 2", False)
-        
+
         assert result1.passed is True
         assert result2.passed is False
-        
+
         # Test with truthy/falsy values
         result3 = GateResult("Test 3", 1)  # Truthy
         result4 = GateResult("Test 4", 0)  # Falsy
-        
+
         assert result3.passed == 1
         assert result4.passed == 0
 
     def test_summarize_none_results(self):
         """Test summarize with None results."""
         results = None
-        
+
         with pytest.raises(TypeError):
             summarize(results)
 
     def test_report_generator_none_results(self):
         """Test ReportGenerator with None results."""
         generator = ReportGenerator()
-        
+
         with pytest.raises(TypeError):
             generator.generate_summary(None)
-        
+
         with pytest.raises(TypeError):
             generator.generate_detailed_report(None)

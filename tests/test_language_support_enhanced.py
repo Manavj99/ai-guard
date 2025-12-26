@@ -21,6 +21,7 @@ class TestJsTsSupport:
     def test_module_import(self):
         """Test that the module can be imported."""
         from src.ai_guard.language_support import js_ts_support
+
         assert js_ts_support is not None
 
     def test_basic_functionality(self):

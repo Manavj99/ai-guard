@@ -16,7 +16,7 @@ from src.ai_guard.diff_parser import (
     _get_base_head_from_event,
     DiffParser,
     parse_diff,
-    get_changed_files
+    get_changed_files,
 )
 
 

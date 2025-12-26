@@ -11,7 +11,7 @@ from src.ai_guard.report import (
     format_report_summary,
     save_report_to_file,
     load_report_from_file,
-    ReportFormatter
+    ReportFormatter,
 )
 
 
@@ -24,7 +24,7 @@ class TestGateResult:
             name="test_gate",
             passed=True,
             message="Test passed",
-            details={"coverage": 85.0}
+            details={"coverage": 85.0},
         )
         assert result.name == "test_gate"
         assert result.passed is True
@@ -49,9 +49,9 @@ class TestSummarize:
             GateResult("lint", True, "No lint issues"),
             GateResult("type", True, "No type issues"),
             GateResult("security", True, "No security issues"),
-            GateResult("coverage", True, "Coverage: 85%", {"coverage": 85.0})
+            GateResult("coverage", True, "Coverage: 85%", {"coverage": 85.0}),
         ]
-        
+
         summary = summarize(results)
         assert summary == 0  # 0 means all passed
 
@@ -61,9 +61,9 @@ class TestSummarize:
             GateResult("lint", False, "Lint issues found"),
             GateResult("type", True, "No type issues"),
             GateResult("security", False, "Security issues found"),
-            GateResult("coverage", True, "Coverage: 85%", {"coverage": 85.0})
+            GateResult("coverage", True, "Coverage: 85%", {"coverage": 85.0}),
         ]
-        
+
         summary = summarize(results)
         assert summary == 2  # 2 failures
 
@@ -85,14 +85,14 @@ class TestReportGenerator:
     def test_generate_report(self):
         """Test generating report."""
         generator = ReportGenerator()
-        
+
         analysis_results = {
             "lint": [],
             "type": [],
             "security": [],
-            "coverage": {"passed": True, "coverage": 85.0}
+            "coverage": {"passed": True, "coverage": 85.0},
         }
-        
+
         report = generator.generate_report(analysis_results)
         assert isinstance(report, dict)
         assert "summary" in report
@@ -108,9 +108,9 @@ class TestGenerateReport:
             "lint": [],
             "type": [],
             "security": [],
-            "coverage": {"passed": True, "coverage": 85.0}
+            "coverage": {"passed": True, "coverage": 85.0},
         }
-        
+
         report = generate_report(analysis_results)
         assert isinstance(report, dict)
         assert "summary" in report
@@ -122,14 +122,8 @@ class TestFormatReportSummary:
 
     def test_format_report_summary(self):
         """Test formatting report summary."""
-        report_data = {
-            "summary": {
-                "passed": True,
-                "total_issues": 0,
-                "coverage": 85.0
-            }
-        }
-        
+        report_data = {"summary": {"passed": True, "total_issues": 0, "coverage": 85.0}}
+
         formatted = format_report_summary(report_data)
         assert isinstance(formatted, str)
         assert "PASSED" in formatted or "FAILED" in formatted
@@ -142,12 +136,12 @@ class TestSaveReportToFile:
         """Test saving report to file."""
         report_data = {
             "summary": {"passed": True, "total_issues": 0},
-            "results": {"coverage": {"passed": True, "coverage": 85.0}}
+            "results": {"coverage": {"passed": True, "coverage": 85.0}},
         }
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.close()
-            
+
             try:
                 result = save_report_to_file(report_data, f.name)
                 assert result["success"] is True
@@ -164,14 +158,15 @@ class TestLoadReportFromFile:
         """Test loading report from file."""
         report_data = {
             "summary": {"passed": True, "total_issues": 0},
-            "results": {"coverage": {"passed": True, "coverage": 85.0}}
+            "results": {"coverage": {"passed": True, "coverage": 85.0}},
         }
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             import json
+
             json.dump(report_data, f)
             f.flush()
-            
+
             try:
                 loaded = load_report_from_file(f.name)
                 assert loaded["success"] is True
@@ -197,12 +192,12 @@ class TestReportFormatter:
     def test_format_report(self):
         """Test formatting report."""
         formatter = ReportFormatter()
-        
+
         report_data = {
             "summary": {"passed": True, "total_issues": 0},
-            "results": {"coverage": {"passed": True, "coverage": 85.0}}
+            "results": {"coverage": {"passed": True, "coverage": 85.0}},
         }
-        
+
         formatted = formatter.format_report(report_data)
         assert isinstance(formatted, str)
         assert len(formatted) > 0

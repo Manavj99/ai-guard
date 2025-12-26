@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "summary": {
+    "passed": false,
+    "gates": [
+      {
+        "name": "Issue: E501",
+        "passed": false,
+        "details": "Test issue"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "rule_id": "E501",
+      "level": "warning",
+      "message": "Test issue",
+      "path": "test.py",
+      "line": 1
+    }
+  ]
+}

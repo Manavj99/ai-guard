@@ -6,17 +6,29 @@ import tempfile
 import os
 from unittest.mock import patch, MagicMock, mock_open
 from src.ai_guard.report_html import (
-    generate_html_report, format_html_summary, create_html_table,
-    HTMLReportGenerator, write_html
+    generate_html_report,
+    format_html_summary,
+    create_html_table,
+    HTMLReportGenerator,
+    write_html,
 )
 from src.ai_guard.report_json import (
-    generate_json_report, format_json_summary, JSONReportGenerator,
-    write_json
+    generate_json_report,
+    format_json_summary,
+    JSONReportGenerator,
+    write_json,
 )
 from src.ai_guard.sarif_report import (
-    generate_sarif_report, create_sarif_run, create_sarif_result,
-    SARIFReportGenerator, create_sarif_report, parse_issue_to_sarif,
-    SarifResult, SarifRun, make_location, write_sarif
+    generate_sarif_report,
+    create_sarif_run,
+    create_sarif_result,
+    SARIFReportGenerator,
+    create_sarif_report,
+    parse_issue_to_sarif,
+    SarifResult,
+    SarifRun,
+    make_location,
+    write_sarif,
 )
 from src.ai_guard.gates.coverage_eval import CoverageResult, evaluate_coverage_str
 from src.ai_guard.generators.config_loader import load_testgen_config
@@ -27,8 +39,13 @@ from src.ai_guard.parsers.typescript import parse_eslint, parse_jest
 from src.ai_guard.performance import PerformanceOptimizer
 from src.ai_guard.diff_parser import DiffParser
 from src.ai_guard.analyzer import (
-    SecurityAnalyzer, PerformanceAnalyzer, QualityAnalyzer, 
-    CoverageAnalyzer, CodeAnalyzer, AnalysisConfig, AnalysisResult
+    SecurityAnalyzer,
+    PerformanceAnalyzer,
+    QualityAnalyzer,
+    CoverageAnalyzer,
+    CodeAnalyzer,
+    AnalysisConfig,
+    AnalysisResult,
 )
 from src.ai_guard.analyzer_optimized import OptimizedCodeAnalyzer
 from src.ai_guard.config import Config
@@ -44,10 +61,15 @@ class TestReportHTMLComprehensive:
             "total_issues": 2,
             "issues": [
                 {"type": "error", "message": "Error 1", "file": "test.py", "line": 10},
-                {"type": "warning", "message": "Warning 1", "file": "test.py", "line": 20}
-            ]
+                {
+                    "type": "warning",
+                    "message": "Warning 1",
+                    "file": "test.py",
+                    "line": 20,
+                },
+            ],
         }
-        
+
         result = generate_html_report(analysis_results)
         assert result["success"] is True
         assert result["format"] == "html"
@@ -62,9 +84,9 @@ class TestReportHTMLComprehensive:
         report_data = {
             "files_analyzed": 5,
             "total_issues": 3,
-            "issues_by_type": {"error": 1, "warning": 2}
+            "issues_by_type": {"error": 1, "warning": 2},
         }
-        
+
         summary = format_html_summary(report_data)
         assert "<div" in summary
         assert "Files analyzed: 5" in summary
@@ -76,9 +98,9 @@ class TestReportHTMLComprehensive:
         """Test HTML table creation comprehensively."""
         data = [
             {"file": "test1.py", "issues": 2, "status": "warning"},
-            {"file": "test2.py", "issues": 1, "status": "error"}
+            {"file": "test2.py", "issues": 1, "status": "error"},
         ]
-        
+
         table = create_html_table(data, ["file", "issues", "status"])
         assert "<table>" in table
         assert "<thead>" in table
@@ -91,13 +113,20 @@ class TestReportHTMLComprehensive:
     def test_html_report_generator_comprehensive(self):
         """Test HTML report generator comprehensively."""
         generator = HTMLReportGenerator()
-        
+
         analysis_results = {
             "files_analyzed": 2,
             "total_issues": 1,
-            "issues": [{"type": "error", "message": "Test error", "file": "test.py", "line": 10}]
+            "issues": [
+                {
+                    "type": "error",
+                    "message": "Test error",
+                    "file": "test.py",
+                    "line": 10,
+                }
+            ],
         }
-        
+
         result = generator.generate_report(analysis_results)
         assert result["success"] is True
         assert result["format"] == "html"
@@ -106,25 +135,37 @@ class TestReportHTMLComprehensive:
     def test_write_html_comprehensive(self):
         """Test write_html function comprehensively."""
         from ai_guard.report import GateResult
-        
+
         gates = [
             GateResult(name="test_gate1", passed=True, details="Gate passed"),
-            GateResult(name="test_gate2", passed=False, details="Gate failed")
+            GateResult(name="test_gate2", passed=False, details="Gate failed"),
         ]
-        
+
         findings = [
-            {"rule_id": "E001", "level": "error", "message": "Test error", "path": "test.py", "line": 10},
-            {"rule_id": "W001", "level": "warning", "message": "Test warning", "path": "test.py", "line": 20}
+            {
+                "rule_id": "E001",
+                "level": "error",
+                "message": "Test error",
+                "path": "test.py",
+                "line": 10,
+            },
+            {
+                "rule_id": "W001",
+                "level": "warning",
+                "message": "Test warning",
+                "path": "test.py",
+                "line": 20,
+            },
         ]
-        
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.html') as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".html") as f:
             temp_path = f.name
-        
+
         try:
             write_html(temp_path, gates, findings)
             assert os.path.exists(temp_path)
-            
-            with open(temp_path, 'r', encoding='utf-8') as f:
+
+            with open(temp_path, "r", encoding="utf-8") as f:
                 content = f.read()
             assert "<html>" in content
             assert "test_gate1" in content
@@ -146,14 +187,14 @@ class TestReportJSONComprehensive:
             "issues_by_type": {"error": 1, "warning": 1},
             "issues": [
                 {"type": "error", "message": "Error 1", "file": "test.py"},
-                {"type": "warning", "message": "Warning 1", "file": "test.py"}
-            ]
+                {"type": "warning", "message": "Warning 1", "file": "test.py"},
+            ],
         }
-        
+
         result = generate_json_report(analysis_results)
         assert result["success"] is True
         assert result["format"] == "json"
-        
+
         content = json.loads(result["content"])
         assert content["files_analyzed"] == 3
         assert content["total_issues"] == 2
@@ -164,9 +205,9 @@ class TestReportJSONComprehensive:
         report_data = {
             "files_analyzed": 5,
             "total_issues": 3,
-            "issues_by_type": {"error": 1, "warning": 2}
+            "issues_by_type": {"error": 1, "warning": 2},
         }
-        
+
         summary = format_json_summary(report_data)
         summary_data = json.loads(summary)
         assert summary_data["files_analyzed"] == 5
@@ -177,41 +218,47 @@ class TestReportJSONComprehensive:
     def test_json_report_generator_comprehensive(self):
         """Test JSON report generator comprehensively."""
         generator = JSONReportGenerator()
-        
+
         analysis_results = {
             "files_analyzed": 2,
             "total_issues": 1,
-            "issues": [{"type": "error", "message": "Test error", "file": "test.py"}]
+            "issues": [{"type": "error", "message": "Test error", "file": "test.py"}],
         }
-        
+
         result = generator.generate_report(analysis_results)
         assert result["success"] is True
         assert result["format"] == "json"
-        
+
         content = json.loads(result["content"])
         assert content["files_analyzed"] == 2
 
     def test_write_json_comprehensive(self):
         """Test write_json function comprehensively."""
         from ai_guard.report import GateResult
-        
+
         gates = [
             GateResult(name="test_gate1", passed=True, details="Gate passed"),
-            GateResult(name="test_gate2", passed=False, details="Gate failed")
+            GateResult(name="test_gate2", passed=False, details="Gate failed"),
         ]
-        
+
         findings = [
-            {"rule_id": "E001", "level": "error", "message": "Test error", "path": "test.py", "line": 10}
+            {
+                "rule_id": "E001",
+                "level": "error",
+                "message": "Test error",
+                "path": "test.py",
+                "line": 10,
+            }
         ]
-        
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as f:
             temp_path = f.name
-        
+
         try:
             write_json(temp_path, gates, findings)
             assert os.path.exists(temp_path)
-            
-            with open(temp_path, 'r', encoding='utf-8') as f:
+
+            with open(temp_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             assert data["version"] == "1.0"
             assert len(data["summary"]["gates"]) == 2
@@ -234,22 +281,22 @@ class TestSARIFReportComprehensive:
                     "message": "Error 1",
                     "file": "test.py",
                     "line": 10,
-                    "rule_id": "rule1"
+                    "rule_id": "rule1",
                 },
                 {
                     "type": "warning",
                     "message": "Warning 1",
                     "file": "test.py",
                     "line": 20,
-                    "rule_id": "rule2"
-                }
-            ]
+                    "rule_id": "rule2",
+                },
+            ],
         }
-        
+
         result = generate_sarif_report(analysis_results)
         assert result["success"] is True
         assert result["format"] == "sarif"
-        
+
         content = json.loads(result["content"])
         assert content["version"] == "2.1.0"
         assert content["$schema"] == "https://json.schemastore.org/sarif-2.1.0.json"
@@ -267,11 +314,11 @@ class TestSARIFReportComprehensive:
                     "message": "Error 1",
                     "file": "test.py",
                     "line": 10,
-                    "rule_id": "rule1"
+                    "rule_id": "rule1",
                 }
-            ]
+            ],
         }
-        
+
         sarif_run = create_sarif_run(analysis_results)
         assert sarif_run["tool"]["driver"]["name"] == "AI-Guard"
         assert len(sarif_run["results"]) == 1
@@ -284,20 +331,23 @@ class TestSARIFReportComprehensive:
             "message": "Error 1",
             "file": "test.py",
             "line": 10,
-            "rule_id": "rule1"
+            "rule_id": "rule1",
         }
-        
+
         result = create_sarif_result(issue)
         assert result["ruleId"] == "rule1"
         assert result["level"] == "error"
         assert result["message"]["text"] == "Error 1"
-        assert result["locations"][0]["physicalLocation"]["artifactLocation"]["uri"] == "test.py"
+        assert (
+            result["locations"][0]["physicalLocation"]["artifactLocation"]["uri"]
+            == "test.py"
+        )
         assert result["locations"][0]["physicalLocation"]["region"]["startLine"] == 10
 
     def test_sarif_report_generator_comprehensive(self):
         """Test SARIF report generator comprehensively."""
         generator = SARIFReportGenerator()
-        
+
         analysis_results = {
             "files_analyzed": 2,
             "total_issues": 1,
@@ -307,15 +357,15 @@ class TestSARIFReportComprehensive:
                     "message": "Error 1",
                     "file": "test.py",
                     "line": 10,
-                    "rule_id": "rule1"
+                    "rule_id": "rule1",
                 }
-            ]
+            ],
         }
-        
+
         result = generator.generate_report(analysis_results)
         assert result["success"] is True
         assert result["format"] == "sarif"
-        
+
         content = json.loads(result["content"])
         assert content["version"] == "2.1.0"
         assert len(content["runs"]) == 1
@@ -328,9 +378,9 @@ class TestSARIFReportComprehensive:
             "message": "Test error",
             "file": "test.py",
             "line": 10,
-            "column": 5
+            "column": 5,
         }
-        
+
         sarif_result = parse_issue_to_sarif(issue)
         assert sarif_result.rule_id == "E001"
         assert sarif_result.level == "error"
@@ -345,12 +395,12 @@ class TestSARIFReportComprehensive:
         assert location["physicalLocation"]["artifactLocation"]["uri"] == "test.py"
         assert location["physicalLocation"]["region"]["startLine"] == 10
         assert location["physicalLocation"]["region"]["startColumn"] == 5
-        
+
         # Test with line only
         location = make_location("test.py", 10)
         assert location["physicalLocation"]["artifactLocation"]["uri"] == "test.py"
         assert location["physicalLocation"]["region"]["startLine"] == 10
-        
+
         # Test with no line/column
         location = make_location("test.py")
         assert location["physicalLocation"]["artifactLocation"]["uri"] == "test.py"
@@ -366,19 +416,19 @@ class TestSARIFReportComprehensive:
                     rule_id="E001",
                     level="error",
                     message="Test error",
-                    locations=[make_location("test.py", 10)]
+                    locations=[make_location("test.py", 10)],
                 )
-            ]
+            ],
         )
-        
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.sarif') as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".sarif") as f:
             temp_path = f.name
-        
+
         try:
             write_sarif(temp_path, sarif_run)
             assert os.path.exists(temp_path)
-            
-            with open(temp_path, 'r', encoding='utf-8') as f:
+
+            with open(temp_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             assert data["version"] == "2.1.0"
             assert len(data["runs"]) == 1
@@ -393,7 +443,7 @@ class TestCoverageEvalComprehensive:
     def test_coverage_evaluator_comprehensive(self):
         """Test coverage evaluation comprehensively."""
         # Test with high coverage XML
-        high_coverage_xml = '''<?xml version="1.0" ?>
+        high_coverage_xml = """<?xml version="1.0" ?>
         <coverage line-rate="0.85" branch-rate="0.80">
             <packages>
                 <package name="src" line-rate="0.85" branch-rate="0.80">
@@ -402,14 +452,14 @@ class TestCoverageEvalComprehensive:
                     </classes>
                 </package>
             </packages>
-        </coverage>'''
-        
+        </coverage>"""
+
         result = evaluate_coverage_str(high_coverage_xml, 80.0)
         assert result.passed is True
         assert result.percent == 85.0
-        
+
         # Test with low coverage XML
-        low_coverage_xml = '''<?xml version="1.0" ?>
+        low_coverage_xml = """<?xml version="1.0" ?>
         <coverage line-rate="0.75" branch-rate="0.70">
             <packages>
                 <package name="src" line-rate="0.75" branch-rate="0.70">
@@ -418,14 +468,14 @@ class TestCoverageEvalComprehensive:
                     </classes>
                 </package>
             </packages>
-        </coverage>'''
-        
+        </coverage>"""
+
         result = evaluate_coverage_str(low_coverage_xml, 80.0)
         assert result.passed is False
         assert result.percent == 75.0
-        
+
         # Test with exact threshold
-        exact_coverage_xml = '''<?xml version="1.0" ?>
+        exact_coverage_xml = """<?xml version="1.0" ?>
         <coverage line-rate="0.80" branch-rate="0.80">
             <packages>
                 <package name="src" line-rate="0.80" branch-rate="0.80">
@@ -434,8 +484,8 @@ class TestCoverageEvalComprehensive:
                     </classes>
                 </package>
             </packages>
-        </coverage>'''
-        
+        </coverage>"""
+
         result = evaluate_coverage_str(exact_coverage_xml, 80.0)
         assert result.passed is True
         assert result.percent == 80.0
@@ -455,7 +505,7 @@ enabled = true
         with patch("builtins.open", mock_open(read_data=toml_content)):
             config = load_testgen_config("config.toml")
             assert config is not None
-        
+
         # Test loading config with environment variables
         with patch.dict(os.environ, {"AI_GUARD_THRESHOLD": "85.0"}):
             config = load_testgen_config()
@@ -469,9 +519,9 @@ class TestTestGeneratorComprehensive:
         """Test test generator function comprehensively."""
         # Test generating tests for changed files
         changed_files = ["test.py", "module.py"]
-        
+
         result = generate_speculative_tests(changed_files)
-        
+
         assert isinstance(result, str)
         assert "test.py" in result
         assert "module.py" in result
@@ -485,15 +535,16 @@ class TestEnhancedTestGeneratorComprehensive:
     def test_enhanced_test_generator_comprehensive(self):
         """Test EnhancedTestGenerator comprehensively."""
         from src.ai_guard.generators.enhanced_testgen import TestGenConfig
+
         config = TestGenConfig()
         generator = EnhancedTestGenerator(config)
-        
+
         # Test generating enhanced tests
         code_content = """
         def multiply(a, b):
             return a * b
         """
-        
+
         result = generator.generate_tests(code_content, "test.py")
         assert isinstance(result, str)
         # The method may return empty string if no tests can be generated
@@ -508,13 +559,13 @@ class TestCommonParserComprehensive:
         # Test rule normalization
         result = normalize_rule("flake8", "E501")
         assert result == "flake8:E501"
-        
+
         result = normalize_rule("mypy", "error[name-defined]")
         assert result == "mypy:name-defined"
-        
+
         result = normalize_rule("bandit", "B101")
         assert result == "bandit:B101"
-        
+
         result = normalize_rule("eslint", "no-unused")
         assert result == "eslint:no-unused"
 
@@ -525,23 +576,29 @@ class TestTypeScriptParserComprehensive:
     def test_typescript_parser_comprehensive(self):
         """Test TypeScript parser functions comprehensively."""
         # Test ESLint parsing with JSON format
-        eslint_json = json.dumps([{
-            "filePath": "test.ts",
-            "messages": [{
-                "line": 10,
-                "column": 5,
-                "severity": 2,
-                "ruleId": "no-unused-vars",
-                "message": "Variable is unused"
-            }]
-        }])
-        
+        eslint_json = json.dumps(
+            [
+                {
+                    "filePath": "test.ts",
+                    "messages": [
+                        {
+                            "line": 10,
+                            "column": 5,
+                            "severity": 2,
+                            "ruleId": "no-unused-vars",
+                            "message": "Variable is unused",
+                        }
+                    ],
+                }
+            ]
+        )
+
         result = parse_eslint(eslint_json)
         assert len(result) == 1
         assert result[0]["file"] == "test.ts"
         assert result[0]["line"] == 10
         assert result[0]["severity"] == "error"
-        
+
         # Test Jest parsing
         jest_output = "Tests: 1 failed, 12 passed, 13 total"
         summary = parse_jest(jest_output)
@@ -556,7 +613,7 @@ class TestPerformanceAnalyzerComprehensive:
     def test_performance_analyzer_comprehensive(self):
         """Test PerformanceAnalyzer comprehensively."""
         analyzer = PerformanceOptimizer()
-        
+
         # Test analyzing performance
         code_content = """
         def slow_function():
@@ -564,7 +621,7 @@ class TestPerformanceAnalyzerComprehensive:
             time.sleep(1)
             return "done"
         """
-        
+
         result = analyzer.analyze_performance()
         assert isinstance(result, dict)
         assert "total_functions" in result
@@ -576,7 +633,7 @@ class TestDiffParserComprehensive:
     def test_diff_parser_comprehensive(self):
         """Test DiffParser comprehensively."""
         parser = DiffParser()
-        
+
         # Test parsing diff
         diff_content = """
         diff --git a/test.py b/test.py
@@ -587,7 +644,7 @@ class TestDiffParserComprehensive:
         -old line
         +new line
         """
-        
+
         result = parser.parse_changed_files()
         assert isinstance(result, list)
 
@@ -598,21 +655,23 @@ class TestAnalyzerComprehensive:
     def test_analyzer_comprehensive(self):
         """Test CodeAnalyzer comprehensively."""
         analyzer = CodeAnalyzer()
-        
+
         # Test analyzing a file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-            f.write("""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
+            f.write(
+                """
 def example_function():
     return "Hello, World!"
-""")
+"""
+            )
             temp_file = f.name
-        
+
         try:
             result = analyzer.analyze_file(temp_file)
             assert isinstance(result, AnalysisResult)
-            assert hasattr(result, 'security_issues')
-            assert hasattr(result, 'performance_issues')
-            assert hasattr(result, 'quality_issues')
+            assert hasattr(result, "security_issues")
+            assert hasattr(result, "performance_issues")
+            assert hasattr(result, "quality_issues")
         finally:
             os.unlink(temp_file)
 
@@ -623,15 +682,17 @@ class TestOptimizedAnalyzerComprehensive:
     def test_optimized_analyzer_comprehensive(self):
         """Test OptimizedCodeAnalyzer comprehensively."""
         analyzer = OptimizedCodeAnalyzer()
-        
+
         # Test optimized analysis
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-            f.write("""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
+            f.write(
+                """
 def optimized_function():
     return "Optimized!"
-""")
+"""
+            )
             temp_file = f.name
-        
+
         try:
             result = analyzer.run_all_checks([temp_file])
             assert isinstance(result, list)
@@ -645,7 +706,7 @@ class TestConfigComprehensive:
     def test_config_comprehensive(self):
         """Test Config comprehensively."""
         config = Config()
-        
+
         # Test configuration properties
         assert config.min_coverage == 80
         assert config.skip_tests is False

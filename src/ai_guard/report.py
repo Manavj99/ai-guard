@@ -2,7 +2,24 @@
 
 import json
 from dataclasses import dataclass
+from datetime import datetime
 from typing import List, Dict, Any, Optional
+
+# Import enhanced report system
+try:
+    from .report_optimized import (
+        EnhancedReportGenerator,
+        ReportConfig,
+        ReportFormat,
+        ReportType,
+        ReportStatus,
+        ReportMetrics,
+        generate_enhanced_report,
+    )
+
+    ENHANCED_REPORTS_AVAILABLE = True
+except ImportError:
+    ENHANCED_REPORTS_AVAILABLE = False
 
 
 @dataclass
@@ -31,7 +48,7 @@ def summarize(results: List[GateResult]) -> int:
     print("=" * 50)
 
     for result in results:
-        prefix = "✅" if result.passed else "❌"
+        prefix = "" if result.passed else ""
         status = "PASSED" if result.passed else "FAILED"
         details = f" - {result.details}" if result.details else ""
         print(f"{prefix} {result.name}: {status}{details}")
@@ -39,10 +56,10 @@ def summarize(results: List[GateResult]) -> int:
     print("=" * 50)
 
     if failed:
-        print(f"❌ {len(failed)} gate(s) failed")
+        print(f" {len(failed)} gate(s) failed")
         return 1
     else:
-        print("✅ All gates passed!")
+        print(" All gates passed!")
         return 0
 
 
@@ -293,3 +310,212 @@ class ReportFormatter:
             formatted_issues.append(f"{issue_type.upper()}: {message} ({file_path})")
 
         return "\n".join(formatted_issues)
+
+
+# Enhanced reporting functions
+def generate_enhanced_analysis_report(
+    analysis_results: Dict[str, Any],
+    format_type: str = "html",
+    output_path: Optional[str] = None,
+    **kwargs,
+) -> Dict[str, Any]:
+    """Generate an enhanced analysis report using the new system.
+
+    Args:
+        analysis_results: Analysis results dictionary
+        format_type: Report format (json, html, csv, xml)
+        output_path: Optional output path for the report
+        **kwargs: Additional configuration options
+
+    Returns:
+        Dictionary with report generation results
+    """
+    if not ENHANCED_REPORTS_AVAILABLE:
+        # Fallback to legacy system
+        return generate_report(analysis_results)
+
+    try:
+        # Use enhanced report system
+        result = generate_enhanced_report(
+            analysis_results=analysis_results,
+            format_type=format_type,
+            output_path=output_path,
+            **kwargs,
+        )
+
+        return {
+            "success": True,
+            "enhanced": True,
+            "report_data": result.get("report_data"),
+            "export_results": result.get("export_results"),
+            "analytics": result.get("analytics"),
+        }
+
+    except Exception as e:
+        # Fallback to legacy system on error
+        return {
+            "success": True,
+            "enhanced": False,
+            "fallback": True,
+            "legacy_report": generate_report(analysis_results),
+            "error": str(e),
+        }
+
+
+def create_interactive_report(
+    analysis_results: Dict[str, Any],
+    report_type: str = "detailed",
+    include_charts: bool = True,
+    **kwargs,
+) -> Dict[str, Any]:
+    """Create an interactive report with advanced features.
+
+    Args:
+        analysis_results: Analysis results dictionary
+        report_type: Type of report (summary, detailed, comparative, trend)
+        include_charts: Whether to include interactive charts
+        **kwargs: Additional configuration options
+
+    Returns:
+        Dictionary with interactive report data
+    """
+    if not ENHANCED_REPORTS_AVAILABLE:
+        return {
+            "success": False,
+            "error": "Enhanced report system not available",
+            "fallback_available": True,
+        }
+
+    try:
+        from .report_optimized import ReportType
+
+        report_type_enum = getattr(ReportType, report_type.upper(), ReportType.SUMMARY)
+
+        config = ReportConfig(
+            format=ReportFormat.HTML,
+            report_type=report_type_enum,
+            include_metadata=True,
+            streaming_enabled=True,
+            **kwargs,
+        )
+
+        generator = EnhancedReportGenerator(config)
+        report_data = generator.generate_report(
+            analysis_results=analysis_results,
+            title="Interactive Analysis Report",
+            description="Advanced interactive report with charts and filtering",
+        )
+
+        # Add interactive features
+        interactive_features = {
+            "search_enabled": True,
+            "filtering_enabled": True,
+            "sorting_enabled": True,
+            "export_enabled": True,
+            "charts_enabled": include_charts,
+            "real_time_updates": True,
+        }
+
+        return {
+            "success": True,
+            "report_data": report_data,
+            "interactive_features": interactive_features,
+            "enhanced": True,
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "enhanced": False,
+        }
+
+
+def get_report_analytics() -> Dict[str, Any]:
+    """Get report generation analytics.
+
+    Returns:
+        Dictionary with analytics data
+    """
+    if not ENHANCED_REPORTS_AVAILABLE:
+        return {
+            "success": False,
+            "error": "Enhanced report system not available",
+        }
+
+    try:
+        generator = EnhancedReportGenerator()
+        analytics = generator.get_analytics()
+
+        return {
+            "success": True,
+            "analytics": analytics,
+            "enhanced": True,
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "enhanced": False,
+        }
+
+
+def compare_reports(
+    report_data_1: Dict[str, Any], report_data_2: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Compare two analysis reports.
+
+    Args:
+        report_data_1: First report data
+        report_data_2: Second report data
+
+    Returns:
+        Dictionary with comparison results
+    """
+    if not ENHANCED_REPORTS_AVAILABLE:
+        return {
+            "success": False,
+            "error": "Enhanced report system not available",
+        }
+
+    try:
+        from .report_optimized import ReportData, create_report_comparison
+
+        # Convert to ReportData objects (simplified)
+        report1 = ReportData(
+            report_id="report_1",
+            title="Report 1",
+            description="First report",
+            timestamp=datetime.now(),
+            format=ReportFormat.JSON,
+            status=ReportStatus.COMPLETED,
+            metrics=ReportMetrics(),
+            entries=[],
+        )
+
+        report2 = ReportData(
+            report_id="report_2",
+            title="Report 2",
+            description="Second report",
+            timestamp=datetime.now(),
+            format=ReportFormat.JSON,
+            status=ReportStatus.COMPLETED,
+            metrics=ReportMetrics(),
+            entries=[],
+        )
+
+        comparison = create_report_comparison([report1, report2], "trend")
+
+        return {
+            "success": True,
+            "comparison": comparison,
+            "enhanced": True,
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "enhanced": False,
+        }

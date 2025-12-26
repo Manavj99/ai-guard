@@ -7,14 +7,20 @@ import os
 from unittest.mock import patch, MagicMock, mock_open
 
 from ai_guard.diff_parser import (
-    get_file_extensions, filter_python_files, parse_diff_output,
-    changed_python_files, parse_github_event, get_changed_files
+    get_file_extensions,
+    filter_python_files,
+    parse_diff_output,
+    changed_python_files,
+    parse_github_event,
+    get_changed_files,
 )
 from ai_guard.parsers.typescript import parse_eslint, parse_jest
 from ai_guard.parsers.common import normalize_rule
 from ai_guard.gates.coverage_eval import CoverageResult, evaluate_coverage_str
 from ai_guard.utils.subprocess_runner import (
-    run_command_dict, run_command_with_output, run_command_safe
+    run_command_dict,
+    run_command_with_output,
+    run_command_safe,
 )
 
 
@@ -208,12 +214,12 @@ class TestCoverageEvalFocused:
 
     def test_coverage_result_init_basic(self):
         """Test CoverageResult initialization."""
-        result = CoverageResult(percent=85.5)
+        result = CoverageResult(percent=85.5, passed=True)
         assert result.percent == 85.5
 
     def test_coverage_result_init_zero(self):
         """Test CoverageResult initialization with zero."""
-        result = CoverageResult(percent=0.0)
+        result = CoverageResult(percent=0.0, passed=False)
         assert result.percent == 0.0
 
     def test_coverage_result_init_hundred(self):
@@ -258,51 +264,51 @@ class TestCoverageEvalFocused:
 class TestSubprocessRunnerFocused:
     """Focused tests for subprocess runner module."""
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_dict_success(self, mock_run):
         """Test running command with dict result."""
         mock_run.return_value = MagicMock(returncode=0, stdout="output", stderr="")
-        
+
         result = run_command_dict(["echo", "test"])
         assert isinstance(result, dict)
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_dict_failure(self, mock_run):
         """Test running command with failure."""
         mock_run.return_value = MagicMock(returncode=1, stdout="", stderr="error")
-        
+
         result = run_command_dict(["false"])
         assert isinstance(result, dict)
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_with_output_success(self, mock_run):
         """Test running command with output."""
         mock_run.return_value = MagicMock(returncode=0, stdout="output", stderr="")
-        
+
         result = run_command_with_output(["echo", "test"])
         assert isinstance(result, dict)
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_with_output_failure(self, mock_run):
         """Test running command with failure."""
         mock_run.return_value = MagicMock(returncode=1, stdout="", stderr="error")
-        
+
         result = run_command_with_output(["false"])
         assert isinstance(result, dict)
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_safe_success(self, mock_run):
         """Test running command safely."""
         mock_run.return_value = MagicMock(returncode=0, stdout="output", stderr="")
-        
+
         result = run_command_safe(["echo", "test"])
         assert isinstance(result, dict)
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_safe_exception(self, mock_run):
         """Test running command safely with exception."""
         mock_run.side_effect = Exception("Command failed")
-        
+
         result = run_command_safe(["invalid_command"])
         assert isinstance(result, dict)
         assert "error" in result or "success" in result

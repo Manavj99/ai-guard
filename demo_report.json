@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "summary": {
+    "passed": true,
+    "gates": [
+      {
+        "name": "Code Quality",
+        "passed": true,
+        "details": "All checks passed"
+      },
+      {
+        "name": "Security",
+        "passed": true,
+        "details": "No vulnerabilities found"
+      },
+      {
+        "name": "Performance",
+        "passed": true,
+        "details": "Within acceptable limits"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "rule_id": "E501",
+      "level": "warning",
+      "message": "Line too long",
+      "path": "example.py",
+      "line": 10
+    },
+    {
+      "rule_id": "F401",
+      "level": "info",
+      "message": "Unused import",
+      "path": "example.py",
+      "line": 5
+    }
+  ]
+}

@@ -184,11 +184,11 @@ class TestRuleNormalizers:
     def test_rule_normalizers_flake8_function(self):
         """Test flake8 normalizer function."""
         normalizer = _RULE_NORMALIZERS["flake8"]
-        
+
         # Test with colon
         result = normalizer("flake8:E501")
         assert result == "flake8:E501"
-        
+
         # Test without colon
         result = normalizer("E501")
         assert result == "flake8:E501"
@@ -196,11 +196,11 @@ class TestRuleNormalizers:
     def test_rule_normalizers_mypy_function(self):
         """Test mypy normalizer function."""
         normalizer = _RULE_NORMALIZERS["mypy"]
-        
+
         # Test with brackets
         result = normalizer("error[name-defined]")
         assert result == "mypy:name-defined"
-        
+
         # Test without brackets
         result = normalizer("name-defined")
         assert result == "mypy:name-defined"
@@ -208,11 +208,11 @@ class TestRuleNormalizers:
     def test_rule_normalizers_bandit_function(self):
         """Test bandit normalizer function."""
         normalizer = _RULE_NORMALIZERS["bandit"]
-        
+
         # Test with prefix
         result = normalizer("bandit:B101")
         assert result == "bandit:B101"
-        
+
         # Test without prefix
         result = normalizer("B101")
         assert result == "bandit:B101"
@@ -220,11 +220,11 @@ class TestRuleNormalizers:
     def test_rule_normalizers_eslint_function(self):
         """Test eslint normalizer function."""
         normalizer = _RULE_NORMALIZERS["eslint"]
-        
+
         # Test with colon
         result = normalizer("eslint:no-unused")
         assert result == "eslint:no-unused"
-        
+
         # Test without colon
         result = normalizer("no-unused")
         assert result == "eslint:no-unused"
@@ -232,11 +232,11 @@ class TestRuleNormalizers:
     def test_rule_normalizers_jest_function(self):
         """Test jest normalizer function."""
         normalizer = _RULE_NORMALIZERS["jest"]
-        
+
         # Test with colon
         result = normalizer("jest:test-failed")
         assert result == "jest:test-failed"
-        
+
         # Test without colon
         result = normalizer("test-failed")
         assert result == "jest:test-failed"

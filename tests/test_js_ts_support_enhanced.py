@@ -18,28 +18,29 @@ from src.ai_guard.language_support.js_ts_support import (
 class TestCheckNodeInstalled:
     """Test check_node_installed function."""
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_check_node_installed_success(self, mock_run):
         """Test successful Node.js check."""
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_run.return_value = mock_result
-        
+
         result = check_node_installed()
         assert result is True
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_check_node_installed_failure(self, mock_run):
         """Test failed Node.js check."""
         mock_run.side_effect = FileNotFoundError()
-        
+
         result = check_node_installed()
         assert result is False
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_check_node_installed_called_process_error(self, mock_run):
         """Test Node.js check with CalledProcessError."""
         from subprocess import CalledProcessError
+
         mock_run.side_effect = CalledProcessError(1, "node")
 
         result = check_node_installed()
@@ -49,28 +50,29 @@ class TestCheckNodeInstalled:
 class TestCheckNpmInstalled:
     """Test check_npm_installed function."""
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_check_npm_installed_success(self, mock_run):
         """Test successful npm check."""
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_run.return_value = mock_result
-        
+
         result = check_npm_installed()
         assert result is True
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_check_npm_installed_failure(self, mock_run):
         """Test failed npm check."""
         mock_run.side_effect = FileNotFoundError()
-        
+
         result = check_npm_installed()
         assert result is False
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_check_npm_installed_called_process_error(self, mock_run):
         """Test npm check with CalledProcessError."""
         from subprocess import CalledProcessError
+
         mock_run.side_effect = CalledProcessError(1, "npm")
 
         result = check_npm_installed()
@@ -80,18 +82,18 @@ class TestCheckNpmInstalled:
 class TestRunEslint:
     """Test run_eslint function."""
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_eslint_success(self, mock_run):
         """Test successful ESLint run."""
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = '{"results": []}'
         mock_run.return_value = mock_result
-        
+
         result = run_eslint(["test.js"])
         assert result["passed"] is True
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_eslint_failure(self, mock_run):
         """Test failed ESLint run."""
         mock_run.side_effect = FileNotFoundError()
@@ -112,18 +114,18 @@ class TestRunEslint:
 class TestRunJest:
     """Test run_jest_tests function."""
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_jest_success(self, mock_run):
         """Test successful Jest run."""
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = "Tests: 5 passed, 5 total"
         mock_run.return_value = mock_result
-        
+
         result = run_jest_tests()
         assert result["passed"] is True
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_jest_failure(self, mock_run):
         """Test failed Jest run."""
         mock_run.side_effect = FileNotFoundError()
@@ -159,14 +161,14 @@ class TestJavaScriptTypeScriptSupport:
         assert "jest" in deps
         assert "typescript" in deps
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_eslint_success(self, mock_run):
         """Test successful ESLint run."""
         mock_result = MagicMock()
         mock_result.returncode = 0
-        mock_result.stdout = '[]'
+        mock_result.stdout = "[]"
         mock_run.return_value = mock_result
-        
+
         config = JSTestGenerationConfig()
         support = JavaScriptTypeScriptSupport(config)
         passed, issues = support.run_eslint(["test.js"])

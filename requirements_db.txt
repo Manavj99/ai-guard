@@ -1,0 +1,13 @@
+# AI-Guard Database Dependencies
+# PostgreSQL database adapter
+psycopg2-binary==2.9.9
+
+# Database connection pooling
+SQLAlchemy==2.0.23
+Flask-SQLAlchemy==3.1.1
+
+# Database migrations
+Flask-Migrate==4.0.5
+
+# Additional database utilities
+alembic==1.13.1

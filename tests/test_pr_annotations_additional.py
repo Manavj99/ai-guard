@@ -17,7 +17,7 @@ from ai_guard.pr_annotations import (
     CoverageAnnotation,
     SecurityAnnotation,
     PerformanceAnnotation,
-    TestAnnotation
+    TestAnnotation,
 )
 
 
@@ -31,9 +31,9 @@ class TestPRAnnotationCreation:
             line=10,
             level="warning",
             message="Test warning",
-            title="Test Title"
+            title="Test Title",
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "warning"
@@ -43,12 +43,9 @@ class TestPRAnnotationCreation:
     def test_create_pr_annotation_minimal(self):
         """Test PR annotation creation with minimal parameters."""
         annotation = create_pr_annotation(
-            path="test.py",
-            line=10,
-            level="notice",
-            message="Test message"
+            path="test.py", line=10, level="notice", message="Test message"
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "notice"
@@ -58,12 +55,9 @@ class TestPRAnnotationCreation:
     def test_create_pr_annotation_invalid_level(self):
         """Test PR annotation creation with invalid level."""
         annotation = create_pr_annotation(
-            path="test.py",
-            line=10,
-            level="invalid",
-            message="Test message"
+            path="test.py", line=10, level="invalid", message="Test message"
         )
-        
+
         assert annotation["annotation_level"] == "notice"  # Should default to notice
 
 
@@ -73,17 +67,15 @@ class TestAnnotationFormatting:
     def test_format_annotation_message_simple(self):
         """Test simple annotation message formatting."""
         message = format_annotation_message("Simple message")
-        
+
         assert message == "Simple message"
 
     def test_format_annotation_message_with_details(self):
         """Test annotation message formatting with details."""
         message = format_annotation_message(
-            "Main message",
-            details="Additional details",
-            suggestion="Try this instead"
+            "Main message", details="Additional details", suggestion="Try this instead"
         )
-        
+
         assert "Main message" in message
         assert "Additional details" in message
         assert "Try this instead" in message
@@ -93,9 +85,9 @@ class TestAnnotationFormatting:
         message = format_annotation_message(
             "Code issue",
             code_example="print('hello')",
-            suggestion="Use logging instead"
+            suggestion="Use logging instead",
         )
-        
+
         assert "Code issue" in message
         assert "print('hello')" in message
         assert "Use logging instead" in message
@@ -135,9 +127,9 @@ class TestQualityGateAnnotation:
             line=10,
             gate_name="test_gate",
             status="passed",
-            message="Gate passed successfully"
+            message="Gate passed successfully",
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "notice"
@@ -151,9 +143,9 @@ class TestQualityGateAnnotation:
             line=10,
             gate_name="test_gate",
             status="failed",
-            message="Gate failed"
+            message="Gate failed",
         )
-        
+
         assert annotation["annotation_level"] == "failure"
         assert "failed" in annotation["message"]
 
@@ -164,11 +156,9 @@ class TestCoverageAnnotation:
     def test_create_coverage_annotation_high(self):
         """Test coverage annotation for high coverage."""
         annotation = create_coverage_annotation(
-            path="test.py",
-            coverage_percent=95.5,
-            threshold=80.0
+            path="test.py", coverage_percent=95.5, threshold=80.0
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["annotation_level"] == "notice"
         assert "95.5%" in annotation["message"]
@@ -176,11 +166,9 @@ class TestCoverageAnnotation:
     def test_create_coverage_annotation_low(self):
         """Test coverage annotation for low coverage."""
         annotation = create_coverage_annotation(
-            path="test.py",
-            coverage_percent=65.0,
-            threshold=80.0
+            path="test.py", coverage_percent=65.0, threshold=80.0
         )
-        
+
         assert annotation["annotation_level"] == "warning"
         assert "65.0%" in annotation["message"]
         assert "80.0%" in annotation["message"]
@@ -196,9 +184,9 @@ class TestSecurityAnnotation:
             line=10,
             severity="high",
             vulnerability="SQL Injection",
-            description="Potential SQL injection vulnerability"
+            description="Potential SQL injection vulnerability",
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "failure"
@@ -211,9 +199,9 @@ class TestSecurityAnnotation:
             line=10,
             severity="medium",
             vulnerability="XSS",
-            description="Potential XSS vulnerability"
+            description="Potential XSS vulnerability",
         )
-        
+
         assert annotation["annotation_level"] == "warning"
         assert "XSS" in annotation["message"]
 
@@ -224,9 +212,9 @@ class TestSecurityAnnotation:
             line=10,
             severity="low",
             vulnerability="Info Disclosure",
-            description="Information disclosure"
+            description="Information disclosure",
         )
-        
+
         assert annotation["annotation_level"] == "notice"
         assert "Info Disclosure" in annotation["message"]
 
@@ -241,9 +229,9 @@ class TestPerformanceAnnotation:
             line=10,
             function_name="slow_function",
             execution_time=2.5,
-            threshold=1.0
+            threshold=1.0,
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "warning"
@@ -257,9 +245,9 @@ class TestPerformanceAnnotation:
             line=10,
             function_name="fast_function",
             execution_time=0.5,
-            threshold=1.0
+            threshold=1.0,
         )
-        
+
         assert annotation["annotation_level"] == "notice"
         assert "fast_function" in annotation["message"]
 
@@ -274,9 +262,9 @@ class TestTestAnnotation:
             line=10,
             test_name="test_function",
             status="passed",
-            duration=0.1
+            duration=0.1,
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "notice"
@@ -291,9 +279,9 @@ class TestTestAnnotation:
             test_name="test_function",
             status="failed",
             duration=0.1,
-            error_message="AssertionError: Expected 1, got 2"
+            error_message="AssertionError: Expected 1, got 2",
         )
-        
+
         assert annotation["annotation_level"] == "failure"
         assert "failed" in annotation["message"]
         assert "AssertionError" in annotation["message"]
@@ -305,72 +293,65 @@ class TestPRAnnotationManager:
     def test_manager_init(self):
         """Test annotation manager initialization."""
         manager = PRAnnotationManager()
-        
+
         assert manager.annotations == []
         assert manager.max_annotations == 50
 
     def test_manager_init_custom_max(self):
         """Test annotation manager initialization with custom max."""
         manager = PRAnnotationManager(max_annotations=100)
-        
+
         assert manager.max_annotations == 100
 
     def test_add_annotation(self):
         """Test adding annotation to manager."""
         manager = PRAnnotationManager()
-        
+
         annotation = create_pr_annotation(
-            path="test.py",
-            line=10,
-            level="warning",
-            message="Test warning"
+            path="test.py", line=10, level="warning", message="Test warning"
         )
-        
+
         manager.add_annotation(annotation)
-        
+
         assert len(manager.annotations) == 1
         assert manager.annotations[0] == annotation
 
     def test_add_annotation_max_limit(self):
         """Test adding annotation when at max limit."""
         manager = PRAnnotationManager(max_annotations=2)
-        
+
         # Add two annotations
         for i in range(2):
             annotation = create_pr_annotation(
-                path=f"test{i}.py",
-                line=10,
-                level="warning",
-                message=f"Warning {i}"
+                path=f"test{i}.py", line=10, level="warning", message=f"Warning {i}"
             )
             manager.add_annotation(annotation)
-        
+
         # Try to add third annotation
         annotation = create_pr_annotation(
-            path="test3.py",
-            line=10,
-            level="warning",
-            message="Warning 3"
+            path="test3.py", line=10, level="warning", message="Warning 3"
         )
-        
+
         manager.add_annotation(annotation)
-        
+
         # Should still have only 2 annotations
         assert len(manager.annotations) == 2
 
     def test_get_annotations_by_level(self):
         """Test getting annotations by level."""
         manager = PRAnnotationManager()
-        
+
         # Add annotations with different levels
         manager.add_annotation(create_pr_annotation("test1.py", 10, "failure", "Error"))
-        manager.add_annotation(create_pr_annotation("test2.py", 10, "warning", "Warning"))
+        manager.add_annotation(
+            create_pr_annotation("test2.py", 10, "warning", "Warning")
+        )
         manager.add_annotation(create_pr_annotation("test3.py", 10, "notice", "Info"))
-        
+
         error_annotations = manager.get_annotations_by_level("failure")
         warning_annotations = manager.get_annotations_by_level("warning")
         notice_annotations = manager.get_annotations_by_level("notice")
-        
+
         assert len(error_annotations) == 1
         assert len(warning_annotations) == 1
         assert len(notice_annotations) == 1
@@ -378,42 +359,52 @@ class TestPRAnnotationManager:
     def test_get_annotations_by_path(self):
         """Test getting annotations by path."""
         manager = PRAnnotationManager()
-        
+
         # Add annotations for different paths
-        manager.add_annotation(create_pr_annotation("test1.py", 10, "warning", "Warning 1"))
-        manager.add_annotation(create_pr_annotation("test1.py", 20, "warning", "Warning 2"))
-        manager.add_annotation(create_pr_annotation("test2.py", 10, "warning", "Warning 3"))
-        
+        manager.add_annotation(
+            create_pr_annotation("test1.py", 10, "warning", "Warning 1")
+        )
+        manager.add_annotation(
+            create_pr_annotation("test1.py", 20, "warning", "Warning 2")
+        )
+        manager.add_annotation(
+            create_pr_annotation("test2.py", 10, "warning", "Warning 3")
+        )
+
         test1_annotations = manager.get_annotations_by_path("test1.py")
         test2_annotations = manager.get_annotations_by_path("test2.py")
-        
+
         assert len(test1_annotations) == 2
         assert len(test2_annotations) == 1
 
     def test_clear_annotations(self):
         """Test clearing all annotations."""
         manager = PRAnnotationManager()
-        
+
         # Add some annotations
-        manager.add_annotation(create_pr_annotation("test.py", 10, "warning", "Warning"))
-        
+        manager.add_annotation(
+            create_pr_annotation("test.py", 10, "warning", "Warning")
+        )
+
         assert len(manager.annotations) == 1
-        
+
         manager.clear_annotations()
-        
+
         assert len(manager.annotations) == 0
 
     def test_get_summary(self):
         """Test getting annotation summary."""
         manager = PRAnnotationManager()
-        
+
         # Add annotations with different levels
         manager.add_annotation(create_pr_annotation("test1.py", 10, "failure", "Error"))
-        manager.add_annotation(create_pr_annotation("test2.py", 10, "warning", "Warning"))
+        manager.add_annotation(
+            create_pr_annotation("test2.py", 10, "warning", "Warning")
+        )
         manager.add_annotation(create_pr_annotation("test3.py", 10, "notice", "Info"))
-        
+
         summary = manager.get_summary()
-        
+
         assert summary["total"] == 3
         assert summary["failures"] == 1
         assert summary["warnings"] == 1
@@ -426,33 +417,29 @@ class TestAnnotationFormatter:
     def test_formatter_init(self):
         """Test formatter initialization."""
         formatter = AnnotationFormatter()
-        
+
         assert formatter.max_message_length == 65535
         assert formatter.include_timestamp is True
 
     def test_formatter_init_custom(self):
         """Test formatter initialization with custom settings."""
         formatter = AnnotationFormatter(
-            max_message_length=1000,
-            include_timestamp=False
+            max_message_length=1000, include_timestamp=False
         )
-        
+
         assert formatter.max_message_length == 1000
         assert formatter.include_timestamp is False
 
     def test_format_annotation(self):
         """Test formatting annotation."""
         formatter = AnnotationFormatter()
-        
+
         annotation = create_pr_annotation(
-            path="test.py",
-            line=10,
-            level="warning",
-            message="Test warning"
+            path="test.py", line=10, level="warning", message="Test warning"
         )
-        
+
         formatted = formatter.format_annotation(annotation)
-        
+
         assert formatted["path"] == "test.py"
         assert formatted["line"] == 10
         assert formatted["annotation_level"] == "warning"
@@ -461,33 +448,30 @@ class TestAnnotationFormatter:
     def test_format_annotation_long_message(self):
         """Test formatting annotation with long message."""
         formatter = AnnotationFormatter(max_message_length=100)
-        
+
         long_message = "This is a very long message that should be truncated because it exceeds the maximum length allowed for annotation messages"
-        
+
         annotation = create_pr_annotation(
-            path="test.py",
-            line=10,
-            level="warning",
-            message=long_message
+            path="test.py", line=10, level="warning", message=long_message
         )
-        
+
         formatted = formatter.format_annotation(annotation)
-        
+
         assert len(formatted["message"]) <= 100
         assert "..." in formatted["message"]
 
     def test_format_annotations_batch(self):
         """Test formatting multiple annotations."""
         formatter = AnnotationFormatter()
-        
+
         annotations = [
             create_pr_annotation("test1.py", 10, "warning", "Warning 1"),
             create_pr_annotation("test2.py", 20, "failure", "Error 1"),
-            create_pr_annotation("test3.py", 30, "notice", "Info 1")
+            create_pr_annotation("test3.py", 30, "notice", "Info 1"),
         ]
-        
+
         formatted = formatter.format_annotations(annotations)
-        
+
         assert len(formatted) == 3
         assert all("path" in ann for ann in formatted)
         assert all("message" in ann for ann in formatted)

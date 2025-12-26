@@ -7,14 +7,13 @@ from unittest.mock import patch, mock_open, MagicMock
 from dataclasses import dataclass
 
 from src.ai_guard.utils.subprocess_runner import (
-    run_cmd, run_command, _format_command_output, ToolExecutionError
+    run_cmd,
+    run_command,
+    _format_command_output,
+    ToolExecutionError,
 )
-from src.ai_guard.security_scanner import (
-    run_bandit, run_safety_check, SecurityScanner
-)
-from src.ai_guard.report import (
-    GateResult, summarize, ReportGenerator
-)
+from src.ai_guard.security_scanner import run_bandit, run_safety_check, SecurityScanner
+from src.ai_guard.report import GateResult, summarize, ReportGenerator
 from src.ai_guard.report_html import HTMLReportGenerator
 from src.ai_guard.sarif_report import SarifResult, SarifRun
 from src.ai_guard.tests_runner import TestsRunner
@@ -51,7 +50,9 @@ class TestSubprocessRunner:
 
     def test_run_cmd_with_cwd(self):
         """Test run_cmd with custom working directory."""
-        returncode, output = run_cmd(["python", "-c", "import os; print(os.getcwd())"], cwd=".")
+        returncode, output = run_cmd(
+            ["python", "-c", "import os; print(os.getcwd())"], cwd="."
+        )
         assert returncode == 0
 
     def test_run_command_none(self):
@@ -98,8 +99,8 @@ class TestSecurityScanner:
 
     def test_run_bandit_no_config(self):
         """Test run_bandit without config file."""
-        with patch('os.path.exists', return_value=False):
-            with patch('subprocess.call') as mock_call:
+        with patch("os.path.exists", return_value=False):
+            with patch("subprocess.call") as mock_call:
                 mock_call.return_value = 0
                 result = run_bandit()
                 mock_call.assert_called_once()
@@ -112,8 +113,8 @@ class TestSecurityScanner:
 
     def test_run_bandit_with_config(self):
         """Test run_bandit with config file."""
-        with patch('os.path.exists', return_value=True):
-            with patch('subprocess.call') as mock_call:
+        with patch("os.path.exists", return_value=True):
+            with patch("subprocess.call") as mock_call:
                 mock_call.return_value = 0
                 result = run_bandit()
                 mock_call.assert_called_once()
@@ -123,8 +124,8 @@ class TestSecurityScanner:
 
     def test_run_bandit_with_extra_args(self):
         """Test run_bandit with extra arguments."""
-        with patch('os.path.exists', return_value=False):
-            with patch('subprocess.call') as mock_call:
+        with patch("os.path.exists", return_value=False):
+            with patch("subprocess.call") as mock_call:
                 mock_call.return_value = 0
                 result = run_bandit(["-v", "-r", "custom_dir"])
                 mock_call.assert_called_once()
@@ -134,7 +135,7 @@ class TestSecurityScanner:
 
     def test_run_safety_check_success(self):
         """Test run_safety_check success."""
-        with patch('subprocess.call') as mock_call:
+        with patch("subprocess.call") as mock_call:
             mock_call.return_value = 0
             result = run_safety_check()
             assert result == 0
@@ -142,8 +143,8 @@ class TestSecurityScanner:
 
     def test_run_safety_check_not_found(self):
         """Test run_safety_check when safety is not installed."""
-        with patch('subprocess.call', side_effect=FileNotFoundError()):
-            with patch('builtins.print') as mock_print:
+        with patch("subprocess.call", side_effect=FileNotFoundError()):
+            with patch("builtins.print") as mock_print:
                 result = run_safety_check()
                 assert result == 0
                 mock_print.assert_called_once()
@@ -151,12 +152,14 @@ class TestSecurityScanner:
 
     def test_run_safety_check_exception(self):
         """Test run_safety_check with other exception."""
-        with patch('subprocess.call', side_effect=Exception("Test error")):
-            with patch('builtins.print') as mock_print:
+        with patch("subprocess.call", side_effect=Exception("Test error")):
+            with patch("builtins.print") as mock_print:
                 result = run_safety_check()
                 assert result == 0
                 mock_print.assert_called_once()
-                assert "Warning: Error running safety check" in mock_print.call_args[0][0]
+                assert (
+                    "Warning: Error running safety check" in mock_print.call_args[0][0]
+                )
 
     def test_security_scanner_init(self):
         """Test SecurityScanner initialization."""
@@ -166,7 +169,7 @@ class TestSecurityScanner:
     def test_security_scanner_run_bandit_scan(self):
         """Test SecurityScanner.run_bandit_scan."""
         scanner = SecurityScanner()
-        with patch('src.ai_guard.security_scanner.run_bandit') as mock_run_bandit:
+        with patch("src.ai_guard.security_scanner.run_bandit") as mock_run_bandit:
             mock_run_bandit.return_value = 0
             result = scanner.run_bandit_scan()
             assert result == 0
@@ -175,7 +178,7 @@ class TestSecurityScanner:
     def test_security_scanner_run_bandit_scan_with_args(self):
         """Test SecurityScanner.run_bandit_scan with extra args."""
         scanner = SecurityScanner()
-        with patch('src.ai_guard.security_scanner.run_bandit') as mock_run_bandit:
+        with patch("src.ai_guard.security_scanner.run_bandit") as mock_run_bandit:
             mock_run_bandit.return_value = 0
             result = scanner.run_bandit_scan(["-v"])
             assert result == 0
@@ -184,7 +187,7 @@ class TestSecurityScanner:
     def test_security_scanner_run_safety_scan(self):
         """Test SecurityScanner.run_safety_scan."""
         scanner = SecurityScanner()
-        with patch('src.ai_guard.security_scanner.run_safety_check') as mock_run_safety:
+        with patch("src.ai_guard.security_scanner.run_safety_check") as mock_run_safety:
             mock_run_safety.return_value = 0
             result = scanner.run_safety_scan()
             assert result == 0
@@ -193,32 +196,32 @@ class TestSecurityScanner:
     def test_security_scanner_run_all_security_checks_both_pass(self):
         """Test SecurityScanner.run_all_security_checks when both pass."""
         scanner = SecurityScanner()
-        with patch.object(scanner, 'run_bandit_scan', return_value=0):
-            with patch.object(scanner, 'run_safety_scan', return_value=0):
+        with patch.object(scanner, "run_bandit_scan", return_value=0):
+            with patch.object(scanner, "run_safety_scan", return_value=0):
                 result = scanner.run_all_security_checks()
                 assert result == 0
 
     def test_security_scanner_run_all_security_checks_bandit_fails(self):
         """Test SecurityScanner.run_all_security_checks when bandit fails."""
         scanner = SecurityScanner()
-        with patch.object(scanner, 'run_bandit_scan', return_value=1):
-            with patch.object(scanner, 'run_safety_scan', return_value=0):
+        with patch.object(scanner, "run_bandit_scan", return_value=1):
+            with patch.object(scanner, "run_safety_scan", return_value=0):
                 result = scanner.run_all_security_checks()
                 assert result == 1
 
     def test_security_scanner_run_all_security_checks_safety_fails(self):
         """Test SecurityScanner.run_all_security_checks when safety fails."""
         scanner = SecurityScanner()
-        with patch.object(scanner, 'run_bandit_scan', return_value=0):
-            with patch.object(scanner, 'run_safety_scan', return_value=1):
+        with patch.object(scanner, "run_bandit_scan", return_value=0):
+            with patch.object(scanner, "run_safety_scan", return_value=1):
                 result = scanner.run_all_security_checks()
                 assert result == 1
 
     def test_security_scanner_run_all_security_checks_both_fail(self):
         """Test SecurityScanner.run_all_security_checks when both fail."""
         scanner = SecurityScanner()
-        with patch.object(scanner, 'run_bandit_scan', return_value=1):
-            with patch.object(scanner, 'run_safety_scan', return_value=1):
+        with patch.object(scanner, "run_bandit_scan", return_value=1):
+            with patch.object(scanner, "run_safety_scan", return_value=1):
                 result = scanner.run_all_security_checks()
                 assert result == 1
 
@@ -248,7 +251,7 @@ class TestReport:
             GateResult("gate1", True, "Passed"),
             GateResult("gate2", True, "Also passed"),
         ]
-        with patch('builtins.print') as mock_print:
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
             assert exit_code == 0
             # Check that success message was printed
@@ -261,7 +264,7 @@ class TestReport:
             GateResult("gate1", True, "Passed"),
             GateResult("gate2", False, "Failed"),
         ]
-        with patch('builtins.print') as mock_print:
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
             assert exit_code == 1
             # Check that failure message was printed
@@ -271,7 +274,7 @@ class TestReport:
     def test_summarize_empty_results(self):
         """Test summarize with empty results."""
         results = []
-        with patch('builtins.print') as mock_print:
+        with patch("builtins.print") as mock_print:
             exit_code = summarize(results)
             assert exit_code == 0
 
@@ -386,6 +389,6 @@ class TestEdgeCases:
     def test_summarize_unicode_details(self):
         """Test summarize with unicode details."""
         results = [GateResult("gate1", False, "测试失败")]
-        with patch('builtins.print'):
+        with patch("builtins.print"):
             exit_code = summarize(results)
             assert exit_code == 1

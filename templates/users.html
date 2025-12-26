@@ -1,0 +1,479 @@
+{% extends "base.html" %}
+
+{% block title %}User Management - AI-Guard Enterprise{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Header -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">User Management</h1>
+                <p class="text-muted">Manage system users, roles, and permissions.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary" onclick="refreshUsers()">
+                    <i class="fas fa-sync-alt me-1"></i>Refresh
+                </button>
+                <button class="btn btn-primary" onclick="addUser()">
+                    <i class="fas fa-plus me-1"></i>Add User
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Statistics -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Users</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-users">-</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Admins</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="admin-users">-</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Developers</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="developer-users">-</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-code fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Active Sessions</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="active-sessions">-</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Users</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit User Modal -->
+<div class="modal fade" id="userModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalTitle">Add User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" required>
+                            <option value="">Select Role</option>
+                            <option value="admin">Admin</option>
+                            <option value="manager">Manager</option>
+                            <option value="developer">Developer</option>
+                            <option value="viewer">Viewer</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveUser()">Save User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Details Modal -->
+<div class="modal fade" id="userDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">User Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="userDetailsBody">
+                <!-- User details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" onclick="editUser()">Edit</button>
+                <button type="button" class="btn btn-danger" onclick="deleteUser()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Global variables
+let users = [];
+let editingUser = null;
+
+// Initialize users page
+document.addEventListener('DOMContentLoaded', function() {
+    loadUsers();
+});
+
+// Load users data
+async function loadUsers() {
+    try {
+        const response = await fetch('/api/users');
+        if (!response.ok) {
+            throw new Error('Failed to load users');
+        }
+        
+        users = await response.json();
+        updateUserCards();
+        updateUsersTable();
+    } catch (error) {
+        console.error('Error loading users:', error);
+        AIGuard.showNotification('Failed to load users: ' + error.message, 'danger');
+    }
+}
+
+// Update user statistics cards
+function updateUserCards() {
+    const totalUsers = users.length;
+    const adminUsers = users.filter(user => user.role === 'admin').length;
+    const developerUsers = users.filter(user => user.role === 'developer').length;
+    const activeSessions = users.length; // Simplified - assume all users are active
+    
+    document.getElementById('total-users').textContent = totalUsers;
+    document.getElementById('admin-users').textContent = adminUsers;
+    document.getElementById('developer-users').textContent = developerUsers;
+    document.getElementById('active-sessions').textContent = activeSessions;
+}
+
+// Update users table
+function updateUsersTable() {
+    const tbody = document.getElementById('usersTableBody');
+    tbody.innerHTML = '';
+    
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        const roleColor = getRoleColor(user.role);
+        const statusColor = 'success'; // Simplified - assume all users are active
+        
+        row.innerHTML = `
+            <td>${user.username}</td>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td><span class="badge bg-${roleColor}">${user.role}</span></td>
+            <td><span class="badge bg-${statusColor}">Active</span></td>
+            <td>Recently</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="viewUserDetails('${user.username}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-warning me-1" onclick="editUser('${user.username}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.username}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// View user details
+function viewUserDetails(username) {
+    const user = users.find(u => u.username === username);
+    if (!user) return;
+    
+    const roleColor = getRoleColor(user.role);
+    
+    document.getElementById('userDetailsBody').innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>User Information</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Username:</strong></td>
+                        <td>${user.username}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Name:</strong></td>
+                        <td>${user.name}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Email:</strong></td>
+                        <td>${user.email}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Role:</strong></td>
+                        <td><span class="badge bg-${roleColor}">${user.role}</span></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6>Permissions</h6>
+                <ul class="list-group list-group-flush">
+                    ${getRolePermissions(user.role).map(permission => `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${permission.name}
+                            <span class="badge bg-${permission.allowed ? 'success' : 'secondary'} rounded-pill">
+                                ${permission.allowed ? 'Allowed' : 'Denied'}
+                            </span>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+        </div>
+    `;
+    
+    new bootstrap.Modal(document.getElementById('userDetailsModal')).show();
+}
+
+// Add user
+function addUser() {
+    editingUser = null;
+    document.getElementById('userModalTitle').textContent = 'Add User';
+    document.getElementById('userForm').reset();
+    new bootstrap.Modal(document.getElementById('userModal')).show();
+}
+
+// Edit user
+function editUser(username) {
+    const user = users.find(u => u.username === username);
+    if (!user) return;
+    
+    editingUser = user;
+    document.getElementById('userModalTitle').textContent = 'Edit User';
+    
+    // Fill form with user data
+    document.getElementById('username').value = user.username;
+    document.getElementById('username').disabled = true; // Don't allow username change
+    document.getElementById('password').required = false; // Password not required for edit
+    document.getElementById('password').placeholder = 'Leave blank to keep current password';
+    document.getElementById('name').value = user.name;
+    document.getElementById('email').value = user.email;
+    document.getElementById('role').value = user.role;
+    
+    new bootstrap.Modal(document.getElementById('userModal')).show();
+}
+
+// Save user
+async function saveUser() {
+    const formData = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        role: document.getElementById('role').value
+    };
+    
+    // Validate form
+    if (!formData.username || !formData.name || !formData.email || !formData.role) {
+        AIGuard.showNotification('Please fill in all required fields', 'warning');
+        return;
+    }
+    
+    if (!editingUser && !formData.password) {
+        AIGuard.showNotification('Password is required for new users', 'warning');
+        return;
+    }
+    
+    try {
+        let response;
+        if (editingUser) {
+            // Edit existing user
+            response = await fetch(`/api/users/${formData.username}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+        } else {
+            // Create new user
+            response = await fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+        }
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to save user');
+        }
+        
+        AIGuard.showNotification(`User ${editingUser ? 'updated' : 'created'} successfully`, 'success');
+        bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+        loadUsers();
+    } catch (error) {
+        console.error('Error saving user:', error);
+        AIGuard.showNotification('Failed to save user: ' + error.message, 'danger');
+    }
+}
+
+// Delete user
+async function deleteUser(username) {
+    if (!confirm(`Are you sure you want to delete user "${username}"?`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/users/${username}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to delete user');
+        }
+        
+        AIGuard.showNotification(`User "${username}" deleted successfully`, 'success');
+        loadUsers();
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        AIGuard.showNotification('Failed to delete user: ' + error.message, 'danger');
+    }
+}
+
+// Refresh users
+function refreshUsers() {
+    loadUsers();
+    AIGuard.showNotification('Users refreshed', 'success');
+}
+
+// Utility functions
+function getRoleColor(role) {
+    switch(role) {
+        case 'admin': return 'danger';
+        case 'manager': return 'warning';
+        case 'developer': return 'info';
+        case 'viewer': return 'secondary';
+        default: return 'light';
+    }
+}
+
+function getRolePermissions(role) {
+    const permissions = {
+        admin: [
+            { name: 'View Dashboard', allowed: true },
+            { name: 'Manage Users', allowed: true },
+            { name: 'View Analytics', allowed: true },
+            { name: 'View Monitoring', allowed: true },
+            { name: 'Manage Projects', allowed: true },
+            { name: 'System Configuration', allowed: true }
+        ],
+        manager: [
+            { name: 'View Dashboard', allowed: true },
+            { name: 'Manage Users', allowed: false },
+            { name: 'View Analytics', allowed: true },
+            { name: 'View Monitoring', allowed: true },
+            { name: 'Manage Projects', allowed: true },
+            { name: 'System Configuration', allowed: false }
+        ],
+        developer: [
+            { name: 'View Dashboard', allowed: true },
+            { name: 'Manage Users', allowed: false },
+            { name: 'View Analytics', allowed: true },
+            { name: 'View Monitoring', allowed: true },
+            { name: 'Manage Projects', allowed: true },
+            { name: 'System Configuration', allowed: false }
+        ],
+        viewer: [
+            { name: 'View Dashboard', allowed: true },
+            { name: 'Manage Users', allowed: false },
+            { name: 'View Analytics', allowed: true },
+            { name: 'View Monitoring', allowed: false },
+            { name: 'Manage Projects', allowed: false },
+            { name: 'System Configuration', allowed: false }
+        ]
+    };
+    
+    return permissions[role] || [];
+}
+</script>
+{% endblock %}

@@ -24,7 +24,7 @@ class TestErrorContext:
             function="test_func",
             file_path="test.py",
             line_number=10,
-            column=5
+            column=5,
         )
         assert context.module == "test_module"
         assert context.function == "test_func"
@@ -71,14 +71,19 @@ class TestFormatError:
 
     def test_format_error_basic(self):
         """Test basic error formatting."""
-        context = ErrorContext(module="test_module", function="test_func", file_path="test.py", line_number=10)
+        context = ErrorContext(
+            module="test_module",
+            function="test_func",
+            file_path="test.py",
+            line_number=10,
+        )
         formatted = format_error(
             message="Test error",
             severity=ErrorSeverity.ERROR,
             category=ErrorCategory.SECURITY,
-            context=context
+            context=context,
         )
-        
+
         assert "Test error" in formatted
         assert "test.py" in formatted
         assert "line 10" in formatted
@@ -90,9 +95,9 @@ class TestFormatError:
         formatted = format_error(
             message="Test error",
             severity=ErrorSeverity.WARNING,
-            category=ErrorCategory.STYLE
+            category=ErrorCategory.STYLE,
         )
-        
+
         assert "Test error" in formatted
         assert "WARNING" in formatted
         assert "STYLE" in formatted
@@ -100,7 +105,7 @@ class TestFormatError:
     def test_format_error_minimal(self):
         """Test error formatting with minimal parameters."""
         formatted = format_error("Simple error")
-        
+
         assert "Simple error" in formatted
 
 
@@ -109,30 +114,21 @@ class TestFormatCoverageMessage:
 
     def test_format_coverage_message_passing(self):
         """Test formatting passing coverage message."""
-        message = format_coverage_message(
-            current_coverage=85.5,
-            passed=True
-        )
-        
+        message = format_coverage_message(current_coverage=85.5, passed=True)
+
         assert "85.5%" in message
         assert "passed" in message.lower()
 
     def test_format_coverage_message_failing(self):
         """Test formatting failing coverage message."""
-        message = format_coverage_message(
-            current_coverage=75.0,
-            passed=False
-        )
-        
+        message = format_coverage_message(current_coverage=75.0, passed=False)
+
         assert "75.0%" in message
         assert "failed" in message.lower()
 
     def test_format_coverage_message_exact_threshold(self):
         """Test formatting coverage message at exact threshold."""
-        message = format_coverage_message(
-            current_coverage=80.0,
-            passed=True
-        )
-        
+        message = format_coverage_message(current_coverage=80.0, passed=True)
+
         assert "80.0%" in message
         assert "passed" in message.lower()

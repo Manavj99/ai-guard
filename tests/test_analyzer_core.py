@@ -7,12 +7,28 @@ import subprocess
 from unittest.mock import patch, MagicMock, mock_open
 
 from src.ai_guard.analyzer import (
-    _rule_style, _make_rule_id, _strict_subprocess_fail, _to_text, _norm,
-    _coverage_percent_from_xml, cov_percent, _parse_flake8_output,
-    _parse_mypy_output, _parse_bandit_json, _parse_bandit_output,
-    run_lint_check, run_type_check, run_security_check, run_coverage_check,
-    _to_findings, _should_skip_file, _parse_coverage_output, _parse_sarif_output,
-    CodeAnalyzer, run, main
+    _rule_style,
+    _make_rule_id,
+    _strict_subprocess_fail,
+    _to_text,
+    _norm,
+    _coverage_percent_from_xml,
+    cov_percent,
+    _parse_flake8_output,
+    _parse_mypy_output,
+    _parse_bandit_json,
+    _parse_bandit_output,
+    run_lint_check,
+    run_type_check,
+    run_security_check,
+    run_coverage_check,
+    _to_findings,
+    _should_skip_file,
+    _parse_coverage_output,
+    _parse_sarif_output,
+    CodeAnalyzer,
+    run,
+    main,
 )
 from src.ai_guard.report import GateResult
 from src.ai_guard.sarif_report import SarifResult
@@ -82,17 +98,20 @@ class TestCoveragePercentFromXml:
 
     def test_coverage_percent_from_xml_cobertura_style(self):
         """Test coverage percent from XML with Cobertura style."""
+
         def mock_exists(path):
             return path == "test_coverage.xml"
-        
-        with patch("os.path.exists", side_effect=mock_exists), \
-             patch("defusedxml.ElementTree.parse") as mock_parse:
+
+        with (
+            patch("os.path.exists", side_effect=mock_exists),
+            patch("defusedxml.ElementTree.parse") as mock_parse,
+        ):
             mock_tree = MagicMock()
             mock_root = MagicMock()
             mock_root.attrib = {"line-rate": "0.86"}
             mock_tree.getroot.return_value = mock_root
             mock_parse.return_value = mock_tree
-            
+
             result = _coverage_percent_from_xml("test_coverage.xml")
             assert result == 86  # 0.86 * 100 = 86.0, rounds to 86
 
@@ -103,7 +122,9 @@ class TestCoveragePercentFromXml:
 
     def test_cov_percent_none(self):
         """Test cov_percent function with None result."""
-        with patch("src.ai_guard.analyzer._coverage_percent_from_xml", return_value=None):
+        with patch(
+            "src.ai_guard.analyzer._coverage_percent_from_xml", return_value=None
+        ):
             assert cov_percent() is None
 
 
@@ -180,7 +201,7 @@ class TestParseBanditJson:
                     "issue_severity": "HIGH",
                     "issue_confidence": "MEDIUM",
                     "issue_text": "Test issue",
-                    "test_id": "B101"
+                    "test_id": "B101",
                 }
             ]
         }
@@ -201,7 +222,7 @@ class TestRunLintCheck:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = ""
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_lint_check(["src/test.py"])
             assert result.passed
             assert sarif is None
@@ -212,7 +233,7 @@ class TestRunLintCheck:
             mock_run.return_value.returncode = 1
             mock_run.return_value.stdout = "src/test.py:10:5: E501 line too long"
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_lint_check(["src/test.py"])
             assert not result.passed
             assert sarif is not None
@@ -236,7 +257,7 @@ class TestRunTypeCheck:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = ""
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_type_check(["src/test.py"])
             assert result.passed
             assert sarif is None
@@ -245,9 +266,11 @@ class TestRunTypeCheck:
         """Test type check with issues."""
         with patch("subprocess.run") as mock_run:
             mock_run.return_value.returncode = 1
-            mock_run.return_value.stdout = "src/test.py:10:5: error: Name 'x' is not defined [name-defined]"
+            mock_run.return_value.stdout = (
+                "src/test.py:10:5: error: Name 'x' is not defined [name-defined]"
+            )
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_type_check(["src/test.py"])
             assert not result.passed
             assert sarif is not None
@@ -271,7 +294,7 @@ class TestRunSecurityCheck:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = '{"results": []}'
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_security_check()
             assert result.passed
             assert sarif is None
@@ -286,7 +309,7 @@ class TestRunSecurityCheck:
                     "issue_severity": "HIGH",
                     "issue_confidence": "MEDIUM",
                     "issue_text": "Test issue",
-                    "test_id": "B101"
+                    "test_id": "B101",
                 }
             ]
         }
@@ -294,7 +317,7 @@ class TestRunSecurityCheck:
             mock_run.return_value.returncode = 1
             mock_run.return_value.stdout = json.dumps(bandit_data)
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_security_check()
             assert not result.passed
             assert sarif is not None
@@ -329,7 +352,9 @@ class TestRunCoverageCheck:
 
     def test_run_coverage_check_no_coverage(self):
         """Test coverage check with no coverage data."""
-        with patch("src.ai_guard.analyzer._coverage_percent_from_xml", return_value=None):
+        with patch(
+            "src.ai_guard.analyzer._coverage_percent_from_xml", return_value=None
+        ):
             result, sarif = run_coverage_check(80)
             assert not result.passed
             assert "coverage" in result.details.lower()  # The actual message format
@@ -349,12 +374,14 @@ class TestToFindings:
             rule_id="test:rule",
             message="Test message",
             level="error",
-            locations=[{
-                "physicalLocation": {
-                    "artifactLocation": {"uri": "test.py"},
-                    "region": {"startLine": 10}
+            locations=[
+                {
+                    "physicalLocation": {
+                        "artifactLocation": {"uri": "test.py"},
+                        "region": {"startLine": 10},
+                    }
                 }
-            }]
+            ],
         )
         findings = _to_findings([sarif_result])
         assert len(findings) == 1
@@ -413,33 +440,36 @@ class TestCodeAnalyzer:
         analyzer = CodeAnalyzer()
         # The config should be an AnalysisConfig object with default values
         assert analyzer.config is not None
-        assert hasattr(analyzer.config, 'enable_security_analysis')
-        assert hasattr(analyzer.config, 'enable_performance_analysis')
-        assert hasattr(analyzer.config, 'enable_quality_analysis')
-        assert hasattr(analyzer.config, 'enable_coverage_analysis')
+        assert hasattr(analyzer.config, "enable_security_analysis")
+        assert hasattr(analyzer.config, "enable_performance_analysis")
+        assert hasattr(analyzer.config, "enable_quality_analysis")
+        assert hasattr(analyzer.config, "enable_coverage_analysis")
 
     def test_code_analyzer_init_custom(self):
         """Test CodeAnalyzer initialization with custom config."""
         from src.ai_guard.analyzer import AnalysisConfig
+
         config = AnalysisConfig(enable_security_analysis=False)
         analyzer = CodeAnalyzer(config)
         assert analyzer.config == config
 
     def test_run_all_checks(self):
         """Test running all checks."""
-        with patch("src.ai_guard.analyzer.run_lint_check") as mock_lint, \
-             patch("src.ai_guard.analyzer.run_type_check") as mock_type, \
-             patch("src.ai_guard.analyzer.run_security_check") as mock_security, \
-             patch("src.ai_guard.analyzer.run_coverage_check") as mock_coverage:
-            
+        with (
+            patch("src.ai_guard.analyzer.run_lint_check") as mock_lint,
+            patch("src.ai_guard.analyzer.run_type_check") as mock_type,
+            patch("src.ai_guard.analyzer.run_security_check") as mock_security,
+            patch("src.ai_guard.analyzer.run_coverage_check") as mock_coverage,
+        ):
+
             mock_lint.return_value = (GateResult("Lint", True), None)
             mock_type.return_value = (GateResult("Type", True), None)
             mock_security.return_value = (GateResult("Security", True), None)
             mock_coverage.return_value = (GateResult("Coverage", True), None)
-            
+
             analyzer = CodeAnalyzer()
             results = analyzer.run_all_checks(["src/test.py"])
-            
+
             assert len(results) == 4  # Lint, Type, Security, Coverage
             assert all(result.passed for result in results)
 
@@ -449,20 +479,22 @@ class TestRunFunction:
 
     def test_run_basic(self):
         """Test basic run function."""
-        with patch("src.ai_guard.analyzer.changed_python_files", return_value=[]), \
-             patch("src.ai_guard.analyzer.run_lint_check") as mock_lint, \
-             patch("src.ai_guard.analyzer.run_type_check") as mock_type, \
-             patch("src.ai_guard.analyzer.run_security_check") as mock_security, \
-             patch("src.ai_guard.analyzer.run_coverage_check") as mock_coverage, \
-             patch("src.ai_guard.analyzer.run_pytest_with_coverage", return_value=0), \
-             patch("src.ai_guard.analyzer.summarize", return_value=0), \
-             patch("src.ai_guard.analyzer.write_sarif") as mock_write_sarif:
-            
+        with (
+            patch("src.ai_guard.analyzer.changed_python_files", return_value=[]),
+            patch("src.ai_guard.analyzer.run_lint_check") as mock_lint,
+            patch("src.ai_guard.analyzer.run_type_check") as mock_type,
+            patch("src.ai_guard.analyzer.run_security_check") as mock_security,
+            patch("src.ai_guard.analyzer.run_coverage_check") as mock_coverage,
+            patch("src.ai_guard.analyzer.run_pytest_with_coverage", return_value=0),
+            patch("src.ai_guard.analyzer.summarize", return_value=0),
+            patch("src.ai_guard.analyzer.write_sarif") as mock_write_sarif,
+        ):
+
             mock_lint.return_value = (GateResult("Lint", True), None)
             mock_type.return_value = (GateResult("Type", True), None)
             mock_security.return_value = (GateResult("Security", True), None)
             mock_coverage.return_value = (GateResult("Coverage", True), None)
-            
+
             exit_code = run([])
             assert exit_code == 0
             mock_write_sarif.assert_called_once()

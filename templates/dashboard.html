@@ -1,0 +1,513 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI-Guard Enterprise{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Header -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">Dashboard</h1>
+                <p class="text-muted">Welcome back, {{ user.name }}! Here's your system overview.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary" onclick="refreshDashboard()">
+                    <i class="fas fa-sync-alt me-1"></i>Refresh
+                </button>
+                <button class="btn btn-primary" onclick="showAnalytics()">
+                    <i class="fas fa-chart-line me-1"></i>Analytics
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Projects</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-projects">-</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-project-diagram fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Healthy Projects</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="healthy-projects">-</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Active Alerts</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="active-alerts">-</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Avg Quality Score</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="avg-quality">-</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-star fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- System Metrics Chart -->
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">System Metrics</h6>
+                <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow">
+                        <a class="dropdown-item" href="#" onclick="exportMetrics()">Export Data</a>
+                        <a class="dropdown-item" href="#" onclick="configureMetrics()">Configure</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-area">
+                    <canvas id="metricsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Status -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Project Status</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="projectStatusChart"></canvas>
+                </div>
+                <div class="mt-4 text-center small">
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-success"></i> Healthy
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-warning"></i> Warning
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-danger"></i> Critical
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity and Alerts -->
+<div class="row">
+    <!-- Recent Projects -->
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Projects</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="projectsTable">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Status</th>
+                                <th>Quality</th>
+                                <th>Security</th>
+                                <th>Coverage</th>
+                                <th>Last Analysis</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsTableBody">
+                            <!-- Projects will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Alerts -->
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Alerts</h6>
+            </div>
+            <div class="card-body">
+                <div id="alertsList">
+                    <!-- Alerts will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Key Performance Indicators</h6>
+            </div>
+            <div class="card-body">
+                <div class="row" id="kpiCards">
+                    <!-- KPI cards will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Global variables
+let socket;
+let metricsChart;
+let projectStatusChart;
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    initializeSocket();
+    loadDashboardData();
+    initializeCharts();
+    
+    // Refresh data every 30 seconds
+    setInterval(loadDashboardData, 30000);
+});
+
+// Initialize Socket.IO connection
+function initializeSocket() {
+    socket = io();
+    
+    socket.on('connect', function() {
+        console.log('Connected to AI-Guard server');
+    });
+    
+    socket.on('metrics_update', function(data) {
+        updateMetricsChart(data);
+    });
+    
+    socket.on('alerts_update', function(alerts) {
+        updateAlertsList(alerts);
+    });
+    
+    socket.on('status', function(data) {
+        console.log('Status:', data.msg);
+    });
+}
+
+// Load dashboard data
+function loadDashboardData() {
+    fetch('/api/dashboard/stats')
+        .then(response => response.json())
+        .then(data => {
+            updateStatsCards(data);
+            updateProjectStatusChart(data.projects);
+        })
+        .catch(error => {
+            console.error('Error loading dashboard data:', error);
+        });
+    
+    loadProjects();
+    loadAlerts();
+    loadKPIs();
+}
+
+// Update stats cards
+function updateStatsCards(data) {
+    document.getElementById('total-projects').textContent = data.projects.total;
+    document.getElementById('healthy-projects').textContent = data.projects.healthy;
+    document.getElementById('active-alerts').textContent = data.alerts.active;
+    document.getElementById('avg-quality').textContent = data.averages.quality_score + '%';
+}
+
+// Load projects
+function loadProjects() {
+    fetch('/api/projects')
+        .then(response => response.json())
+        .then(projects => {
+            const tbody = document.getElementById('projectsTableBody');
+            tbody.innerHTML = '';
+            
+            projects.forEach(project => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <strong>${project.name}</strong><br>
+                        <small class="text-muted">${project.description}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-${getStatusColor(project.status)}">${project.status}</span>
+                    </td>
+                    <td>${project.quality_score}%</td>
+                    <td>${project.security_score}%</td>
+                    <td>${project.coverage}%</td>
+                    <td>${formatDateTime(project.last_analysis)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading projects:', error);
+        });
+}
+
+// Load alerts
+function loadAlerts() {
+    fetch('/api/alerts')
+        .then(response => response.json())
+        .then(alerts => {
+            updateAlertsList(alerts);
+        })
+        .catch(error => {
+            console.error('Error loading alerts:', error);
+        });
+}
+
+// Update alerts list
+function updateAlertsList(alerts) {
+    const alertsList = document.getElementById('alertsList');
+    alertsList.innerHTML = '';
+    
+    alerts.slice(0, 5).forEach(alert => {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${getAlertLevelColor(alert.level)} alert-sm mb-2`;
+        alertDiv.innerHTML = `
+            <div class="d-flex justify-content-between">
+                <div>
+                    <strong>${alert.title}</strong><br>
+                    <small>${alert.message}</small>
+                </div>
+                <small class="text-muted">${formatDateTime(alert.timestamp)}</small>
+            </div>
+        `;
+        alertsList.appendChild(alertDiv);
+    });
+}
+
+// Load KPIs
+function loadKPIs() {
+    fetch('/api/analytics/kpis')
+        .then(response => response.json())
+        .then(kpis => {
+            const kpiCards = document.getElementById('kpiCards');
+            kpiCards.innerHTML = '';
+            
+            kpis.forEach(kpi => {
+                const card = document.createElement('div');
+                card.className = 'col-md-4 mb-3';
+                card.innerHTML = `
+                    <div class="card border-left-${getKPIColor(kpi.status)} shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-${getKPIColor(kpi.status)} text-uppercase mb-1">${kpi.name}</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">${kpi.current_value.toFixed(1)}</div>
+                                    <div class="text-xs text-muted">Target: ${kpi.target_value}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                kpiCards.appendChild(card);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading KPIs:', error);
+        });
+}
+
+// Initialize charts
+function initializeCharts() {
+    // Metrics Chart
+    const metricsCtx = document.getElementById('metricsChart').getContext('2d');
+    metricsChart = new Chart(metricsCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'CPU Usage (%)',
+                data: [],
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.1
+            }, {
+                label: 'Memory Usage (%)',
+                data: [],
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Project Status Chart
+    const projectStatusCtx = document.getElementById('projectStatusChart').getContext('2d');
+    projectStatusChart = new Chart(projectStatusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Healthy', 'Warning', 'Critical'],
+            datasets: [{
+                data: [0, 0, 0],
+                backgroundColor: ['#1cc88a', '#f6c23e', '#e74a3b'],
+                hoverBackgroundColor: ['#17a673', '#dda20a', '#be2617']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+// Update metrics chart
+function updateMetricsChart(data) {
+    const now = new Date().toLocaleTimeString();
+    
+    // Add new data point
+    metricsChart.data.labels.push(now);
+    metricsChart.data.datasets[0].data.push(data.cpu_usage?.value || 0);
+    metricsChart.data.datasets[1].data.push(data.memory_usage?.value || 0);
+    
+    // Keep only last 20 data points
+    if (metricsChart.data.labels.length > 20) {
+        metricsChart.data.labels.shift();
+        metricsChart.data.datasets[0].data.shift();
+        metricsChart.data.datasets[1].data.shift();
+    }
+    
+    metricsChart.update();
+}
+
+// Update project status chart
+function updateProjectStatusChart(projects) {
+    projectStatusChart.data.datasets[0].data = [
+        projects.healthy,
+        projects.warning,
+        projects.critical
+    ];
+    projectStatusChart.update();
+}
+
+// Utility functions
+function getStatusColor(status) {
+    switch(status) {
+        case 'healthy': return 'success';
+        case 'warning': return 'warning';
+        case 'critical': return 'danger';
+        default: return 'secondary';
+    }
+}
+
+function getAlertLevelColor(level) {
+    switch(level) {
+        case 'critical': return 'danger';
+        case 'warning': return 'warning';
+        case 'info': return 'info';
+        default: return 'secondary';
+    }
+}
+
+function getKPIColor(status) {
+    switch(status) {
+        case 'normal': return 'success';
+        case 'warning': return 'warning';
+        case 'critical': return 'danger';
+        default: return 'info';
+    }
+}
+
+function formatDateTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+}
+
+function refreshDashboard() {
+    loadDashboardData();
+}
+
+// Navigation functions
+function showProjects() {
+    // Implementation for projects view
+    console.log('Show projects');
+}
+
+function showAnalytics() {
+    // Implementation for analytics view
+    console.log('Show analytics');
+}
+
+function showMonitoring() {
+    // Implementation for monitoring view
+    console.log('Show monitoring');
+}
+
+function showUsers() {
+    // Implementation for users view
+    console.log('Show users');
+}
+</script>
+{% endblock %}

@@ -14,7 +14,7 @@ from src.ai_guard.exceptions import (
     ValidationError,
     TimeoutError,
     FileSystemError,
-    NetworkError
+    NetworkError,
 )
 
 
@@ -143,7 +143,9 @@ class TestSecurityError:
 
     def test_security_error_with_both(self):
         """Test security error with both vulnerability type and severity."""
-        error = SecurityError("Security error", vulnerability_type="XSS", severity="CRITICAL")
+        error = SecurityError(
+            "Security error", vulnerability_type="XSS", severity="CRITICAL"
+        )
         assert error.vulnerability_type == "XSS"
         assert error.severity == "CRITICAL"
 
@@ -176,7 +178,9 @@ class TestPerformanceError:
 
     def test_performance_error_with_both(self):
         """Test performance error with both metric name and threshold."""
-        error = PerformanceError("Performance error", metric_name="memory_usage", threshold=100.0)
+        error = PerformanceError(
+            "Performance error", metric_name="memory_usage", threshold=100.0
+        )
         assert error.metric_name == "memory_usage"
         assert error.threshold == 100.0
 
@@ -199,17 +203,25 @@ class TestTestGenerationError:
 
     def test_test_generation_error_with_target_file(self):
         """Test test generation error with target file."""
-        error = TestGenerationError("Test generation error", target_file="test_module.py")
+        error = TestGenerationError(
+            "Test generation error", target_file="test_module.py"
+        )
         assert error.target_file == "test_module.py"
 
     def test_test_generation_error_with_generation_type(self):
         """Test test generation error with generation type."""
-        error = TestGenerationError("Test generation error", generation_type="unit_tests")
+        error = TestGenerationError(
+            "Test generation error", generation_type="unit_tests"
+        )
         assert error.generation_type == "unit_tests"
 
     def test_test_generation_error_with_both(self):
         """Test test generation error with both target file and generation type."""
-        error = TestGenerationError("Test generation error", target_file="test_module.py", generation_type="integration_tests")
+        error = TestGenerationError(
+            "Test generation error",
+            target_file="test_module.py",
+            generation_type="integration_tests",
+        )
         assert error.target_file == "test_module.py"
         assert error.generation_type == "integration_tests"
 
@@ -237,12 +249,18 @@ class TestReportGenerationError:
 
     def test_report_generation_error_with_output_path(self):
         """Test report generation error with output path."""
-        error = ReportGenerationError("Report generation error", output_path="/path/to/report.html")
+        error = ReportGenerationError(
+            "Report generation error", output_path="/path/to/report.html"
+        )
         assert error.output_path == "/path/to/report.html"
 
     def test_report_generation_error_with_both(self):
         """Test report generation error with both format and output path."""
-        error = ReportGenerationError("Report generation error", report_format="SARIF", output_path="/path/to/report.sarif")
+        error = ReportGenerationError(
+            "Report generation error",
+            report_format="SARIF",
+            output_path="/path/to/report.sarif",
+        )
         assert error.report_format == "SARIF"
         assert error.output_path == "/path/to/report.sarif"
 
@@ -275,7 +293,9 @@ class TestDependencyError:
 
     def test_dependency_error_with_both(self):
         """Test dependency error with both package name and version."""
-        error = DependencyError("Dependency error", package_name="requests", version="2.28.0")
+        error = DependencyError(
+            "Dependency error", package_name="requests", version="2.28.0"
+        )
         assert error.package_name == "requests"
         assert error.version == "2.28.0"
 
@@ -314,7 +334,12 @@ class TestToolExecutionError:
 
     def test_tool_execution_error_with_all(self):
         """Test tool execution error with all parameters."""
-        error = ToolExecutionError("Tool execution error", tool_name="flake8", command="flake8 src/", exit_code=1)
+        error = ToolExecutionError(
+            "Tool execution error",
+            tool_name="flake8",
+            command="flake8 src/",
+            exit_code=1,
+        )
         assert error.tool_name == "flake8"
         assert error.command == "flake8 src/"
         assert error.exit_code == 1
@@ -348,7 +373,9 @@ class TestValidationError:
 
     def test_validation_error_with_both(self):
         """Test validation error with both field name and value."""
-        error = ValidationError("Validation error", field_name="min_coverage", value=150)
+        error = ValidationError(
+            "Validation error", field_name="min_coverage", value=150
+        )
         assert error.field_name == "min_coverage"
         assert error.value == 150
 
@@ -414,7 +441,9 @@ class TestFileSystemError:
 
     def test_file_system_error_with_both(self):
         """Test file system error with both file path and operation."""
-        error = FileSystemError("File system error", file_path="/path/to/file.py", operation="write")
+        error = FileSystemError(
+            "File system error", file_path="/path/to/file.py", operation="write"
+        )
         assert error.file_path == "/path/to/file.py"
         assert error.operation == "write"
 
@@ -447,7 +476,9 @@ class TestNetworkError:
 
     def test_network_error_with_both(self):
         """Test network error with both URL and status code."""
-        error = NetworkError("Network error", url="https://api.example.com", status_code=500)
+        error = NetworkError(
+            "Network error", url="https://api.example.com", status_code=500
+        )
         assert error.url == "https://api.example.com"
         assert error.status_code == 500
 
@@ -464,14 +495,14 @@ class TestErrorChaining:
         """Test that errors can be raised as exceptions."""
         with pytest.raises(AIGuardError) as exc_info:
             raise AIGuardError("Test error")
-        
+
         assert str(exc_info.value) == "Test error"
 
     def test_specific_error_as_exception(self):
         """Test that specific errors can be raised as exceptions."""
         with pytest.raises(ConfigurationError) as exc_info:
             raise ConfigurationError("Config error")
-        
+
         assert str(exc_info.value) == "[CONFIG_ERROR] Config error"
 
     def test_error_with_complex_details(self):
@@ -479,7 +510,7 @@ class TestErrorChaining:
         details = {
             "files": ["test1.py", "test2.py"],
             "metrics": {"coverage": 85.5, "complexity": 10},
-            "nested": {"key": "value"}
+            "nested": {"key": "value"},
         }
         error = AIGuardError("Complex error", details=details)
         assert error.details == details
@@ -495,7 +526,7 @@ class TestErrorChaining:
         error1 = AIGuardError("Test error")
         error2 = AIGuardError("Test error")
         error3 = AIGuardError("Different error")
-        
+
         # Errors with same message should be equal
         assert str(error1) == str(error2)
         assert str(error1) != str(error3)

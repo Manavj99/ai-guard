@@ -26,7 +26,7 @@ from src.ai_guard.pr_annotations import (
     create_performance_annotation,
     create_test_annotation,
     create_github_annotation,
-    format_annotation_message_from_issue
+    format_annotation_message_from_issue,
 )
 
 
@@ -59,7 +59,7 @@ class TestCodeIssueExtended:
             message="Test error message",
             rule_id="E123",
             suggestion="Fix this issue",
-            fix_code="corrected_code()"
+            fix_code="corrected_code()",
         )
         assert issue.file_path == "test.py"
         assert issue.line_number == 10
@@ -78,7 +78,7 @@ class TestCodeIssueExtended:
             column=0,
             severity="warning",
             message="Test warning",
-            rule_id="W001"
+            rule_id="W001",
         )
         assert issue.file_path == "test.py"
         assert issue.suggestion is None
@@ -94,11 +94,11 @@ class TestCodeIssueExtended:
             message="Test error",
             rule_id="E123",
             suggestion="Fix it",
-            fix_code="fixed_code()"
+            fix_code="fixed_code()",
         )
-        
+
         issue_dict = issue.to_dict()
-        
+
         assert isinstance(issue_dict, dict)
         assert issue_dict["file_path"] == "test.py"
         assert issue_dict["line_number"] == 10
@@ -125,7 +125,7 @@ class TestPRAnnotationExtended:
             start_line=10,
             end_line=10,
             start_column=1,
-            end_column=5
+            end_column=5,
         )
         assert annotation.file_path == "test.py"
         assert annotation.line_number == 10
@@ -144,7 +144,7 @@ class TestPRAnnotationExtended:
             file_path="test.py",
             line_number=1,
             message="Minimal annotation",
-            annotation_level="notice"
+            annotation_level="notice",
         )
         assert annotation.file_path == "test.py"
         assert annotation.title is None
@@ -160,11 +160,9 @@ class TestPRReviewSummaryExtended:
 
     def test_pr_review_summary_creation(self):
         """Test creating PRReviewSummary object."""
-        annotations = [
-            PRAnnotation("test.py", 1, "Test", "notice")
-        ]
+        annotations = [PRAnnotation("test.py", 1, "Test", "notice")]
         suggestions = ["Test suggestion"]
-        
+
         summary = PRReviewSummary(
             overall_status="approved",
             summary="All checks passed",
@@ -172,9 +170,9 @@ class TestPRReviewSummaryExtended:
             suggestions=suggestions,
             quality_score=0.95,
             coverage_info={"coverage": 85.0},
-            security_issues=["No issues found"]
+            security_issues=["No issues found"],
         )
-        
+
         assert summary.overall_status == "approved"
         assert summary.summary == "All checks passed"
         assert len(summary.annotations) == 1
@@ -208,11 +206,11 @@ class TestPRAnnotatorExtended:
             column=5,
             severity="error",
             message="Test error",
-            rule_id="E123"
+            rule_id="E123",
         )
-        
+
         annotator.add_issue(issue)
-        
+
         assert len(annotator.issues) == 1
         assert len(annotator.annotations) == 1
 
@@ -226,25 +224,22 @@ class TestPRAnnotatorExtended:
                 "column": 5,
                 "severity": "error",
                 "message": "Test error",
-                "rule": "E123"
+                "rule": "E123",
             }
         ]
-        
+
         annotator.add_lint_issues(lint_results)
-        
+
         assert len(annotator.issues) == 1
         assert len(annotator.annotations) == 1
 
     def test_add_coverage_annotation(self):
         """Test adding coverage annotation."""
         annotator = PRAnnotator()
-        coverage_data = {
-            "coverage": 75.0,
-            "uncovered_lines": [10, 15, 20]
-        }
-        
+        coverage_data = {"coverage": 75.0, "uncovered_lines": [10, 15, 20]}
+
         annotator.add_coverage_annotation("test.py", coverage_data)
-        
+
         assert len(annotator.annotations) >= 1
 
     def test_add_security_annotation(self):
@@ -256,26 +251,26 @@ class TestPRAnnotatorExtended:
                 "line": 10,
                 "severity": "high",
                 "message": "Security vulnerability",
-                "rule": "B001"
+                "rule": "B001",
             }
         ]
-        
+
         annotator.add_security_annotation(security_issues)
-        
+
         assert len(annotator.annotations) == 1
 
     def test_generate_review_summary(self):
         """Test generating review summary."""
         annotator = PRAnnotator()
-        
+
         # Add some issues
         issue1 = CodeIssue("test.py", 10, 5, "error", "Error", "E123")
         issue2 = CodeIssue("test.py", 15, 3, "warning", "Warning", "W001")
         annotator.add_issue(issue1)
         annotator.add_issue(issue2)
-        
+
         summary = annotator.generate_review_summary()
-        
+
         assert isinstance(summary, PRReviewSummary)
         assert summary.overall_status in ["approved", "changes_requested", "commented"]
         assert summary.quality_score >= 0.0
@@ -286,9 +281,9 @@ class TestPRAnnotatorExtended:
         annotator = PRAnnotator()
         issue = CodeIssue("test.py", 10, 5, "error", "Test error", "E123")
         annotator.add_issue(issue)
-        
+
         github_annotations = annotator.create_github_annotations()
-        
+
         assert isinstance(github_annotations, list)
         assert len(github_annotations) == 1
         assert github_annotations[0]["path"] == "test.py"
@@ -298,10 +293,10 @@ class TestPRAnnotatorExtended:
         annotator = PRAnnotator()
         issue = CodeIssue("test.py", 10, 5, "error", "Test error", "E123")
         annotator.add_issue(issue)
-        
+
         summary = annotator.generate_review_summary()
         comment = annotator.create_review_comment(summary)
-        
+
         assert isinstance(comment, str)
         assert "AI-Guard Quality Review" in comment
 
@@ -310,8 +305,8 @@ class TestPRAnnotatorExtended:
         annotator = PRAnnotator()
         issue = CodeIssue("test.py", 10, 5, "error", "Test error", "E123")
         annotator.add_issue(issue)
-        
-        with patch('builtins.open', mock_open()) as mock_file:
+
+        with patch("builtins.open", mock_open()) as mock_file:
             annotator.save_annotations("test_output.json")
             mock_file.assert_called_once_with("test_output.json", "w", encoding="utf-8")
 
@@ -320,9 +315,9 @@ class TestPRAnnotatorExtended:
         annotator = PRAnnotator()
         issue = CodeIssue("test.py", 10, 5, "error", "Test error", "E123")
         annotator.add_issue(issue)
-        
+
         annotator.clear_annotations()
-        
+
         assert len(annotator.annotations) == 0
         assert len(annotator.issues) == 0
 
@@ -337,9 +332,9 @@ class TestUtilityFunctions:
             line=10,
             level="error",
             message="Test message",
-            title="Test Title"
+            title="Test Title",
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "failure"
@@ -360,9 +355,9 @@ class TestUtilityFunctions:
             line=10,
             gate_name="coverage",
             status="passed",
-            message="Coverage threshold met"
+            message="Coverage threshold met",
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "notice"
@@ -371,11 +366,9 @@ class TestUtilityFunctions:
     def test_create_coverage_annotation(self):
         """Test create_coverage_annotation function."""
         annotation = create_coverage_annotation(
-            path="test.py",
-            coverage_percent=85.0,
-            threshold=80.0
+            path="test.py", coverage_percent=85.0, threshold=80.0
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 1
         assert annotation["annotation_level"] == "notice"
@@ -388,9 +381,9 @@ class TestUtilityFunctions:
             line=10,
             severity="high",
             vulnerability="SQL Injection",
-            description="Potential SQL injection vulnerability"
+            description="Potential SQL injection vulnerability",
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "failure"
@@ -403,9 +396,9 @@ class TestUtilityFunctions:
             line=10,
             function_name="slow_function",
             execution_time=2.5,
-            threshold=1.0
+            threshold=1.0,
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "warning"
@@ -419,9 +412,9 @@ class TestUtilityFunctions:
             test_name="test_function",
             status="failed",
             duration=0.5,
-            error_message="AssertionError"
+            error_message="AssertionError",
         )
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["line"] == 10
         assert annotation["annotation_level"] == "failure"
@@ -435,11 +428,11 @@ class TestUtilityFunctions:
             column=5,
             severity="error",
             message="Test error",
-            rule_id="E123"
+            rule_id="E123",
         )
-        
+
         annotation = create_github_annotation(issue)
-        
+
         assert annotation["path"] == "test.py"
         assert annotation["start_line"] == 10
         assert annotation["end_line"] == 10
@@ -451,9 +444,9 @@ class TestUtilityFunctions:
             message="Test message",
             details="Additional details",
             suggestion="Try this fix",
-            code_example="fixed_code()"
+            code_example="fixed_code()",
         )
-        
+
         assert "Test message" in message
         assert "Additional details" in message
         assert "Try this fix" in message
@@ -469,11 +462,11 @@ class TestUtilityFunctions:
             message="Test error",
             rule_id="E123",
             suggestion="Fix this",
-            fix_code="corrected_code()"
+            fix_code="corrected_code()",
         )
-        
+
         message = format_annotation_message_from_issue(issue)
-        
+
         assert "Test error" in message
         assert "Fix this" in message
         assert "corrected_code()" in message
@@ -486,7 +479,7 @@ class TestParsingFunctions:
         """Test parsing lint output."""
         lint_output = "test.py:10:5: E123: Test error message"
         issues = parse_lint_output(lint_output)
-        
+
         assert len(issues) == 1
         assert issues[0].file_path == "test.py"
         assert issues[0].line_number == 10
@@ -506,7 +499,7 @@ class TestParsingFunctions:
         """Test parsing mypy output."""
         mypy_output = "test.py:10: error: Incompatible types"
         issues = parse_mypy_output(mypy_output)
-        
+
         assert len(issues) == 1
         assert issues[0].file_path == "test.py"
         assert issues[0].line_number == 10
@@ -517,7 +510,7 @@ class TestParsingFunctions:
         """Test parsing bandit output."""
         bandit_output = "test.py:10:1: B001: Test security issue"
         issues = parse_bandit_output(bandit_output)
-        
+
         assert len(issues) == 1
         assert issues[0].file_path == "test.py"
         assert issues[0].line_number == 10
@@ -538,29 +531,35 @@ class TestPRAnnotationManager:
         """Test adding annotation."""
         manager = PRAnnotationManager(max_annotations=5)
         annotation = {"path": "test.py", "line": 10, "message": "Test"}
-        
+
         manager.add_annotation(annotation)
-        
+
         assert len(manager.annotations) == 1
 
     def test_add_annotation_max_limit(self):
         """Test adding annotation with max limit."""
         manager = PRAnnotationManager(max_annotations=2)
-        
+
         for i in range(5):
-            manager.add_annotation({"path": f"test{i}.py", "line": i, "message": f"Test {i}"})
-        
+            manager.add_annotation(
+                {"path": f"test{i}.py", "line": i, "message": f"Test {i}"}
+            )
+
         assert len(manager.annotations) == 2
 
     def test_get_annotations_by_level(self):
         """Test getting annotations by level."""
         manager = PRAnnotationManager()
-        manager.add_annotation({"path": "test.py", "line": 10, "annotation_level": "error"})
-        manager.add_annotation({"path": "test.py", "line": 15, "annotation_level": "warning"})
-        
+        manager.add_annotation(
+            {"path": "test.py", "line": 10, "annotation_level": "error"}
+        )
+        manager.add_annotation(
+            {"path": "test.py", "line": 15, "annotation_level": "warning"}
+        )
+
         error_annotations = manager.get_annotations_by_level("error")
         warning_annotations = manager.get_annotations_by_level("warning")
-        
+
         assert len(error_annotations) == 1
         assert len(warning_annotations) == 1
 
@@ -569,10 +568,10 @@ class TestPRAnnotationManager:
         manager = PRAnnotationManager()
         manager.add_annotation({"path": "test1.py", "line": 10, "message": "Test 1"})
         manager.add_annotation({"path": "test2.py", "line": 15, "message": "Test 2"})
-        
+
         test1_annotations = manager.get_annotations_by_path("test1.py")
         test2_annotations = manager.get_annotations_by_path("test2.py")
-        
+
         assert len(test1_annotations) == 1
         assert len(test2_annotations) == 1
 
@@ -580,19 +579,23 @@ class TestPRAnnotationManager:
         """Test clearing annotations."""
         manager = PRAnnotationManager()
         manager.add_annotation({"path": "test.py", "line": 10, "message": "Test"})
-        
+
         manager.clear_annotations()
-        
+
         assert len(manager.annotations) == 0
 
     def test_get_summary(self):
         """Test getting annotation summary."""
         manager = PRAnnotationManager()
-        manager.add_annotation({"path": "test.py", "line": 10, "annotation_level": "failure"})
-        manager.add_annotation({"path": "test.py", "line": 15, "annotation_level": "warning"})
-        
+        manager.add_annotation(
+            {"path": "test.py", "line": 10, "annotation_level": "failure"}
+        )
+        manager.add_annotation(
+            {"path": "test.py", "line": 15, "annotation_level": "warning"}
+        )
+
         summary = manager.get_summary()
-        
+
         assert summary["total"] == 2
         assert summary["failures"] == 1
         assert summary["warnings"] == 1
@@ -611,31 +614,28 @@ class TestAnnotationFormatter:
         """Test formatting annotation."""
         formatter = AnnotationFormatter(max_message_length=100)
         annotation = {"message": "Short message"}
-        
+
         formatted = formatter.format_annotation(annotation)
-        
+
         assert formatted["message"] == "Short message"
 
     def test_format_annotation_long_message(self):
         """Test formatting annotation with long message."""
         formatter = AnnotationFormatter(max_message_length=10)
         annotation = {"message": "This is a very long message that should be truncated"}
-        
+
         formatted = formatter.format_annotation(annotation)
-        
+
         assert len(formatted["message"]) <= 10
         assert formatted["message"].endswith("...")
 
     def test_format_annotations(self):
         """Test formatting multiple annotations."""
         formatter = AnnotationFormatter()
-        annotations = [
-            {"message": "Message 1"},
-            {"message": "Message 2"}
-        ]
-        
+        annotations = [{"message": "Message 1"}, {"message": "Message 2"}]
+
         formatted = formatter.format_annotations(annotations)
-        
+
         assert len(formatted) == 2
         assert formatted[0]["message"] == "Message 1"
         assert formatted[1]["message"] == "Message 2"
@@ -647,44 +647,43 @@ class TestCreatePRAnnotations:
     def test_create_pr_annotations_with_lint(self):
         """Test creating PR annotations with lint output."""
         lint_output = "test.py:10:5: E123: Test error"
-        
+
         annotations = create_pr_annotations(lint_output=lint_output)
-        
+
         assert len(annotations) == 1
         assert annotations[0].file_path == "test.py"
 
     def test_create_pr_annotations_with_bandit(self):
         """Test creating PR annotations with bandit output."""
         bandit_output = "test.py:10:1: B001: Security issue"
-        
+
         annotations = create_pr_annotations(bandit_output=bandit_output)
-        
+
         assert len(annotations) == 1
 
     def test_create_pr_annotations_with_mypy(self):
         """Test creating PR annotations with mypy output."""
         mypy_output = "test.py:10: error: Type error"
-        
+
         annotations = create_pr_annotations(mypy_output=mypy_output)
-        
+
         assert len(annotations) == 1
 
     def test_create_pr_annotations_with_coverage(self):
         """Test creating PR annotations with coverage output."""
         coverage_output = "test.py 100 75 75% 10-15"
-        
+
         annotations = create_pr_annotations(coverage_output=coverage_output)
-        
+
         assert len(annotations) >= 1
 
     def test_create_pr_annotations_with_output_file(self):
         """Test creating PR annotations with output file."""
         lint_output = "test.py:10:5: E123: Test error"
-        
-        with patch('builtins.open', mock_open()) as mock_file:
+
+        with patch("builtins.open", mock_open()) as mock_file:
             annotations = create_pr_annotations(
-                lint_output=lint_output,
-                output_file="test_output.json"
+                lint_output=lint_output, output_file="test_output.json"
             )
             mock_file.assert_called_once()
 
@@ -694,21 +693,19 @@ class TestWriteAnnotationsFile:
 
     def test_write_annotations_file_success(self):
         """Test writing annotations file successfully."""
-        annotations = [
-            {"path": "test.py", "line": 10, "message": "Test"}
-        ]
-        
-        with patch('builtins.open', mock_open()) as mock_file:
+        annotations = [{"path": "test.py", "line": 10, "message": "Test"}]
+
+        with patch("builtins.open", mock_open()) as mock_file:
             result = write_annotations_file(annotations, "test.json")
-            
+
             assert result is True
             mock_file.assert_called_once_with("test.json", "w", encoding="utf-8")
 
     def test_write_annotations_file_failure(self):
         """Test writing annotations file with failure."""
         annotations = [{"path": "test.py", "line": 10, "message": "Test"}]
-        
-        with patch('builtins.open', side_effect=IOError("Permission denied")):
+
+        with patch("builtins.open", side_effect=IOError("Permission denied")):
             result = write_annotations_file(annotations, "test.json")
-            
+
             assert result is False

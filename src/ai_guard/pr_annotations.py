@@ -105,9 +105,9 @@ class PRAnnotator:
         # Create detailed message
         message_parts = [issue.message]
         if issue.suggestion:
-            message_parts.append(f"\n💡 **Suggestion:** {issue.suggestion}")
+            message_parts.append(f"\n **Suggestion:** {issue.suggestion}")
         if issue.fix_code:
-            message_parts.append(f"\n🔧 **Fix:**\n```\n{issue.fix_code}\n```")
+            message_parts.append(f"\n **Fix:**\n```\n{issue.fix_code}\n```")
 
         message = "\n".join(message_parts)
 
@@ -175,7 +175,7 @@ class PRAnnotator:
                 file_path=file_path,
                 line_number=1,
                 message=(
-                    f"⚠️ **Low Coverage Warning:** This file has {coverage_percent:.1f}% "
+                    f" **Low Coverage Warning:** This file has {coverage_percent:.1f}% "
                     f"test coverage. Consider adding tests for uncovered lines."
                 ),
                 annotation_level="warning",
@@ -191,7 +191,7 @@ class PRAnnotator:
                 file_path=file_path,
                 line_number=line_num,
                 message=(
-                    "🔍 **Uncovered Line:** This line is not covered by tests. "
+                    " **Uncovered Line:** This line is not covered by tests. "
                     "Consider adding a test case."
                 ),
                 annotation_level="notice",
@@ -214,7 +214,7 @@ class PRAnnotator:
                     file_path=issue.get("file", ""),
                     line_number=issue.get("line", 0),
                     message=(
-                        f"🛡️ **Security Issue ({severity.upper()}):** "
+                        f" **Security Issue ({severity.upper()}):** "
                         f"{issue.get('message', '')}"
                     ),
                     annotation_level=annotation_level,
@@ -254,17 +254,17 @@ class PRAnnotator:
         summary_parts = []
         if error_count > 0:
             summary_parts.append(
-                f"❌ {error_count} error{'s' if error_count != 1 else ''}"
+                f" {error_count} error{'s' if error_count != 1 else ''}"
             )
         if warning_count > 0:
             summary_parts.append(
-                f"⚠️ {warning_count} warning{'s' if warning_count != 1 else ''}"
+                f" {warning_count} warning{'s' if warning_count != 1 else ''}"
             )
         if info_count > 0:
-            summary_parts.append(f"ℹ️ {info_count} info")
+            summary_parts.append(f" {info_count} info")
 
         if not summary_parts:
-            summary_parts.append("✅ All quality checks passed!")
+            summary_parts.append(" All quality checks passed!")
 
         summary = " | ".join(summary_parts)
 
@@ -336,17 +336,17 @@ class PRAnnotator:
     def create_review_comment(self, summary: PRReviewSummary) -> str:
         """Create a human-readable review comment."""
         comment_parts = [
-            "## 🤖 AI-Guard Quality Review\n",
+            "##  AI-Guard Quality Review\n",
             f"**Status:** {summary.overall_status.replace('_', ' ').title()}\n",
             f"**Quality Score:** {summary.quality_score:.1%}\n\n",
-            "### 📊 Summary\n",
+            "###  Summary\n",
             f"{summary.summary}\n\n",
         ]
 
         if summary.suggestions:
             comment_parts.extend(
                 [
-                    "### 💡 Suggestions\n",
+                    "###  Suggestions\n",
                     *[f"- {suggestion}\n" for suggestion in summary.suggestions],
                     "\n",
                 ]
@@ -355,7 +355,7 @@ class PRAnnotator:
         if summary.annotations:
             comment_parts.extend(
                 [
-                    "### 🔍 Issues Found\n",
+                    "###  Issues Found\n",
                     f"Total annotations: {len(summary.annotations)}\n\n",
                 ]
             )
@@ -370,8 +370,8 @@ class PRAnnotator:
             for file_path, file_annotations in by_file.items():
                 comment_parts.append(f"**{file_path}:**\n")
                 for annotation in file_annotations[:3]:  # Show first 3 per file
-                    emoji = {"failure": "❌", "warning": "⚠️", "notice": "ℹ️"}.get(
-                        annotation.annotation_level, "ℹ️"
+                    emoji = {"failure": "", "warning": "", "notice": ""}.get(
+                        annotation.annotation_level, ""
                     )
                     comment_parts.append(
                         f"- {emoji} Line {annotation.line_number}: {annotation.title}\n"
@@ -1220,7 +1220,7 @@ def format_annotation_message(
         message_parts.append(f"\n**Details:** {details}")
 
     if suggestion:
-        message_parts.append(f"\n💡 **Suggestion:** {suggestion}")
+        message_parts.append(f"\n **Suggestion:** {suggestion}")
 
     if code_example:
         message_parts.append(f"\n**Code:**\n```\n{code_example}\n```")
@@ -1240,10 +1240,10 @@ def format_annotation_message_from_issue(issue: CodeIssue) -> str:
     message_parts = [issue.message]
 
     if issue.suggestion:
-        message_parts.append(f"\n💡 **Suggestion:** {issue.suggestion}")
+        message_parts.append(f"\n **Suggestion:** {issue.suggestion}")
 
     if issue.fix_code:
-        message_parts.append(f"\n🔧 **Fix:**\n```\n{issue.fix_code}\n```")
+        message_parts.append(f"\n **Fix:**\n```\n{issue.fix_code}\n```")
 
     return "\n".join(message_parts)
 

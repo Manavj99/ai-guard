@@ -6,8 +6,11 @@ import tempfile
 import os
 
 from src.ai_guard.generators.config_loader import (
-    load_testgen_config, create_default_config, validate_config,
-    TestGenerationConfig, _get_env_api_key
+    load_testgen_config,
+    create_default_config,
+    validate_config,
+    TestGenerationConfig,
+    _get_env_api_key,
 )
 
 
@@ -25,10 +28,15 @@ class TestConfigLoader:
     def test_load_testgen_config_custom_file(self):
         """Test loading test generation config from custom file."""
         with patch("os.path.exists", return_value=True):
-            with patch("src.ai_guard.generators.config_loader._load_toml_config") as mock_load:
+            with patch(
+                "src.ai_guard.generators.config_loader._load_toml_config"
+            ) as mock_load:
                 mock_load.return_value = {
                     "llm": {"provider": "anthropic", "model": "claude-3"},
-                    "test_generation": {"framework": "unittest", "max_tests_per_file": 20}
+                    "test_generation": {
+                        "framework": "unittest",
+                        "max_tests_per_file": 20,
+                    },
                 }
                 config = load_testgen_config("custom.toml")
                 assert config.llm_provider == "anthropic"
@@ -37,11 +45,14 @@ class TestConfigLoader:
 
     def test_load_testgen_config_with_env_vars(self):
         """Test loading config with environment variables."""
-        with patch.dict(os.environ, {
-            "OPENAI_API_KEY": "test-key",
-            "AI_GUARD_LLM_PROVIDER": "openai",
-            "AI_GUARD_LLM_MODEL": "gpt-3.5-turbo"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "OPENAI_API_KEY": "test-key",
+                "AI_GUARD_LLM_PROVIDER": "openai",
+                "AI_GUARD_LLM_MODEL": "gpt-3.5-turbo",
+            },
+        ):
             with patch("os.path.exists", return_value=False):
                 config = load_testgen_config()
                 assert config.llm_api_key == "test-key"
@@ -74,14 +85,14 @@ class TestConfigLoader:
 
     def test_create_default_config(self):
         """Test creating default configuration file."""
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             temp_path = f.name
 
         try:
             create_default_config(temp_path)
             assert os.path.exists(temp_path)
-            
-            with open(temp_path, 'r') as f:
+
+            with open(temp_path, "r") as f:
                 content = f.read()
                 assert "[llm]" in content
                 assert "[test_generation]" in content
@@ -152,7 +163,7 @@ class TestTestGenerationConfig:
             test_framework="unittest",
             min_coverage_threshold=90.0,
             generate_mocks=False,
-            max_tests_per_file=15
+            max_tests_per_file=15,
         )
         assert config.llm_provider == "anthropic"
         assert config.llm_model == "claude-3"
@@ -164,9 +175,7 @@ class TestTestGenerationConfig:
     def test_config_to_dict(self):
         """Test config conversion to dictionary."""
         config = TestGenerationConfig(
-            llm_provider="openai",
-            llm_model="gpt-4",
-            test_framework="pytest"
+            llm_provider="openai", llm_model="gpt-4", test_framework="pytest"
         )
         config_dict = config.to_dict()
         assert config_dict["llm_provider"] == "openai"
@@ -179,7 +188,7 @@ class TestTestGenerationConfig:
             "llm_provider": "anthropic",
             "llm_model": "claude-3",
             "test_framework": "unittest",
-            "min_coverage_threshold": 85.0
+            "min_coverage_threshold": 85.0,
         }
         config = TestGenerationConfig.from_dict(config_dict)
         assert config.llm_provider == "anthropic"
@@ -242,7 +251,7 @@ test_file_suffix = "_test.py"
 separate_files = false
 include_imports = true
 """
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.toml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write(config_content)
             temp_path = f.name
 
@@ -260,15 +269,24 @@ include_imports = true
 
     def test_config_loading_with_environment_override(self):
         """Test config loading with environment variable overrides."""
-        with patch.dict(os.environ, {
-            "AI_GUARD_LLM_PROVIDER": "anthropic",
-            "AI_GUARD_LLM_API_KEY": "env-key",
-            "AI_GUARD_LLM_MODEL": "claude-3"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "AI_GUARD_LLM_PROVIDER": "anthropic",
+                "AI_GUARD_LLM_API_KEY": "env-key",
+                "AI_GUARD_LLM_MODEL": "claude-3",
+            },
+        ):
             with patch("os.path.exists", return_value=True):
-                with patch("src.ai_guard.generators.config_loader._load_toml_config") as mock_load:
+                with patch(
+                    "src.ai_guard.generators.config_loader._load_toml_config"
+                ) as mock_load:
                     mock_load.return_value = {
-                        "llm": {"provider": "openai", "api_key": "file-key", "model": "gpt-4"}
+                        "llm": {
+                            "provider": "openai",
+                            "api_key": "file-key",
+                            "model": "gpt-4",
+                        }
                     }
                     config = load_testgen_config("test.toml")
                     # Environment variables should override file values
@@ -282,13 +300,13 @@ include_imports = true
             llm_provider="openai",
             llm_api_key="test-key",
             test_framework="pytest",
-            min_coverage_threshold=80.0
+            min_coverage_threshold=80.0,
         )
-        
+
         # Should validate successfully
         assert config.validate() is True
         assert validate_config(config) is True
-        
+
         # Convert to dict and back
         config_dict = config.to_dict()
         new_config = TestGenerationConfig.from_dict(config_dict)
@@ -302,7 +320,7 @@ include_imports = true
         assert config.llm_provider == "openai"  # Should use defaults
 
         # Test with malformed config file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.toml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write("invalid toml content")
             temp_path = f.name
 

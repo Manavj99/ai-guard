@@ -115,7 +115,7 @@ def write_html(
 <h2>Findings</h2>
 <table>
   <thead><tr><th>Location</th><th>Level</th><th>Rule</th><th>Message</th></tr></thead>
-  <tbody>{findings_rows_str or '<tr><td colspan="4">No findings 🎉</td></tr>'}</tbody>
+  <tbody>{findings_rows_str or '<tr><td colspan="4">No findings </td></tr>'}</tbody>
 </table>
 </body></html>
 """

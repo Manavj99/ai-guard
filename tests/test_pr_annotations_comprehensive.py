@@ -18,7 +18,7 @@ from src.ai_guard.pr_annotations import (
     parse_mypy_output,
     format_annotation_message,
     write_annotations_file,
-    main
+    main,
 )
 
 
@@ -45,9 +45,9 @@ class TestCodeIssue:
             message="Line too long",
             severity="error",
             suggestion="Break the line",
-            fix_code="line1 = 'short'\nline2 = 'line'"
+            fix_code="line1 = 'short'\nline2 = 'line'",
         )
-        
+
         assert issue.file_path == "test.py"
         assert issue.line_number == 10
         assert issue.column == 5
@@ -65,9 +65,9 @@ class TestCodeIssue:
             column=1,
             severity="error",
             message="Syntax error",
-            rule_id="E001"
+            rule_id="E001",
         )
-        
+
         assert issue.file_path == "test.py"
         assert issue.line_number == 1
         assert issue.column == 1
@@ -87,11 +87,11 @@ class TestCodeIssue:
             message="Line too long",
             severity="error",
             suggestion="Break the line",
-            fix_code="line1 = 'short'"
+            fix_code="line1 = 'short'",
         )
-        
+
         issue_dict = issue.to_dict()
-        
+
         expected = {
             "file_path": "test.py",
             "line_number": 10,
@@ -100,9 +100,9 @@ class TestCodeIssue:
             "message": "Line too long",
             "severity": "error",
             "suggestion": "Break the line",
-            "fix_code": "line1 = 'short'"
+            "fix_code": "line1 = 'short'",
         }
-        
+
         assert issue_dict == expected
 
 
@@ -120,9 +120,9 @@ class TestPRAnnotation:
             start_line=10,
             end_line=10,
             start_column=5,
-            end_column=10
+            end_column=10,
         )
-        
+
         assert annotation.file_path == "test.py"
         assert annotation.line_number == 10
         assert annotation.message == "Test message"
@@ -140,9 +140,9 @@ class TestPRAnnotation:
             line_number=10,
             message="Test message",
             annotation_level="error",
-            title="Test Title"
+            title="Test Title",
         )
-        
+
         # Test PRAnnotation attributes directly
         assert annotation.file_path == "test.py"
         assert annotation.line_number == 10
@@ -166,9 +166,9 @@ class TestPRReviewSummary:
             annotations=[],
             suggestions=["suggestion1", "suggestion2"],
             quality_score=0.85,
-            security_issues=["security1"]
+            security_issues=["security1"],
         )
-        
+
         assert summary.overall_status == "success"
         assert summary.quality_score == 0.85
         assert summary.annotations == []
@@ -182,9 +182,9 @@ class TestPRReviewSummary:
             summary="Minimal summary",
             annotations=[],
             suggestions=[],
-            quality_score=0.5
+            quality_score=0.5,
         )
-        
+
         assert summary.overall_status == "failure"
         assert summary.quality_score == 0.5
         assert summary.annotations == []
@@ -205,10 +205,7 @@ class TestPRAnnotator:
 
     def test_pr_annotator_init_with_params(self):
         """Test PRAnnotator initialization with parameters."""
-        annotator = PRAnnotator(
-            github_token="test_token",
-            repo="owner/repo"
-        )
+        annotator = PRAnnotator(github_token="test_token", repo="owner/repo")
         assert annotator.github_token == "test_token"
         assert annotator.repo == "owner/repo"
         assert annotator.annotations == []
@@ -216,10 +213,9 @@ class TestPRAnnotator:
 
     def test_pr_annotator_init_with_env(self):
         """Test PRAnnotator initialization with environment variables."""
-        with patch.dict(os.environ, {
-            "GITHUB_TOKEN": "env_token",
-            "GITHUB_REPOSITORY": "env/repo"
-        }):
+        with patch.dict(
+            os.environ, {"GITHUB_TOKEN": "env_token", "GITHUB_REPOSITORY": "env/repo"}
+        ):
             annotator = PRAnnotator()
             assert annotator.github_token == "env_token"
             assert annotator.repo == "env/repo"
@@ -227,18 +223,18 @@ class TestPRAnnotator:
     def test_add_issue(self):
         """Test adding a code issue."""
         annotator = PRAnnotator()
-        
+
         issue = CodeIssue(
             file_path="test.py",
             line_number=10,
             column=5,
             rule_id="E501",
             message="Line too long",
-            severity="error"
+            severity="error",
         )
-        
+
         annotator.add_issue(issue)
-        
+
         assert len(annotator.issues) == 1
         assert len(annotator.annotations) == 1
         assert annotator.issues[0] == issue
@@ -246,7 +242,7 @@ class TestPRAnnotator:
     def test_issue_to_annotation_error(self):
         """Test converting error issue to annotation."""
         annotator = PRAnnotator()
-        
+
         issue = CodeIssue(
             file_path="test.py",
             line_number=10,
@@ -255,11 +251,11 @@ class TestPRAnnotator:
             message="Line too long",
             severity="error",
             suggestion="Break the line",
-            fix_code="short_line = 'value'"
+            fix_code="short_line = 'value'",
         )
-        
+
         annotation = annotator._issue_to_annotation(issue)
-        
+
         assert annotation is not None
         assert annotation.file_path == "test.py"
         assert annotation.line_number == 10
@@ -271,18 +267,18 @@ class TestPRAnnotator:
     def test_issue_to_annotation_warning(self):
         """Test converting warning issue to annotation."""
         annotator = PRAnnotator()
-        
+
         issue = CodeIssue(
             file_path="test.py",
             line_number=5,
             column=1,
             rule_id="W001",
             message="Unused import",
-            severity="warning"
+            severity="warning",
         )
-        
+
         annotation = annotator._issue_to_annotation(issue)
-        
+
         assert annotation is not None
         assert annotation.annotation_level == "warning"
         assert annotation.title == "W001: Unused import"
@@ -290,25 +286,25 @@ class TestPRAnnotator:
     def test_issue_to_annotation_info(self):
         """Test converting info issue to annotation."""
         annotator = PRAnnotator()
-        
+
         issue = CodeIssue(
             file_path="test.py",
             line_number=1,
             column=1,
             rule_id="I001",
             message="Style suggestion",
-            severity="info"
+            severity="info",
         )
-        
+
         annotation = annotator._issue_to_annotation(issue)
-        
+
         assert annotation is not None
         assert annotation.annotation_level == "notice"
 
     def test_add_lint_issues(self):
         """Test adding lint issues."""
         annotator = PRAnnotator()
-        
+
         lint_results = [
             {
                 "file_path": "test.py",
@@ -316,7 +312,7 @@ class TestPRAnnotator:
                 "column": 5,
                 "rule_id": "E501",
                 "message": "Line too long",
-                "severity": "error"
+                "severity": "error",
             },
             {
                 "file_path": "test2.py",
@@ -324,19 +320,19 @@ class TestPRAnnotator:
                 "column": 1,
                 "rule_id": "W001",
                 "message": "Unused import",
-                "severity": "warning"
-            }
+                "severity": "warning",
+            },
         ]
-        
+
         annotator.add_lint_issues(lint_results)
-        
+
         assert len(annotator.issues) == 2
         assert len(annotator.annotations) == 2
 
     def test_add_security_annotation(self):
         """Test adding security annotations."""
         annotator = PRAnnotator()
-        
+
         security_issues = [
             {
                 "file_path": "test.py",
@@ -344,12 +340,12 @@ class TestPRAnnotator:
                 "column": 5,
                 "rule_id": "B101",
                 "message": "Hardcoded password",
-                "severity": "error"
+                "severity": "error",
             }
         ]
-        
+
         annotator.add_security_annotation(security_issues)
-        
+
         assert len(annotator.annotations) == 1
         annotation = annotator.annotations[0]
         assert "security" in annotation.title.lower() or "B101" in annotation.title
@@ -357,9 +353,9 @@ class TestPRAnnotator:
     def test_add_coverage_annotation(self):
         """Test adding coverage annotations."""
         annotator = PRAnnotator()
-        
+
         annotator.add_coverage_annotation("test.py", {"coverage": 75.5})
-        
+
         assert len(annotator.annotations) == 1
         annotation = annotator.annotations[0]
         assert "coverage" in annotation.title.lower()
@@ -368,7 +364,7 @@ class TestPRAnnotator:
     def test_generate_review_summary(self):
         """Test generating review summary."""
         annotator = PRAnnotator()
-        
+
         # Add some issues
         issue1 = CodeIssue(
             file_path="test.py",
@@ -376,31 +372,36 @@ class TestPRAnnotator:
             column=5,
             rule_id="E501",
             message="Line too long",
-            severity="error"
+            severity="error",
         )
-        
+
         issue2 = CodeIssue(
             file_path="test.py",
             line_number=15,
             column=1,
             rule_id="W001",
             message="Unused import",
-            severity="warning"
+            severity="warning",
         )
-        
+
         annotator.add_issue(issue1)
         annotator.add_issue(issue2)
-        
+
         summary = annotator.generate_review_summary()
-        
-        assert summary.overall_status in ["success", "failure", "warning", "changes_requested"]
+
+        assert summary.overall_status in [
+            "success",
+            "failure",
+            "warning",
+            "changes_requested",
+        ]
         assert 0 <= summary.quality_score <= 1
         assert len(summary.annotations) == 2
 
     def test_create_review_comment(self):
         """Test creating review comment."""
         annotator = PRAnnotator()
-        
+
         # Add some issues
         issue = CodeIssue(
             file_path="test.py",
@@ -408,21 +409,21 @@ class TestPRAnnotator:
             column=5,
             rule_id="E501",
             message="Line too long",
-            severity="error"
+            severity="error",
         )
-        
+
         annotator.add_issue(issue)
         summary = annotator.generate_review_summary()
-        
+
         comment = annotator.create_review_comment(summary)
-        
+
         assert isinstance(comment, str)
         assert len(comment) > 0
 
     def test_save_annotations(self):
         """Test saving annotations to file."""
         annotator = PRAnnotator()
-        
+
         # Add an issue
         issue = CodeIssue(
             file_path="test.py",
@@ -430,17 +431,19 @@ class TestPRAnnotator:
             column=5,
             rule_id="E501",
             message="Line too long",
-            severity="error"
+            severity="error",
         )
-        
+
         annotator.add_issue(issue)
-        
+
         # Mock file operations
         with patch("builtins.open", mock_open()) as mock_file:
             annotator.save_annotations("test_annotations.json")
-            
-            mock_file.assert_called_once_with("test_annotations.json", "w", encoding="utf-8")
-            
+
+            mock_file.assert_called_once_with(
+                "test_annotations.json", "w", encoding="utf-8"
+            )
+
             # Check that JSON was written
             written_data = mock_file().write.call_args[0][0]
             annotations_data = json.loads(written_data)
@@ -458,11 +461,11 @@ test.py:10:5: E501 line too long (80 > 79 characters)
 test.py:15:1: W001 unused import 'os'
 test.py:20:10: E001 syntax error
         """.strip()
-        
+
         issues = parse_lint_output(lint_output)
-        
+
         assert len(issues) == 3
-        
+
         # Check first issue
         issue1 = issues[0]
         assert issue1.file_path == "test.py"
@@ -478,11 +481,11 @@ test.py:20:10: E001 syntax error
 test.py:10:5: B101 Use of hardcoded password strings
 test.py:20:1: B102 exec_used Use of exec
         """.strip()
-        
+
         issues = parse_bandit_output(bandit_output)
-        
+
         assert len(issues) == 2
-        
+
         # Check first issue
         issue1 = issues[0]
         assert issue1.file_path == "test.py"
@@ -496,11 +499,11 @@ test.py:20:1: B102 exec_used Use of exec
 test.py:10: error: Incompatible return type
 test.py:15: warning: Unused "type: ignore" comment
         """.strip()
-        
+
         issues = parse_mypy_output(mypy_output)
-        
+
         assert len(issues) == 2
-        
+
         # Check first issue
         issue1 = issues[0]
         assert issue1.file_path == "test.py"
@@ -521,9 +524,9 @@ class TestCreatePRAnnotations:
     def test_create_pr_annotations_with_lint(self):
         """Test creating PR annotations with lint output."""
         lint_output = "test.py:10:5: E501 line too long"
-        
+
         annotations = create_pr_annotations(lint_output=lint_output)
-        
+
         assert len(annotations) == 1
         annotation = annotations[0]
         assert annotation.file_path == "test.py"
@@ -532,37 +535,36 @@ class TestCreatePRAnnotations:
     def test_create_pr_annotations_with_bandit(self):
         """Test creating PR annotations with bandit output."""
         bandit_output = "test.py:10:5: B101 hardcoded password"
-        
+
         annotations = create_pr_annotations(bandit_output=bandit_output)
-        
+
         assert len(annotations) == 1
 
     def test_create_pr_annotations_with_mypy(self):
         """Test creating PR annotations with mypy output."""
         mypy_output = "test.py:10: error: Incompatible return type"
-        
+
         annotations = create_pr_annotations(mypy_output=mypy_output)
-        
+
         assert len(annotations) == 1
 
     def test_create_pr_annotations_with_coverage(self):
         """Test creating PR annotations with coverage output."""
         coverage_output = "test.py: 10 lines, 8 covered (80%)"
-        
+
         annotations = create_pr_annotations(coverage_output=coverage_output)
-        
+
         assert len(annotations) == 1
 
     def test_create_pr_annotations_with_multiple(self):
         """Test creating PR annotations with multiple outputs."""
         lint_output = "test.py:10:5: E501 line too long"
         bandit_output = "test.py:20:1: B101 hardcoded password"
-        
+
         annotations = create_pr_annotations(
-            lint_output=lint_output,
-            bandit_output=bandit_output
+            lint_output=lint_output, bandit_output=bandit_output
         )
-        
+
         assert len(annotations) == 2
 
     def test_create_pr_annotations_with_list(self):
@@ -574,24 +576,23 @@ class TestCreatePRAnnotations:
                 column=5,
                 rule_id="E501",
                 message="Line too long",
-                severity="error"
+                severity="error",
             )
         ]
-        
+
         annotations = create_pr_annotations(lint_output=issues)
-        
+
         assert len(annotations) == 1
 
     def test_create_pr_annotations_with_output_file(self):
         """Test creating PR annotations with output file."""
         lint_output = "test.py:10:5: E501 line too long"
-        
+
         with patch("builtins.open", mock_open()) as mock_file:
             annotations = create_pr_annotations(
-                lint_output=lint_output,
-                output_file="test_output.json"
+                lint_output=lint_output, output_file="test_output.json"
             )
-            
+
             assert len(annotations) == 1
             mock_file.assert_called()
 
@@ -607,11 +608,11 @@ class TestFormatAnnotationMessage:
             column=5,
             rule_id="E501",
             message="Line too long",
-            severity="error"
+            severity="error",
         )
-        
+
         message = format_annotation_message(issue)
-        
+
         assert "Line too long" in message
         assert issue.message in message
 
@@ -624,11 +625,11 @@ class TestFormatAnnotationMessage:
             rule_id="E501",
             message="Line too long",
             severity="error",
-            suggestion="Break the line"
+            suggestion="Break the line",
         )
-        
+
         message = format_annotation_message(issue)
-        
+
         assert "Line too long" in message
         assert "Suggestion:" in message
         assert "Break the line" in message
@@ -642,11 +643,11 @@ class TestFormatAnnotationMessage:
             rule_id="E501",
             message="Line too long",
             severity="error",
-            fix_code="short_line = 'value'"
+            fix_code="short_line = 'value'",
         )
-        
+
         message = format_annotation_message(issue)
-        
+
         assert "Line too long" in message
         assert "Fix:" in message
         assert "short_line = 'value'" in message
@@ -661,11 +662,11 @@ class TestFormatAnnotationMessage:
             message="Line too long",
             severity="error",
             suggestion="Break the line",
-            fix_code="short_line = 'value'"
+            fix_code="short_line = 'value'",
         )
-        
+
         message = format_annotation_message(issue)
-        
+
         assert "Line too long" in message
         assert "Suggestion:" in message
         assert "Break the line" in message
@@ -683,16 +684,16 @@ class TestWriteAnnotationsFile:
                 "file_path": "test.py",
                 "line_number": 10,
                 "message": "Test message",
-                "annotation_level": "error"
+                "annotation_level": "error",
             }
         ]
-        
+
         with patch("builtins.open", mock_open()) as mock_file:
             result = write_annotations_file(annotations, "test.json")
-            
+
             assert result is True
             mock_file.assert_called_once_with("test.json", "w", encoding="utf-8")
-            
+
             # Check JSON content
             written_data = mock_file().write.call_args[0][0]
             data = json.loads(written_data)
@@ -702,10 +703,10 @@ class TestWriteAnnotationsFile:
     def test_write_annotations_file_error(self):
         """Test writing annotations file with error."""
         annotations = [{"test": "data"}]
-        
+
         with patch("builtins.open", side_effect=IOError("Permission denied")):
             result = write_annotations_file(annotations, "test.json")
-            
+
             assert result is False
 
 
@@ -716,12 +717,16 @@ class TestMain:
         """Test main function with command line arguments."""
         test_args = [
             "pr_annotations.py",
-            "--input", "test_input.json",
-            "--output", "test_output.json",
-            "--github-token", "test_token",
-            "--repo", "owner/repo"
+            "--input",
+            "test_input.json",
+            "--output",
+            "test_output.json",
+            "--github-token",
+            "test_token",
+            "--repo",
+            "owner/repo",
         ]
-        
+
         input_data = {
             "lint_results": [
                 {
@@ -730,16 +735,18 @@ class TestMain:
                     "column": 5,
                     "rule_id": "E501",
                     "message": "Line too long",
-                    "severity": "error"
+                    "severity": "error",
                 }
             ]
         }
-        
-        with patch("sys.argv", test_args), \
-             patch("builtins.open", mock_open(read_data=json.dumps(input_data))), \
-             patch("src.ai_guard.pr_annotations.PRAnnotator") as mock_annotator_class, \
-             patch("builtins.print") as mock_print:
-            
+
+        with (
+            patch("sys.argv", test_args),
+            patch("builtins.open", mock_open(read_data=json.dumps(input_data))),
+            patch("src.ai_guard.pr_annotations.PRAnnotator") as mock_annotator_class,
+            patch("builtins.print") as mock_print,
+        ):
+
             mock_annotator = Mock()
             mock_annotator_class.return_value = mock_annotator
             mock_annotator.generate_review_summary.return_value = PRReviewSummary(
@@ -747,12 +754,12 @@ class TestMain:
                 summary="Test summary",
                 annotations=[],
                 suggestions=[],
-                quality_score=0.85
+                quality_score=0.85,
             )
             mock_annotator.create_review_comment.return_value = "Test comment"
-            
+
             main()
-            
+
             mock_annotator.add_lint_issues.assert_called_once()
             mock_annotator.save_annotations.assert_called_once_with("test_output.json")
 
@@ -760,16 +767,20 @@ class TestMain:
         """Test main function with error."""
         test_args = [
             "pr_annotations.py",
-            "--input", "nonexistent.json",
-            "--output", "test_output.json"
+            "--input",
+            "nonexistent.json",
+            "--output",
+            "test_output.json",
         ]
-        
-        with patch("sys.argv", test_args), \
-             patch("builtins.open", side_effect=FileNotFoundError("File not found")), \
-             patch("builtins.print") as mock_print:
-            
+
+        with (
+            patch("sys.argv", test_args),
+            patch("builtins.open", side_effect=FileNotFoundError("File not found")),
+            patch("builtins.print") as mock_print,
+        ):
+
             main()
-            
+
             # Should print error message
             mock_print.assert_called()
             assert "Error processing input" in str(mock_print.call_args)
@@ -784,34 +795,33 @@ class TestIntegration:
         lint_output = "test.py:10:5: E501 line too long"
         bandit_output = "test.py:20:1: B101 hardcoded password"
         coverage_output = "test.py: 10 lines, 8 covered (80%)"
-        
+
         # Create annotations
         annotations = create_pr_annotations(
             lint_output=lint_output,
             bandit_output=bandit_output,
-            coverage_output=coverage_output
+            coverage_output=coverage_output,
         )
-        
+
         assert len(annotations) == 3
-        
+
         # Verify annotation types
         annotation_types = [ann.annotation_level for ann in annotations]
         assert "failure" in annotation_types  # Error
         assert "warning" in annotation_types  # Coverage below threshold
-        
+
         # Test saving annotations
         with patch("builtins.open", mock_open()) as mock_file:
             result = write_annotations_file(
-                [ann.to_dict() for ann in annotations],
-                "test_annotations.json"
+                [ann.to_dict() for ann in annotations], "test_annotations.json"
             )
-            
+
             assert result is True
 
     def test_annotator_with_real_data(self):
         """Test PRAnnotator with realistic data."""
         annotator = PRAnnotator()
-        
+
         # Add various types of issues
         issues = [
             CodeIssue(
@@ -822,7 +832,7 @@ class TestIntegration:
                 message="Line too long (120 > 79 characters)",
                 severity="error",
                 suggestion="Break the line into multiple lines",
-                fix_code="result = some_function_call(\n    param1, param2, param3\n)"
+                fix_code="result = some_function_call(\n    param1, param2, param3\n)",
             ),
             CodeIssue(
                 file_path="src/utils.py",
@@ -830,7 +840,7 @@ class TestIntegration:
                 column=1,
                 rule_id="W001",
                 message="Unused import 'os'",
-                severity="warning"
+                severity="warning",
             ),
             CodeIssue(
                 file_path="src/auth.py",
@@ -839,25 +849,30 @@ class TestIntegration:
                 rule_id="B101",
                 message="Use of hardcoded password strings",
                 severity="error",
-                suggestion="Use environment variables or secure key management"
-            )
+                suggestion="Use environment variables or secure key management",
+            ),
         ]
-        
+
         for issue in issues:
             annotator.add_issue(issue)
-        
+
         # Generate summary
         summary = annotator.generate_review_summary()
-        
-        assert summary.overall_status in ["success", "failure", "warning", "changes_requested"]
+
+        assert summary.overall_status in [
+            "success",
+            "failure",
+            "warning",
+            "changes_requested",
+        ]
         assert 0 <= summary.quality_score <= 1
         assert len(summary.annotations) == 3
-        
+
         # Create review comment
         comment = annotator.create_review_comment(summary)
         assert isinstance(comment, str)
         assert len(comment) > 0
-        
+
         # Verify annotations have proper formatting
         for annotation in annotator.annotations:
             assert annotation.file_path

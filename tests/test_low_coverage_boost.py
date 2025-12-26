@@ -9,23 +9,42 @@ from unittest.mock import patch, MagicMock, mock_open
 from pathlib import Path
 
 from ai_guard.diff_parser import (
-    DiffParser, parse_diff, parse_diff_output, get_file_extensions,
-    filter_python_files, changed_python_files, parse_github_event,
-    get_changed_files
+    DiffParser,
+    parse_diff,
+    parse_diff_output,
+    get_file_extensions,
+    filter_python_files,
+    changed_python_files,
+    parse_github_event,
+    get_changed_files,
 )
 from ai_guard.generators.enhanced_testgen import EnhancedTestGenerator
 from ai_guard.language_support.js_ts_support import (
-    JavaScriptTypeScriptSupport, check_node_installed, check_npm_installed,
-    run_eslint, run_typescript_check, run_jest_tests, run_prettier_check
+    JavaScriptTypeScriptSupport,
+    check_node_installed,
+    check_npm_installed,
+    run_eslint,
+    run_typescript_check,
+    run_jest_tests,
+    run_prettier_check,
 )
 from ai_guard.parsers.typescript import parse_eslint, parse_jest
 from ai_guard.tests_runner import (
-    TestRunner, TestDiscoverer, TestExecutor, run_tests,
-    discover_test_files, execute_test_suite
+    TestRunner,
+    TestDiscoverer,
+    TestExecutor,
+    run_tests,
+    discover_test_files,
+    execute_test_suite,
 )
 from ai_guard.utils.subprocess_runner import (
-    SubprocessRunner, CommandExecutor, SafeCommandRunner,
-    run_command, run_command_dict, run_command_with_output, run_command_safe
+    SubprocessRunner,
+    CommandExecutor,
+    SafeCommandRunner,
+    run_command,
+    run_command_dict,
+    run_command_with_output,
+    run_command_safe,
 )
 from ai_guard.gates.coverage_eval import CoverageResult, evaluate_coverage_str
 
@@ -105,9 +124,10 @@ index 1234567..abcdefg 100644
     def test_diff_parser_parse_file(self):
         """Test parsing diff from file."""
         parser = DiffParser()
-        
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.diff') as f:
-            f.write("""
+
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".diff") as f:
+            f.write(
+                """
 diff --git a/test.py b/test.py
 index 1234567..abcdefg 100644
 --- a/test.py
@@ -117,7 +137,8 @@ index 1234567..abcdefg 100644
 -    print("Hello")
 +    print("Hello World")
 +    return True
-""")
+"""
+            )
             temp_path = f.name
 
         try:
@@ -145,7 +166,7 @@ class TestEnhancedTestGeneratorComprehensive:
     def test_generate_tests_basic(self):
         """Test basic test generation."""
         generator = EnhancedTestGenerator()
-        
+
         code = """
 def add(a, b):
     return a + b
@@ -171,7 +192,7 @@ def multiply(x, y):
     def test_generate_unit_tests(self):
         """Test unit test generation."""
         generator = EnhancedTestGenerator()
-        
+
         code = """
 class Calculator:
     def add(self, a, b):
@@ -186,7 +207,7 @@ class Calculator:
     def test_generate_integration_tests(self):
         """Test integration test generation."""
         generator = EnhancedTestGenerator()
-        
+
         code = """
 def process_data(data):
     return {"processed": data, "status": "success"}
@@ -197,7 +218,7 @@ def process_data(data):
     def test_generate_performance_tests(self):
         """Test performance test generation."""
         generator = EnhancedTestGenerator()
-        
+
         code = """
 def slow_function():
     import time
@@ -210,7 +231,7 @@ def slow_function():
     def test_generate_security_tests(self):
         """Test security test generation."""
         generator = EnhancedTestGenerator()
-        
+
         code = """
 def authenticate_user(username, password):
     # Simulate authentication
@@ -238,43 +259,45 @@ class TestJSTSSupportComprehensive:
         result = check_npm_installed()
         assert isinstance(result, bool)
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_eslint_success(self, mock_run):
         """Test running ESLint successfully."""
-        mock_run.return_value = MagicMock(returncode=0, stdout='[]', stderr='')
-        
+        mock_run.return_value = MagicMock(returncode=0, stdout="[]", stderr="")
+
         result = run_eslint(["test.js"])
         assert result is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_eslint_failure(self, mock_run):
         """Test running ESLint with failure."""
-        mock_run.return_value = MagicMock(returncode=1, stdout='', stderr='error')
-        
+        mock_run.return_value = MagicMock(returncode=1, stdout="", stderr="error")
+
         result = run_eslint(["test.js"])
         assert result is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_typescript_check_success(self, mock_run):
         """Test running TypeScript check successfully."""
-        mock_run.return_value = MagicMock(returncode=0, stdout='', stderr='')
-        
+        mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
+
         result = run_typescript_check(["test.ts"])
         assert result is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_jest_tests_success(self, mock_run):
         """Test running Jest tests successfully."""
-        mock_run.return_value = MagicMock(returncode=0, stdout='{"testResults": []}', stderr='')
-        
+        mock_run.return_value = MagicMock(
+            returncode=0, stdout='{"testResults": []}', stderr=""
+        )
+
         result = run_jest_tests()
         assert result is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_prettier_check_success(self, mock_run):
         """Test running Prettier check successfully."""
-        mock_run.return_value = MagicMock(returncode=0, stdout='', stderr='')
-        
+        mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
+
         result = run_prettier_check(["test.js"])
         assert result is not None
 
@@ -363,55 +386,61 @@ class TestTestsRunnerComprehensive:
         executor = TestExecutor()
         assert executor is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_tests_success(self, mock_run):
         """Test running tests successfully."""
         mock_run.return_value = MagicMock(returncode=0, stdout="test passed", stderr="")
-        
+
         result = run_tests(["test_file.py"])
         assert result is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_tests_failure(self, mock_run):
         """Test running tests with failure."""
         mock_run.return_value = MagicMock(returncode=1, stdout="test failed", stderr="")
-        
+
         result = run_tests(["test_file.py"])
         assert result is not None
 
-    @patch('os.listdir')
+    @patch("os.listdir")
     def test_discover_test_files_success(self, mock_listdir):
         """Test discovering test files successfully."""
         mock_listdir.return_value = ["test_file1.py", "test_file2.py", "other_file.py"]
-        
+
         result = discover_test_files("test_dir")
         assert result is not None
 
-    @patch('os.listdir')
+    @patch("os.listdir")
     def test_discover_test_files_empty(self, mock_listdir):
         """Test discovering test files in empty directory."""
         mock_listdir.return_value = []
-        
+
         result = discover_test_files("empty_dir")
         assert result is not None
 
     def test_execute_test_suite_success(self):
         """Test executing test suite successfully."""
-        with patch('ai_guard.tests_runner.run_tests') as mock_run_tests:
+        with patch("ai_guard.tests_runner.run_tests") as mock_run_tests:
             mock_run_tests.return_value = {
-                "success": True, "passed": 5, "failed": 0, "total": 5
+                "success": True,
+                "passed": 5,
+                "failed": 0,
+                "total": 5,
             }
-            
+
             result = execute_test_suite(["test_file1.py", "test_file2.py"])
             assert result is not None
 
     def test_execute_test_suite_failure(self):
         """Test executing test suite with failure."""
-        with patch('ai_guard.tests_runner.run_tests') as mock_run_tests:
+        with patch("ai_guard.tests_runner.run_tests") as mock_run_tests:
             mock_run_tests.return_value = {
-                "success": False, "passed": 3, "failed": 2, "total": 5
+                "success": False,
+                "passed": 3,
+                "failed": 2,
+                "total": 5,
             }
-            
+
             result = execute_test_suite(["test_file1.py", "test_file2.py"])
             assert result is not None
 
@@ -434,52 +463,52 @@ class TestSubprocessRunnerComprehensive:
         runner = SafeCommandRunner()
         assert runner is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_success(self, mock_run):
         """Test running command successfully."""
         mock_run.return_value = MagicMock(returncode=0, stdout="success", stderr="")
-        
+
         result = run_command(["echo", "test"])
         assert result is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_failure(self, mock_run):
         """Test running command with failure."""
         mock_run.return_value = MagicMock(returncode=1, stdout="", stderr="error")
-        
+
         result = run_command(["false"])
         assert result is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_dict_success(self, mock_run):
         """Test running command with dict result."""
         mock_run.return_value = MagicMock(returncode=0, stdout="output", stderr="")
-        
+
         result = run_command_dict(["echo", "test"])
         assert result is not None
         assert "success" in result or "returncode" in result
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_with_output_success(self, mock_run):
         """Test running command with output."""
         mock_run.return_value = MagicMock(returncode=0, stdout="output", stderr="")
-        
+
         result = run_command_with_output(["echo", "test"])
         assert result is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_safe_success(self, mock_run):
         """Test running command safely."""
         mock_run.return_value = MagicMock(returncode=0, stdout="output", stderr="")
-        
+
         result = run_command_safe(["echo", "test"])
         assert result is not None
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_safe_failure(self, mock_run):
         """Test running command safely with failure."""
         mock_run.side_effect = subprocess.CalledProcessError(1, "command")
-        
+
         result = run_command_safe(["invalid_command"])
         assert result is not None
         assert "success" in result or "error" in result

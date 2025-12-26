@@ -93,30 +93,32 @@ class TestTypeScriptParserComprehensive:
 
     def test_parse_eslint_json_format(self):
         """Test parse_eslint with JSON format."""
-        json_output = json.dumps([
-            {
-                "filePath": "src/test.ts",
-                "messages": [
-                    {
-                        "ruleId": "no-unused-vars",
-                        "severity": 2,
-                        "line": 5,
-                        "column": 10,
-                        "message": "Variable 'x' is defined but never used"
-                    },
-                    {
-                        "ruleId": "no-console",
-                        "severity": 1,
-                        "line": 8,
-                        "column": 5,
-                        "message": "Unexpected console statement"
-                    }
-                ]
-            }
-        ])
-        
+        json_output = json.dumps(
+            [
+                {
+                    "filePath": "src/test.ts",
+                    "messages": [
+                        {
+                            "ruleId": "no-unused-vars",
+                            "severity": 2,
+                            "line": 5,
+                            "column": 10,
+                            "message": "Variable 'x' is defined but never used",
+                        },
+                        {
+                            "ruleId": "no-console",
+                            "severity": 1,
+                            "line": 8,
+                            "column": 5,
+                            "message": "Unexpected console statement",
+                        },
+                    ],
+                }
+            ]
+        )
+
         result = parse_eslint(json_output)
-        
+
         assert len(result) == 2
         assert result[0]["file"] == "src/test.ts"
         assert result[0]["line"] == 5
@@ -124,7 +126,7 @@ class TestTypeScriptParserComprehensive:
         assert result[0]["rule"] == "eslint:no-unused-vars"
         assert result[0]["message"] == "Variable 'x' is defined but never used"
         assert result[0]["severity"] == "error"
-        
+
         assert result[1]["file"] == "src/test.ts"
         assert result[1]["line"] == 8
         assert result[1]["col"] == 5
@@ -134,23 +136,25 @@ class TestTypeScriptParserComprehensive:
 
     def test_parse_eslint_json_format_missing_fields(self):
         """Test parse_eslint with JSON format missing some fields."""
-        json_output = json.dumps([
-            {
-                "filePath": "src/test.ts",
-                "messages": [
-                    {
-                        "ruleId": None,
-                        "severity": None,
-                        "line": None,
-                        "column": None,
-                        "message": None
-                    }
-                ]
-            }
-        ])
-        
+        json_output = json.dumps(
+            [
+                {
+                    "filePath": "src/test.ts",
+                    "messages": [
+                        {
+                            "ruleId": None,
+                            "severity": None,
+                            "line": None,
+                            "column": None,
+                            "message": None,
+                        }
+                    ],
+                }
+            ]
+        )
+
         result = parse_eslint(json_output)
-        
+
         assert len(result) == 1
         assert result[0]["file"] == "src/test.ts"
         assert result[0]["line"] == 1
@@ -162,9 +166,9 @@ class TestTypeScriptParserComprehensive:
     def test_parse_eslint_json_format_invalid_json(self):
         """Test parse_eslint with invalid JSON falls back to text parsing."""
         invalid_json = '{"invalid": json}'
-        
+
         result = parse_eslint(invalid_json)
-        
+
         # Should return empty list since no text format matches
         assert result == []
 
@@ -172,9 +176,9 @@ class TestTypeScriptParserComprehensive:
         """Test parse_eslint with text format."""
         text_output = """src/test.ts:5:10  error  Variable 'x' is defined but never used  no-unused-vars
 src/test.ts:8:5   warning  Unexpected console statement  no-console"""
-        
+
         result = parse_eslint(text_output)
-        
+
         assert len(result) == 2
         assert result[0]["file"] == "src/test.ts"
         assert result[0]["line"] == 5
@@ -182,7 +186,7 @@ src/test.ts:8:5   warning  Unexpected console statement  no-console"""
         assert result[0]["rule"] == "eslint:no-unused-vars"
         assert result[0]["message"] == "Variable 'x' is defined but never used"
         assert result[0]["severity"] == "error"
-        
+
         assert result[1]["file"] == "src/test.ts"
         assert result[1]["line"] == 8
         assert result[1]["col"] == 5
@@ -193,9 +197,9 @@ src/test.ts:8:5   warning  Unexpected console statement  no-console"""
     def test_parse_eslint_text_format_no_matches(self):
         """Test parse_eslint with text that doesn't match pattern."""
         text_output = "This is not a valid eslint output line"
-        
+
         result = parse_eslint(text_output)
-        
+
         assert result == []
 
     def test_parse_eslint_empty_output(self):
@@ -211,9 +215,9 @@ src/test.ts:8:5   warning  Unexpected console statement  no-console"""
     def test_parse_jest_valid_output(self):
         """Test parse_jest with valid output."""
         output = "Tests:       1 failed, 12 passed, 13 total"
-        
+
         result = parse_jest(output)
-        
+
         assert result["tests"] == 13
         assert result["passed"] == 12
         assert result["failed"] == 1
@@ -221,9 +225,9 @@ src/test.ts:8:5   warning  Unexpected console statement  no-console"""
     def test_parse_jest_no_failed(self):
         """Test parse_jest with no failed tests."""
         output = "Tests:       12 passed, 12 total"
-        
+
         result = parse_jest(output)
-        
+
         assert result["tests"] == 12
         assert result["passed"] == 12
         assert result["failed"] == 0
@@ -231,9 +235,9 @@ src/test.ts:8:5   warning  Unexpected console statement  no-console"""
     def test_parse_jest_no_passed(self):
         """Test parse_jest with no passed tests."""
         output = "Tests:       5 failed, 5 total"
-        
+
         result = parse_jest(output)
-        
+
         assert result["tests"] == 5
         assert result["passed"] == 0
         assert result["failed"] == 5
@@ -241,9 +245,9 @@ src/test.ts:8:5   warning  Unexpected console statement  no-console"""
     def test_parse_jest_no_match(self):
         """Test parse_jest with no matching pattern."""
         output = "This is not a jest output"
-        
+
         result = parse_jest(output)
-        
+
         assert result["tests"] == 0
         assert result["passed"] == 0
         assert result["failed"] == 0
@@ -265,9 +269,9 @@ src/test.ts:8:5   warning  Unexpected console statement  no-console"""
     def test_parse_jest_complex_output(self):
         """Test parse_jest with complex output."""
         output = "Tests:       3 failed, 15 passed, 18 total, 2 skipped"
-        
+
         result = parse_jest(output)
-        
+
         assert result["tests"] == 18
         assert result["passed"] == 15
         assert result["failed"] == 3
@@ -275,9 +279,9 @@ src/test.ts:8:5   warning  Unexpected console statement  no-console"""
     def test_parse_jest_whitespace_variations(self):
         """Test parse_jest with various whitespace."""
         output = "Tests:   2 failed,   8 passed,   10 total"
-        
+
         result = parse_jest(output)
-        
+
         assert result["tests"] == 10
         assert result["passed"] == 8
         assert result["failed"] == 2

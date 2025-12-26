@@ -14,7 +14,7 @@ from src.ai_guard.exceptions import (
     ValidationError,
     TimeoutError,
     FileSystemError,
-    NetworkError
+    NetworkError,
 )
 
 
@@ -203,9 +203,9 @@ class TestExceptionInheritance:
             ValidationError,
             TimeoutError,
             FileSystemError,
-            NetworkError
+            NetworkError,
         ]
-        
+
         for exception_class in exceptions:
             error = exception_class("Test message")
             assert isinstance(error, AIGuardError)

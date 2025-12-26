@@ -9,7 +9,7 @@ from src.ai_guard.utils.subprocess_runner import (
     run_command_with_output,
     run_command_safe,
     SubprocessRunner,
-    CommandExecutor
+    CommandExecutor,
 )
 
 

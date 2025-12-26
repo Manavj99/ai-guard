@@ -9,8 +9,12 @@ import sys
 import defusedxml.ElementTree as ET
 from pathlib import Path
 from dataclasses import dataclass
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Optional, Union, Callable
 from enum import Enum
+import functools
+import concurrent.futures
+import threading
+from collections import defaultdict
 
 from .config import load_config
 from .report import GateResult, summarize
@@ -21,7 +25,14 @@ from .report_json import write_json
 from .report_html import write_html
 from .generators.enhanced_testgen import EnhancedTestGenerator, TestGenConfig
 from .pr_annotations import PRAnnotator
-from .performance import time_function, cached, get_performance_summary
+from .performance import (
+    time_function,
+    cached,
+    get_performance_summary,
+    parallel_execute,
+    get_cache,
+    PerformanceMonitor,
+)
 from .utils.error_formatter import (
     ErrorContext,
     ErrorSeverity,
@@ -278,7 +289,7 @@ def _parse_mypy_output(text: str) -> List[SarifResult]:
         m = re.match(pattern, ln.strip())
         if not m:
             continue
-        if m["sev"].lower() not in {"error", "warning", "note"}:
+        if m["sev"].lower() not in {"error", "warning"}:
             continue
         code = (m["code"] or "").strip()
         file = m["file"]
@@ -331,16 +342,16 @@ def run_lint_check(paths: list[str] | None) -> tuple[GateResult, SarifResult | N
     sarif_results = _parse_flake8_output(combined)
     first_result = sarif_results[0] if sarif_results else None
 
-    # If non-zero AND we did parse a finding → fail with the finding message.
+    # If non-zero AND we did parse a finding  fail with the finding message.
     if proc.returncode != 0 and first_result is not None:
         return GateResult("Lint (flake8)", False, first_result.message, 0), first_result
 
-    # If non-zero AND no parseable output → treat as tool error and show stderr.
+    # If non-zero AND no parseable output  treat as tool error and show stderr.
     if proc.returncode != 0 and (first_result is None):
         details = ("flake8 error: " + _to_text(proc.stderr).strip()) or "flake8 error"
         return GateResult("Lint (flake8)", False, details, 0), None
 
-    # Zero returncode → pass
+    # Zero returncode  pass
     details = "No issues" if first_result is None else first_result.message
     return GateResult("Lint (flake8)", True, details, 0), first_result
 
@@ -820,7 +831,7 @@ def run_coverage_check(
             None,
         )
 
-    # If min_coverage is None, don't enforce a threshold—report informationally.
+    # If min_coverage is None, don't enforce a thresholdreport informationally.
     if min_coverage is None:
         details = format_coverage_message(pct, 0) + " (no minimum set)"
         return (
@@ -994,7 +1005,7 @@ def run(argv: list[str] | None = None) -> int:
 
     # Enhanced test generation (if enabled)
     if args.enhanced_testgen and changed_py:
-        print("🔧 Running enhanced test generation...")
+        print(" Running enhanced test generation...")
         try:
             # Initialize enhanced test generator
             testgen_config = TestGenConfig(
@@ -1021,7 +1032,7 @@ def run(argv: list[str] | None = None) -> int:
                 with open(test_output_path, "w", encoding="utf-8") as f:
                     f.write(test_content)
 
-                print(f"✅ Enhanced tests generated: {test_output_path}")
+                print(f" Enhanced tests generated: {test_output_path}")
                 results.append(
                     GateResult(
                         "Enhanced Test Generation",
@@ -1030,20 +1041,20 @@ def run(argv: list[str] | None = None) -> int:
                     )
                 )
             else:
-                print("ℹ️ No enhanced tests generated")
+                print(" No enhanced tests generated")
                 results.append(
                     GateResult("Enhanced Test Generation", True, "No tests needed")
                 )
 
         except Exception as e:
-            print(f"⚠️ Enhanced test generation failed: {e}")
+            print(f" Enhanced test generation failed: {e}")
             results.append(
                 GateResult("Enhanced Test Generation", False, f"Generation failed: {e}")
             )
 
     # PR Annotations (if enabled)
     if args.pr_annotations:
-        print("📝 Generating PR annotations...")
+        print(" Generating PR annotations...")
         try:
             # Initialize PR annotator
             annotator = PRAnnotator()
@@ -1151,9 +1162,9 @@ def run(argv: list[str] | None = None) -> int:
             summary = annotator.generate_review_summary()
             annotator.save_annotations(args.annotations_output)
 
-            print(f"✅ PR annotations generated: {args.annotations_output}")
-            print(f"📊 Review status: {summary.overall_status}")
-            print(f"🎯 Quality score: {summary.quality_score:.1%}")
+            print(f" PR annotations generated: {args.annotations_output}")
+            print(f" Review status: {summary.overall_status}")
+            print(f" Quality score: {summary.quality_score:.1%}")
 
             results.append(
                 GateResult(
@@ -1164,7 +1175,7 @@ def run(argv: list[str] | None = None) -> int:
             )
 
         except Exception as e:
-            print(f"⚠️ PR annotation generation failed: {e}")
+            print(f" PR annotation generation failed: {e}")
             results.append(
                 GateResult("PR Annotations", False, f"Generation failed: {e}")
             )
@@ -1209,7 +1220,7 @@ def run(argv: list[str] | None = None) -> int:
     # Generate performance report if requested
     if args.performance_report:
         perf_summary = get_performance_summary()
-        print("\n📊 Performance Summary:")
+        print("\n Performance Summary:")
         print(f"  Total metrics recorded: {perf_summary['total_metrics']}")
         print(f"  Cache size: {perf_summary['cache_size']}")
         print(f"  Functions tracked: {perf_summary['functions_tracked']}")
@@ -1238,6 +1249,7 @@ class AnalysisConfig:
     enable_coverage_analysis: bool = True
     output_format: str = "json"
     verbose: bool = False
+    min_coverage: float = 80.0
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -1248,6 +1260,7 @@ class AnalysisConfig:
             "enable_coverage_analysis": self.enable_coverage_analysis,
             "output_format": self.output_format,
             "verbose": self.verbose,
+            "min_coverage": self.min_coverage,
         }
 
     @classmethod
@@ -1287,6 +1300,53 @@ class AnalysisResult:
             + len(self.quality_issues)
         )
 
+    def add_security_issue(self, issue: str) -> None:
+        """Add a security issue."""
+        self.security_issues.append(issue)
+
+    def add_performance_issue(self, issue: str) -> None:
+        """Add a performance issue."""
+        self.performance_issues.append(issue)
+
+    def add_quality_issue(self, issue: str) -> None:
+        """Add a quality issue."""
+        self.quality_issues.append(issue)
+
+    def set_coverage_data(self, coverage_data: Dict[str, float]) -> None:
+        """Set coverage data."""
+        self.coverage_data = coverage_data
+
+    def set_execution_time(self, execution_time: float) -> None:
+        """Set execution time."""
+        self.execution_time = execution_time
+
+    def clear_issues(self) -> None:
+        """Clear all issues."""
+        self.security_issues.clear()
+        self.performance_issues.clear()
+        self.quality_issues.clear()
+
+    def get_total_issues_count(self) -> int:
+        """Get total number of issues."""
+        return (
+            len(self.security_issues)
+            + len(self.performance_issues)
+            + len(self.quality_issues)
+        )
+
+    def has_issues(self) -> bool:
+        """Check if there are any issues."""
+        return self.get_total_issues_count() > 0
+
+    def get_issues_summary(self) -> Dict[str, int]:
+        """Get summary of issues by type."""
+        return {
+            "security": len(self.security_issues),
+            "performance": len(self.performance_issues),
+            "quality": len(self.quality_issues),
+            "total": self.get_total_issues_count(),
+        }
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -1306,34 +1366,79 @@ class SecurityAnalyzer:
         """Initialize security analyzer."""
         self.issues = []
         self.rules = []
+        self._cache = {}
+        self._lock = threading.Lock()
+        self._compiled_patterns = {
+            "os_system": re.compile(r"os\.system\s*\(.*?\)"),
+            "eval_call": re.compile(r"eval\s*\(.*?\)"),
+            "exec_call": re.compile(r"exec\s*\(.*?\)"),
+            "subprocess_call": re.compile(r"subprocess\.call\s*\(.*?\)"),
+            "hardcoded_password": re.compile(
+                r'password\s*=\s*["\'][^"\']+["\']', re.IGNORECASE
+            ),
+            "sql_injection": re.compile(
+                r'f["\'][^"\']*\{.*?\}[^"\']*["\'].*?(?:SELECT|INSERT|UPDATE|DELETE)',
+                re.IGNORECASE,
+            ),
+        }
 
     def load_rules(self):
         """Load security rules."""
         self.rules = ["rule1", "rule2", "rule3"]
 
+    @time_function
     def analyze_file(self, file_path: str) -> List[str]:
-        """Analyze file for security issues."""
+        """Analyze file for security issues with optimized pattern matching."""
         if not os.path.exists(file_path):
-            return [f"File not found: {file_path}"]
+            return []
+
+        # Check cache first
+        with self._lock:
+            if file_path in self._cache:
+                return self._cache[file_path]
 
         try:
-            with open(file_path, "r") as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             issues = []
-            if "os.system" in content:
-                issues.append("Dangerous os.system call detected")
-            if "eval(" in content:
-                issues.append("Dangerous eval() call detected")
+
+            # Use compiled regex patterns for faster matching
+            for pattern_name, pattern in self._compiled_patterns.items():
+                matches = pattern.findall(content)
+                if matches:
+                    if pattern_name == "os_system":
+                        issues.append("Dangerous os.system call detected")
+                    elif pattern_name == "eval_call":
+                        issues.append("Dangerous eval() call detected")
+                    elif pattern_name == "exec_call":
+                        issues.append("Dangerous exec() call detected")
+                    elif pattern_name == "subprocess_call":
+                        issues.append("Dangerous subprocess.call detected")
+                    elif pattern_name == "hardcoded_password":
+                        issues.append("Potential hardcoded password detected")
+                    elif pattern_name == "sql_injection":
+                        issues.append("Potential SQL injection vulnerability")
+
+            # Cache results
+            with self._lock:
+                self._cache[file_path] = issues
 
             return issues
         except Exception as e:
             return [f"Error analyzing file: {e}"]
 
-    def add_issue(self, file: str, line: int, message: str, severity: str):
+    def add_issue(
+        self, file_path: str, line_number: int, message: str, severity: str
+    ) -> None:
         """Add security issue."""
         self.issues.append(
-            {"file": file, "line": line, "message": message, "severity": severity}
+            {
+                "file": file_path,
+                "line": line_number,
+                "message": message,
+                "severity": severity,
+            }
         )
 
     def get_issues(self) -> List[Dict[str, Any]]:
@@ -1352,30 +1457,71 @@ class PerformanceAnalyzer:
         """Initialize performance analyzer."""
         self.issues = []
         self.benchmarks = {}
+        self._cache = {}
+        self._lock = threading.Lock()
+        self._compiled_patterns = {
+            "large_range": re.compile(r"range\s*\(\s*\d{6,}\s*\)"),
+            "time_sleep": re.compile(r"time\.sleep\s*\(.*?\)"),
+            "nested_loops": re.compile(
+                r"for\s+\w+\s+in\s+.*?:\s*\n.*?for\s+\w+\s+in\s+.*?:\s*\n"
+            ),
+            "inefficient_list_comp": re.compile(r"\[.*?for.*?in.*?if.*?\]"),
+            "global_vars": re.compile(r"global\s+\w+"),
+        }
 
+    @time_function
     def analyze_file(self, file_path: str) -> List[str]:
-        """Analyze file for performance issues."""
+        """Analyze file for performance issues with optimized pattern matching."""
         if not os.path.exists(file_path):
-            return [f"File not found: {file_path}"]
+            return []
+
+        # Check cache first
+        with self._lock:
+            if file_path in self._cache:
+                return self._cache[file_path]
 
         try:
-            with open(file_path, "r") as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             issues = []
-            if "for i in range(1000000)" in content:
-                issues.append("Potential performance issue: large range loop")
-            if "time.sleep(" in content:
-                issues.append("Blocking sleep call detected")
+
+            # Use compiled regex patterns for faster matching
+            for pattern_name, pattern in self._compiled_patterns.items():
+                matches = pattern.findall(content)
+                if matches:
+                    if pattern_name == "large_range":
+                        issues.append("Potential performance issue: large range loop")
+                    elif pattern_name == "time_sleep":
+                        issues.append("Blocking sleep call detected")
+                    elif pattern_name == "nested_loops":
+                        issues.append("Nested loops detected - consider optimization")
+                    elif pattern_name == "inefficient_list_comp":
+                        issues.append("Complex list comprehension detected")
+                    elif pattern_name == "global_vars":
+                        issues.append(
+                            "Global variables detected - may impact performance"
+                        )
+
+            # Cache results
+            with self._lock:
+                self._cache[file_path] = issues
 
             return issues
         except Exception as e:
             return [f"Error analyzing file: {e}"]
 
-    def add_issue(self, file: str, line: int, message: str, severity: str):
+    def add_issue(
+        self, file_path: str, line_number: int, message: str, severity: str
+    ) -> None:
         """Add performance issue."""
         self.issues.append(
-            {"file": file, "line": line, "message": message, "severity": severity}
+            {
+                "file": file_path,
+                "line": line_number,
+                "message": message,
+                "severity": severity,
+            }
         )
 
     def get_issues(self) -> List[Dict[str, Any]]:
@@ -1394,30 +1540,72 @@ class QualityAnalyzer:
         """Initialize quality analyzer."""
         self.issues = []
         self.metrics = {}
+        self._cache = {}
+        self._lock = threading.Lock()
+        self._compiled_patterns = {
+            "todo_comments": re.compile(r"#\s*TODO\b", re.IGNORECASE),
+            "fixme_comments": re.compile(r"#\s*FIXME\b", re.IGNORECASE),
+            "hack_comments": re.compile(r"#\s*HACK\b", re.IGNORECASE),
+            "long_lines": re.compile(r"^.{120,}$"),
+            "complex_functions": re.compile(
+                r"def\s+\w+\s*\([^)]*\):\s*\n(?:\s{4}.*\n){20,}"
+            ),
+            "duplicate_code": re.compile(r"(.{20,})\n.*\1"),
+        }
 
+    @time_function
     def analyze_file(self, file_path: str) -> List[str]:
-        """Analyze file for quality issues."""
+        """Analyze file for quality issues with optimized pattern matching."""
         if not os.path.exists(file_path):
-            return [f"File not found: {file_path}"]
+            return []
+
+        # Check cache first
+        with self._lock:
+            if file_path in self._cache:
+                return self._cache[file_path]
 
         try:
-            with open(file_path, "r") as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             issues = []
-            if "TODO" in content:
-                issues.append("TODO comment found")
-            if "FIXME" in content:
-                issues.append("FIXME comment found")
+
+            # Use compiled regex patterns for faster matching
+            for pattern_name, pattern in self._compiled_patterns.items():
+                matches = pattern.findall(content)
+                if matches:
+                    if pattern_name == "todo_comments":
+                        issues.append(f"TODO comment found ({len(matches)} instances)")
+                    elif pattern_name == "fixme_comments":
+                        issues.append(f"FIXME comment found ({len(matches)} instances)")
+                    elif pattern_name == "hack_comments":
+                        issues.append(f"HACK comment found ({len(matches)} instances)")
+                    elif pattern_name == "long_lines":
+                        issues.append(f"Long lines detected ({len(matches)} instances)")
+                    elif pattern_name == "complex_functions":
+                        issues.append("Complex functions detected")
+                    elif pattern_name == "duplicate_code":
+                        issues.append("Potential code duplication detected")
+
+            # Cache results
+            with self._lock:
+                self._cache[file_path] = issues
 
             return issues
         except Exception as e:
             return [f"Error analyzing file: {e}"]
 
-    def add_issue(self, file: str, line: int, message: str, severity: str):
+    def add_issue(
+        self, file_path: str, line_number: int, message: str, severity: str
+    ) -> None:
         """Add quality issue."""
         self.issues.append(
-            {"file": file, "line": line, "message": message, "severity": severity}
+            {
+                "file": file_path,
+                "line": line_number,
+                "message": message,
+                "severity": severity,
+            }
         )
 
     def get_issues(self) -> List[Dict[str, Any]]:
@@ -1436,14 +1624,60 @@ class CoverageAnalyzer:
         """Initialize coverage analyzer."""
         self.coverage_data = {}
         self.threshold = 80.0
+        self._cache = {}
+        self._lock = threading.Lock()
+        self._xml_cache = {}
+        self._xml_cache_time = {}
+        self._xml_cache_ttl = 60  # Cache XML parsing for 60 seconds
 
+    @time_function
     def analyze_file(self, file_path: str) -> Dict[str, float]:
-        """Analyze file for coverage."""
+        """Analyze file for coverage with caching."""
         if not os.path.exists(file_path):
             return {}
 
-        # Mock coverage analysis
-        return {file_path: 85.5}
+        # Check cache first
+        with self._lock:
+            if file_path in self._cache:
+                return self._cache[file_path]
+
+        # Try to get coverage from XML file
+        coverage_percent = self._get_coverage_from_xml_cached()
+
+        if coverage_percent is not None:
+            result = {file_path: float(coverage_percent)}
+        else:
+            # Fallback to mock analysis
+            result = {file_path: 85.5}
+
+        # Cache results
+        with self._lock:
+            self._cache[file_path] = result
+
+        return result
+
+    def _get_coverage_from_xml_cached(self) -> Optional[int]:
+        """Get coverage from XML with caching."""
+        import time
+
+        with self._lock:
+            current_time = time.time()
+            if (
+                "coverage.xml" in self._xml_cache
+                and "coverage.xml" in self._xml_cache_time
+                and current_time - self._xml_cache_time["coverage.xml"]
+                < self._xml_cache_ttl
+            ):
+                return self._xml_cache["coverage.xml"]
+
+        # Parse XML if not cached or expired
+        coverage_percent = _coverage_percent_from_xml("coverage.xml")
+
+        with self._lock:
+            self._xml_cache["coverage.xml"] = coverage_percent
+            self._xml_cache_time["coverage.xml"] = time.time()
+
+        return coverage_percent
 
     def set_threshold(self, threshold: float):
         """Set coverage threshold."""
@@ -1472,10 +1706,26 @@ class CodeAnalyzer:
         self.performance_analyzer = PerformanceAnalyzer()
         self.quality_analyzer = QualityAnalyzer()
         self.coverage_analyzer = CoverageAnalyzer()
+        self._file_cache = {}
+        self._cache_lock = threading.Lock()
+        self._performance_monitor = PerformanceMonitor()
 
     def analyze_file(self, file_path: str) -> AnalysisResult:
         """Analyze a single file."""
         result = AnalysisResult()
+
+        # Check if file exists first
+        if not os.path.exists(file_path):
+            file_not_found_msg = f"File not found: {file_path}"
+            if self.config.enable_security_analysis:
+                result.security_issues = [file_not_found_msg]
+            if self.config.enable_performance_analysis:
+                result.performance_issues = [file_not_found_msg]
+            if self.config.enable_quality_analysis:
+                result.quality_issues = [file_not_found_msg]
+            if self.config.enable_coverage_analysis:
+                result.coverage_data = {}
+            return result
 
         if self.config.enable_security_analysis:
             result.security_issues = self.security_analyzer.analyze_file(file_path)
@@ -1493,7 +1743,10 @@ class CodeAnalyzer:
 
         return result
 
-    def analyze_directory(self, directory: str) -> List[AnalysisResult]:
+    @time_function
+    def analyze_directory(
+        self, directory: str, max_workers: int = 4
+    ) -> List[AnalysisResult]:
         """Analyze a directory."""
         results = []
 
@@ -1535,7 +1788,10 @@ class CodeAnalyzer:
             "average_execution_time": average_execution_time,
         }
 
-    def run_all_checks(self, paths: Optional[List[str]] = None) -> List[GateResult]:
+    @time_function
+    def run_all_checks(
+        self, paths: Optional[List[str]] = None, parallel: bool = True
+    ) -> List[GateResult]:
         """Run all quality gate checks.
 
         Args:
@@ -1564,6 +1820,146 @@ class CodeAnalyzer:
         results.append(coverage_result)
 
         return results
+
+    def get_performance_metrics(self) -> Dict[str, Any]:
+        """Get performance metrics for the analyzer."""
+        return get_performance_summary()
+
+    def clear_cache(self) -> None:
+        """Clear all caches."""
+        with self._cache_lock:
+            self._file_cache.clear()
+
+        # Clear individual analyzer caches
+        with self.security_analyzer._lock:
+            self.security_analyzer._cache.clear()
+        with self.performance_analyzer._lock:
+            self.performance_analyzer._cache.clear()
+        with self.quality_analyzer._lock:
+            self.quality_analyzer._cache.clear()
+        with self.coverage_analyzer._lock:
+            self.coverage_analyzer._cache.clear()
+
+    def get_cache_stats(self) -> Dict[str, int]:
+        """Get cache statistics."""
+        with self._cache_lock:
+            file_cache_size = len(self._file_cache)
+
+        with self.security_analyzer._lock:
+            security_cache_size = len(self.security_analyzer._cache)
+        with self.performance_analyzer._lock:
+            performance_cache_size = len(self.performance_analyzer._cache)
+        with self.quality_analyzer._lock:
+            quality_cache_size = len(self.quality_analyzer._cache)
+        with self.coverage_analyzer._lock:
+            coverage_cache_size = len(self.coverage_analyzer._cache)
+
+        return {
+            "file_cache": file_cache_size,
+            "security_cache": security_cache_size,
+            "performance_cache": performance_cache_size,
+            "quality_cache": quality_cache_size,
+            "coverage_cache": coverage_cache_size,
+            "total_cache": (
+                file_cache_size
+                + security_cache_size
+                + performance_cache_size
+                + quality_cache_size
+                + coverage_cache_size
+            ),
+        }
+
+
+# Optimized utility functions
+@time_function
+def analyze_files_parallel(
+    file_paths: List[str], config: Optional[AnalysisConfig] = None, max_workers: int = 4
+) -> List[AnalysisResult]:
+    """Analyze multiple files in parallel.
+
+    Args:
+        file_paths: List of file paths to analyze
+        config: Optional analysis configuration
+        max_workers: Maximum number of worker threads
+
+    Returns:
+        List of analysis results
+    """
+    analyzer = CodeAnalyzer(config)
+    results = []
+
+    if len(file_paths) <= 5:
+        # Sequential processing for small number of files
+        for file_path in file_paths:
+            result = analyzer.analyze_file(file_path)
+            results.append(result)
+    else:
+        # Parallel processing for larger number of files
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_file = {
+                executor.submit(analyzer.analyze_file, file_path): file_path
+                for file_path in file_paths
+            }
+
+            for future in concurrent.futures.as_completed(future_to_file):
+                try:
+                    result = future.result()
+                    results.append(result)
+                except Exception as e:
+                    # Create error result
+                    error_result = AnalysisResult()
+                    error_result.security_issues = [
+                        f"Error analyzing {future_to_file[future]}: {e}"
+                    ]
+                    results.append(error_result)
+
+    return results
+
+
+@time_function
+def benchmark_analyzer(file_paths: List[str], iterations: int = 10) -> Dict[str, float]:
+    """Benchmark the analyzer performance.
+
+    Args:
+        file_paths: List of file paths to analyze
+        iterations: Number of iterations to run
+
+    Returns:
+        Dictionary with benchmark results
+    """
+    import time
+
+    # Clear caches before benchmarking
+    analyzer = CodeAnalyzer()
+    analyzer.clear_cache()
+
+    # Warm up
+    for file_path in file_paths[:3]:  # Analyze first 3 files as warm up
+        analyzer.analyze_file(file_path)
+
+    # Benchmark sequential analysis
+    start_time = time.time()
+    for _ in range(iterations):
+        for file_path in file_paths:
+            analyzer.analyze_file(file_path)
+    sequential_time = time.time() - start_time
+
+    # Clear caches
+    analyzer.clear_cache()
+
+    # Benchmark parallel analysis
+    start_time = time.time()
+    for _ in range(iterations):
+        analyze_files_parallel(file_paths, max_workers=4)
+    parallel_time = time.time() - start_time
+
+    return {
+        "sequential_time": sequential_time,
+        "parallel_time": parallel_time,
+        "speedup": sequential_time / parallel_time if parallel_time > 0 else 1.0,
+        "files_per_second_sequential": len(file_paths) * iterations / sequential_time,
+        "files_per_second_parallel": len(file_paths) * iterations / parallel_time,
+    }
 
 
 # Utility functions for backward compatibility

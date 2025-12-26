@@ -83,6 +83,7 @@ except ImportError:
 
 # Tests for src/ai_guard/__main__.py
 
+
 def test_main():
     """Test main function."""
     # Arrange
@@ -121,14 +122,14 @@ def test_main_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = main(float('inf'))
+    result = main(float("inf"))
     assert result == None
 
 
 def test_main_coverage():
     """Test main to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = main(1)
     assert result is not None
 
@@ -140,6 +141,7 @@ def test_main_coverage():
 
 
 # Tests for src/ai_guard/analyzer.py
+
 
 def test__coverage_percent_from_xml():
     """Test _coverage_percent_from_xml function."""
@@ -179,14 +181,14 @@ def test__coverage_percent_from_xml_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _coverage_percent_from_xml(float('inf'))
+    result = _coverage_percent_from_xml(float("inf"))
     assert result == None
 
 
 def test__coverage_percent_from_xml_coverage():
     """Test _coverage_percent_from_xml to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _coverage_percent_from_xml(1)
     assert result is not None
 
@@ -235,14 +237,14 @@ def test_cov_percent_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = cov_percent(float('inf'))
+    result = cov_percent(float("inf"))
     assert result == None
 
 
 def test_cov_percent_coverage():
     """Test cov_percent to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = cov_percent(1)
     assert result is not None
 
@@ -291,14 +293,14 @@ def test__parse_mypy_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _parse_mypy_output(float('inf'))
+    result = _parse_mypy_output(float("inf"))
     assert result == None
 
 
 def test__parse_mypy_output_coverage():
     """Test _parse_mypy_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _parse_mypy_output(1)
     assert result is not None
 
@@ -347,14 +349,14 @@ def test_run_security_check_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_security_check(float('inf'))
+    result = run_security_check(float("inf"))
     assert result == None
 
 
 def test_run_security_check_coverage():
     """Test run_security_check to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_security_check(1)
     assert result is not None
 
@@ -403,14 +405,14 @@ def test__to_findings_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _to_findings(float('inf'))
+    result = _to_findings(float("inf"))
     assert result == None
 
 
 def test__to_findings_coverage():
     """Test _to_findings to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _to_findings(1)
     assert result is not None
 
@@ -459,14 +461,14 @@ def test__should_skip_file_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _should_skip_file(float('inf'))
+    result = _should_skip_file(float("inf"))
     assert result == None
 
 
 def test__should_skip_file_coverage():
     """Test _should_skip_file to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _should_skip_file(1)
     assert result is not None
 
@@ -515,14 +517,14 @@ def test__parse_coverage_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _parse_coverage_output(float('inf'))
+    result = _parse_coverage_output(float("inf"))
     assert result == None
 
 
 def test__parse_coverage_output_coverage():
     """Test _parse_coverage_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _parse_coverage_output(1)
     assert result is not None
 
@@ -571,14 +573,14 @@ def test_main_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = main(float('inf'))
+    result = main(float("inf"))
     assert result == None
 
 
 def test_main_coverage():
     """Test main to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = main(1)
     assert result is not None
 
@@ -640,12 +642,15 @@ def test_run_all_checks():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_run_all_checks_parametrized(input_data, expected):
     """Test run_all_checks with various inputs."""
     result = run_all_checks(input_data)
@@ -677,14 +682,14 @@ def test_run_all_checks_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_all_checks(float('inf'))
+    result = run_all_checks(float("inf"))
     assert result == None
 
 
 def test_run_all_checks_coverage():
     """Test run_all_checks to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_all_checks(1)
     assert result is not None
     # Test with multiple parameters
@@ -699,6 +704,7 @@ def test_run_all_checks_coverage():
 
 
 # Tests for src/ai_guard/analyzer_optimized.py
+
 
 class TestRuleIdStyle:
     """Test RuleIdStyle class."""
@@ -757,14 +763,14 @@ def test__rule_style_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _rule_style(float('inf'))
+    result = _rule_style(float("inf"))
     assert result == None
 
 
 def test__rule_style_coverage():
     """Test _rule_style to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _rule_style(1)
     assert result is not None
 
@@ -788,12 +794,15 @@ def test__make_rule_id():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__make_rule_id_parametrized(input_data, expected):
     """Test _make_rule_id with various inputs."""
     result = _make_rule_id(input_data)
@@ -825,14 +834,14 @@ def test__make_rule_id_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _make_rule_id(float('inf'))
+    result = _make_rule_id(float("inf"))
     assert result == None
 
 
 def test__make_rule_id_coverage():
     """Test _make_rule_id to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _make_rule_id(1)
     assert result is not None
     # Test with multiple parameters
@@ -884,14 +893,14 @@ def test__strict_subprocess_fail_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _strict_subprocess_fail(float('inf'))
+    result = _strict_subprocess_fail(float("inf"))
     assert result == None
 
 
 def test__strict_subprocess_fail_coverage():
     """Test _strict_subprocess_fail to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _strict_subprocess_fail(1)
     assert result is not None
 
@@ -940,14 +949,14 @@ def test__parse_bandit_json_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _parse_bandit_json(float('inf'))
+    result = _parse_bandit_json(float("inf"))
     assert result == None
 
 
 def test__parse_bandit_json_coverage():
     """Test _parse_bandit_json to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _parse_bandit_json(1)
     assert result is not None
 
@@ -959,6 +968,7 @@ def test__parse_bandit_json_coverage():
 
 
 # Tests for src/ai_guard/config.py
+
 
 def test__get_toml_loader():
     """Test _get_toml_loader function."""
@@ -998,14 +1008,14 @@ def test__get_toml_loader_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _get_toml_loader(float('inf'))
+    result = _get_toml_loader(float("inf"))
     assert result == None
 
 
 def test__get_toml_loader_coverage():
     """Test _get_toml_loader to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _get_toml_loader(1)
     assert result is not None
 
@@ -1054,14 +1064,14 @@ def test_validate_config_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = validate_config(float('inf'))
+    result = validate_config(float("inf"))
     assert result == None
 
 
 def test_validate_config_coverage():
     """Test validate_config to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = validate_config(1)
     assert result is not None
 
@@ -1110,14 +1120,14 @@ def test__validate_config_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _validate_config(float('inf'))
+    result = _validate_config(float("inf"))
     assert result == None
 
 
 def test__validate_config_coverage():
     """Test _validate_config to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _validate_config(1)
     assert result is not None
 
@@ -1141,12 +1151,15 @@ def test_merge_configs():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_merge_configs_parametrized(input_data, expected):
     """Test merge_configs with various inputs."""
     result = merge_configs(input_data)
@@ -1178,14 +1191,14 @@ def test_merge_configs_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = merge_configs(float('inf'))
+    result = merge_configs(float("inf"))
     assert result == None
 
 
 def test_merge_configs_coverage():
     """Test merge_configs to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = merge_configs(1)
     assert result is not None
     # Test with multiple parameters
@@ -1237,14 +1250,14 @@ def test_load_config_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = load_config(float('inf'))
+    result = load_config(float("inf"))
     assert result == None
 
 
 def test_load_config_coverage():
     """Test load_config to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = load_config(1)
     assert result is not None
 
@@ -1287,12 +1300,15 @@ def test___init__():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test___init___parametrized(input_data, expected):
     """Test __init__ with various inputs."""
     result = __init__(input_data)
@@ -1324,14 +1340,14 @@ def test___init___edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = __init__(float('inf'))
+    result = __init__(float("inf"))
     assert result == None
 
 
 def test___init___coverage():
     """Test __init__ to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = __init__(1)
     assert result is not None
     # Test with multiple parameters
@@ -1358,12 +1374,15 @@ def test_set():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_set_parametrized(input_data, expected):
     """Test set with various inputs."""
     result = set(input_data)
@@ -1395,14 +1414,14 @@ def test_set_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = set(float('inf'))
+    result = set(float("inf"))
     assert result == None
 
 
 def test_set_coverage():
     """Test set to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = set(1)
     assert result is not None
     # Test with multiple parameters
@@ -1454,14 +1473,14 @@ def test_reload_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = reload(float('inf'))
+    result = reload(float("inf"))
     assert result == None
 
 
 def test_reload_coverage():
     """Test reload to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = reload(1)
     assert result is not None
 
@@ -1485,12 +1504,15 @@ def test_from_dict():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_from_dict_parametrized(input_data, expected):
     """Test from_dict with various inputs."""
     result = from_dict(input_data)
@@ -1522,14 +1544,14 @@ def test_from_dict_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = from_dict(float('inf'))
+    result = from_dict(float("inf"))
     assert result == None
 
 
 def test_from_dict_coverage():
     """Test from_dict to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = from_dict(1)
     assert result is not None
     # Test with multiple parameters
@@ -1544,6 +1566,7 @@ def test_from_dict_coverage():
 
 
 # Tests for src/ai_guard/diff_parser.py
+
 
 def test_get_file_extensions():
     """Test get_file_extensions function."""
@@ -1583,14 +1606,14 @@ def test_get_file_extensions_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = get_file_extensions(float('inf'))
+    result = get_file_extensions(float("inf"))
     assert result == None
 
 
 def test_get_file_extensions_coverage():
     """Test get_file_extensions to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = get_file_extensions(1)
     assert result is not None
 
@@ -1639,14 +1662,14 @@ def test_filter_python_files_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = filter_python_files(float('inf'))
+    result = filter_python_files(float("inf"))
     assert result == None
 
 
 def test_filter_python_files_coverage():
     """Test filter_python_files to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = filter_python_files(1)
     assert result is not None
 
@@ -1695,14 +1718,14 @@ def test_parse_diff_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = parse_diff_output(float('inf'))
+    result = parse_diff_output(float("inf"))
     assert result == None
 
 
 def test_parse_diff_output_coverage():
     """Test parse_diff_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = parse_diff_output(1)
     assert result is not None
 
@@ -1751,14 +1774,14 @@ def test_changed_python_files_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = changed_python_files(float('inf'))
+    result = changed_python_files(float("inf"))
     assert result == None
 
 
 def test_changed_python_files_coverage():
     """Test changed_python_files to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = changed_python_files(1)
     assert result is not None
 
@@ -1807,14 +1830,14 @@ def test__git_ls_files_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _git_ls_files(float('inf'))
+    result = _git_ls_files(float("inf"))
     assert result == None
 
 
 def test__git_ls_files_coverage():
     """Test _git_ls_files to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _git_ls_files(1)
     assert result is not None
 
@@ -1863,14 +1886,14 @@ def test__get_base_head_from_event_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _get_base_head_from_event(float('inf'))
+    result = _get_base_head_from_event(float("inf"))
     assert result == None
 
 
 def test__get_base_head_from_event_coverage():
     """Test _get_base_head_from_event to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _get_base_head_from_event(1)
     assert result is not None
 
@@ -1938,14 +1961,14 @@ def test_parse_diff_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = parse_diff(float('inf'))
+    result = parse_diff(float("inf"))
     assert result == None
 
 
 def test_parse_diff_coverage():
     """Test parse_diff to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = parse_diff(1)
     assert result is not None
 
@@ -1969,12 +1992,15 @@ def test_filter_python_files():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_filter_python_files_parametrized(input_data, expected):
     """Test filter_python_files with various inputs."""
     result = filter_python_files(input_data)
@@ -2006,14 +2032,14 @@ def test_filter_python_files_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = filter_python_files(float('inf'))
+    result = filter_python_files(float("inf"))
     assert result == None
 
 
 def test_filter_python_files_coverage():
     """Test filter_python_files to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = filter_python_files(1)
     assert result is not None
     # Test with multiple parameters
@@ -2028,6 +2054,7 @@ def test_filter_python_files_coverage():
 
 
 # Tests for src/ai_guard/gates/coverage_eval.py
+
 
 def test__percent_from_root():
     """Test _percent_from_root function."""
@@ -2067,14 +2094,14 @@ def test__percent_from_root_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _percent_from_root(float('inf'))
+    result = _percent_from_root(float("inf"))
     assert result == None
 
 
 def test__percent_from_root_coverage():
     """Test _percent_from_root to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _percent_from_root(1)
     assert result is not None
 
@@ -2086,6 +2113,7 @@ def test__percent_from_root_coverage():
 
 
 # Tests for src/ai_guard/generators/config_loader.py
+
 
 def test_load_testgen_config():
     """Test load_testgen_config function."""
@@ -2125,14 +2153,14 @@ def test_load_testgen_config_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = load_testgen_config(float('inf'))
+    result = load_testgen_config(float("inf"))
     assert result == None
 
 
 def test_load_testgen_config_coverage():
     """Test load_testgen_config to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = load_testgen_config(1)
     assert result is not None
 
@@ -2181,14 +2209,14 @@ def test__load_env_config_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _load_env_config(float('inf'))
+    result = _load_env_config(float("inf"))
     assert result == None
 
 
 def test__load_env_config_coverage():
     """Test _load_env_config to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _load_env_config(1)
     assert result is not None
 
@@ -2200,6 +2228,7 @@ def test__load_env_config_coverage():
 
 
 # Tests for src/ai_guard/generators/enhanced_testgen.py
+
 
 class TestTestGenConfig:
     """Test TestGenConfig class."""
@@ -2277,14 +2306,14 @@ def test_to_dict_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = to_dict(float('inf'))
+    result = to_dict(float("inf"))
     assert result == None
 
 
 def test_to_dict_coverage():
     """Test to_dict to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = to_dict(1)
     assert result is not None
 
@@ -2333,14 +2362,14 @@ def test__initialize_llm_client_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _initialize_llm_client(float('inf'))
+    result = _initialize_llm_client(float("inf"))
     assert result == None
 
 
 def test__initialize_llm_client_coverage():
     """Test _initialize_llm_client to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _initialize_llm_client(1)
     assert result is not None
 
@@ -2364,12 +2393,15 @@ def test__analyze_file_changes():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__analyze_file_changes_parametrized(input_data, expected):
     """Test _analyze_file_changes with various inputs."""
     result = _analyze_file_changes(input_data)
@@ -2401,14 +2433,14 @@ def test__analyze_file_changes_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _analyze_file_changes(float('inf'))
+    result = _analyze_file_changes(float("inf"))
     assert result == None
 
 
 def test__analyze_file_changes_coverage():
     """Test _analyze_file_changes to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _analyze_file_changes(1)
     assert result is not None
     # Test with multiple parameters
@@ -2435,12 +2467,15 @@ def test_generate_tests():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_generate_tests_parametrized(input_data, expected):
     """Test generate_tests with various inputs."""
     result = generate_tests(input_data)
@@ -2472,14 +2507,14 @@ def test_generate_tests_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_tests(float('inf'))
+    result = generate_tests(float("inf"))
     assert result == None
 
 
 def test_generate_tests_coverage():
     """Test generate_tests to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_tests(1)
     assert result is not None
     # Test with multiple parameters
@@ -2506,12 +2541,15 @@ def test_generate_tests_for_changes():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_generate_tests_for_changes_parametrized(input_data, expected):
     """Test generate_tests_for_changes with various inputs."""
     result = generate_tests_for_changes(input_data)
@@ -2543,14 +2581,14 @@ def test_generate_tests_for_changes_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_tests_for_changes(float('inf'))
+    result = generate_tests_for_changes(float("inf"))
     assert result == None
 
 
 def test_generate_tests_for_changes_coverage():
     """Test generate_tests_for_changes to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_tests_for_changes(1)
     assert result is not None
     # Test with multiple parameters
@@ -2565,6 +2603,7 @@ def test_generate_tests_for_changes_coverage():
 
 
 # Tests for src/ai_guard/generators/testgen.py
+
 
 def test_generate_speculative_tests():
     """Test generate_speculative_tests function."""
@@ -2604,14 +2643,14 @@ def test_generate_speculative_tests_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_speculative_tests(float('inf'))
+    result = generate_speculative_tests(float("inf"))
     assert result == None
 
 
 def test_generate_speculative_tests_coverage():
     """Test generate_speculative_tests to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_speculative_tests(1)
     assert result is not None
 
@@ -2660,14 +2699,14 @@ def test_main_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = main(float('inf'))
+    result = main(float("inf"))
     assert result == None
 
 
 def test_main_coverage():
     """Test main to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = main(1)
     assert result is not None
 
@@ -2679,6 +2718,7 @@ def test_main_coverage():
 
 
 # Tests for src/ai_guard/language_support/js_ts_support.py
+
 
 def test_check_node_installed():
     """Test check_node_installed function."""
@@ -2718,14 +2758,14 @@ def test_check_node_installed_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = check_node_installed(float('inf'))
+    result = check_node_installed(float("inf"))
     assert result == None
 
 
 def test_check_node_installed_coverage():
     """Test check_node_installed to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = check_node_installed(1)
     assert result is not None
 
@@ -2774,14 +2814,14 @@ def test_check_npm_installed_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = check_npm_installed(float('inf'))
+    result = check_npm_installed(float("inf"))
     assert result == None
 
 
 def test_check_npm_installed_coverage():
     """Test check_npm_installed to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = check_npm_installed(1)
     assert result is not None
 
@@ -2830,14 +2870,14 @@ def test_run_eslint_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_eslint(float('inf'))
+    result = run_eslint(float("inf"))
     assert result == None
 
 
 def test_run_eslint_coverage():
     """Test run_eslint to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_eslint(1)
     assert result is not None
 
@@ -2886,14 +2926,14 @@ def test_run_typescript_check_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_typescript_check(float('inf'))
+    result = run_typescript_check(float("inf"))
     assert result == None
 
 
 def test_run_typescript_check_coverage():
     """Test run_typescript_check to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_typescript_check(1)
     assert result is not None
 
@@ -2942,14 +2982,14 @@ def test_run_jest_tests_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_jest_tests(float('inf'))
+    result = run_jest_tests(float("inf"))
     assert result == None
 
 
 def test_run_jest_tests_coverage():
     """Test run_jest_tests to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_jest_tests(1)
     assert result is not None
 
@@ -2998,14 +3038,14 @@ def test_run_prettier_check_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_prettier_check(float('inf'))
+    result = run_prettier_check(float("inf"))
     assert result == None
 
 
 def test_run_prettier_check_coverage():
     """Test run_prettier_check to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_prettier_check(1)
     assert result is not None
 
@@ -3111,14 +3151,14 @@ def test_main_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = main(float('inf'))
+    result = main(float("inf"))
     assert result == None
 
 
 def test_main_coverage():
     """Test main to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = main(1)
     assert result is not None
 
@@ -3142,12 +3182,15 @@ def test___init__():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test___init___parametrized(input_data, expected):
     """Test __init__ with various inputs."""
     result = __init__(input_data)
@@ -3179,14 +3222,14 @@ def test___init___edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = __init__(float('inf'))
+    result = __init__(float("inf"))
     assert result == None
 
 
 def test___init___coverage():
     """Test __init__ to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = __init__(1)
     assert result is not None
     # Test with multiple parameters
@@ -3238,14 +3281,14 @@ def test__find_project_root_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _find_project_root(float('inf'))
+    result = _find_project_root(float("inf"))
     assert result == None
 
 
 def test__find_project_root_coverage():
     """Test _find_project_root to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _find_project_root(1)
     assert result is not None
 
@@ -3294,14 +3337,14 @@ def test__load_package_json_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _load_package_json(float('inf'))
+    result = _load_package_json(float("inf"))
     assert result == None
 
 
 def test__load_package_json_coverage():
     """Test _load_package_json to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _load_package_json(1)
     assert result is not None
 
@@ -3350,14 +3393,14 @@ def test_check_dependencies_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = check_dependencies(float('inf'))
+    result = check_dependencies(float("inf"))
     assert result == None
 
 
 def test_check_dependencies_coverage():
     """Test check_dependencies to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = check_dependencies(1)
     assert result is not None
 
@@ -3381,12 +3424,15 @@ def test_run_eslint():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_run_eslint_parametrized(input_data, expected):
     """Test run_eslint with various inputs."""
     result = run_eslint(input_data)
@@ -3418,14 +3464,14 @@ def test_run_eslint_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_eslint(float('inf'))
+    result = run_eslint(float("inf"))
     assert result == None
 
 
 def test_run_eslint_coverage():
     """Test run_eslint to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_eslint(1)
     assert result is not None
     # Test with multiple parameters
@@ -3452,12 +3498,15 @@ def test_run_prettier():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_run_prettier_parametrized(input_data, expected):
     """Test run_prettier with various inputs."""
     result = run_prettier(input_data)
@@ -3489,14 +3538,14 @@ def test_run_prettier_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_prettier(float('inf'))
+    result = run_prettier(float("inf"))
     assert result == None
 
 
 def test_run_prettier_coverage():
     """Test run_prettier to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_prettier(1)
     assert result is not None
     # Test with multiple parameters
@@ -3523,12 +3572,15 @@ def test_run_typescript_check():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_run_typescript_check_parametrized(input_data, expected):
     """Test run_typescript_check with various inputs."""
     result = run_typescript_check(input_data)
@@ -3560,14 +3612,14 @@ def test_run_typescript_check_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_typescript_check(float('inf'))
+    result = run_typescript_check(float("inf"))
     assert result == None
 
 
 def test_run_typescript_check_coverage():
     """Test run_typescript_check to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_typescript_check(1)
     assert result is not None
     # Test with multiple parameters
@@ -3594,12 +3646,15 @@ def test_run_jest_tests():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_run_jest_tests_parametrized(input_data, expected):
     """Test run_jest_tests with various inputs."""
     result = run_jest_tests(input_data)
@@ -3631,14 +3686,14 @@ def test_run_jest_tests_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_jest_tests(float('inf'))
+    result = run_jest_tests(float("inf"))
     assert result == None
 
 
 def test_run_jest_tests_coverage():
     """Test run_jest_tests to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_jest_tests(1)
     assert result is not None
     # Test with multiple parameters
@@ -3665,12 +3720,15 @@ def test_generate_test_templates():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_generate_test_templates_parametrized(input_data, expected):
     """Test generate_test_templates with various inputs."""
     result = generate_test_templates(input_data)
@@ -3702,14 +3760,14 @@ def test_generate_test_templates_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_test_templates(float('inf'))
+    result = generate_test_templates(float("inf"))
     assert result == None
 
 
 def test_generate_test_templates_coverage():
     """Test generate_test_templates to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_test_templates(1)
     assert result is not None
     # Test with multiple parameters
@@ -3736,12 +3794,15 @@ def test__create_test_template():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__create_test_template_parametrized(input_data, expected):
     """Test _create_test_template with various inputs."""
     result = _create_test_template(input_data)
@@ -3773,14 +3834,14 @@ def test__create_test_template_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _create_test_template(float('inf'))
+    result = _create_test_template(float("inf"))
     assert result == None
 
 
 def test__create_test_template_coverage():
     """Test _create_test_template to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _create_test_template(1)
     assert result is not None
     # Test with multiple parameters
@@ -3807,12 +3868,15 @@ def test_create_test_file():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_create_test_file_parametrized(input_data, expected):
     """Test create_test_file with various inputs."""
     result = create_test_file(input_data)
@@ -3844,14 +3908,14 @@ def test_create_test_file_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = create_test_file(float('inf'))
+    result = create_test_file(float("inf"))
     assert result == None
 
 
 def test_create_test_file_coverage():
     """Test create_test_file to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = create_test_file(1)
     assert result is not None
     # Test with multiple parameters
@@ -3878,12 +3942,15 @@ def test_run_quality_checks():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_run_quality_checks_parametrized(input_data, expected):
     """Test run_quality_checks with various inputs."""
     result = run_quality_checks(input_data)
@@ -3915,14 +3982,14 @@ def test_run_quality_checks_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_quality_checks(float('inf'))
+    result = run_quality_checks(float("inf"))
     assert result == None
 
 
 def test_run_quality_checks_coverage():
     """Test run_quality_checks to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_quality_checks(1)
     assert result is not None
     # Test with multiple parameters
@@ -3949,12 +4016,15 @@ def test_generate_tests():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_generate_tests_parametrized(input_data, expected):
     """Test generate_tests with various inputs."""
     result = generate_tests(input_data)
@@ -3986,14 +4056,14 @@ def test_generate_tests_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_tests(float('inf'))
+    result = generate_tests(float("inf"))
     assert result == None
 
 
 def test_generate_tests_coverage():
     """Test generate_tests to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_tests(1)
     assert result is not None
     # Test with multiple parameters
@@ -4020,12 +4090,15 @@ def test_run_linting():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_run_linting_parametrized(input_data, expected):
     """Test run_linting with various inputs."""
     result = run_linting(input_data)
@@ -4057,14 +4130,14 @@ def test_run_linting_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_linting(float('inf'))
+    result = run_linting(float("inf"))
     assert result == None
 
 
 def test_run_linting_coverage():
     """Test run_linting to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_linting(1)
     assert result is not None
     # Test with multiple parameters
@@ -4116,14 +4189,14 @@ def test_run_testing_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_testing(float('inf'))
+    result = run_testing(float("inf"))
     assert result == None
 
 
 def test_run_testing_coverage():
     """Test run_testing to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_testing(1)
     assert result is not None
 
@@ -4147,12 +4220,15 @@ def test_generate_test_file_path():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_generate_test_file_path_parametrized(input_data, expected):
     """Test generate_test_file_path with various inputs."""
     result = generate_test_file_path(input_data)
@@ -4184,14 +4260,14 @@ def test_generate_test_file_path_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_test_file_path(float('inf'))
+    result = generate_test_file_path(float("inf"))
     assert result == None
 
 
 def test_generate_test_file_path_coverage():
     """Test generate_test_file_path to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_test_file_path(1)
     assert result is not None
     # Test with multiple parameters
@@ -4218,12 +4294,15 @@ def test_analyze_file_changes():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_analyze_file_changes_parametrized(input_data, expected):
     """Test analyze_file_changes with various inputs."""
     result = analyze_file_changes(input_data)
@@ -4255,14 +4334,14 @@ def test_analyze_file_changes_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = analyze_file_changes(float('inf'))
+    result = analyze_file_changes(float("inf"))
     assert result == None
 
 
 def test_analyze_file_changes_coverage():
     """Test analyze_file_changes to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = analyze_file_changes(1)
     assert result is not None
     # Test with multiple parameters
@@ -4289,12 +4368,15 @@ def test_generate_test_content():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_generate_test_content_parametrized(input_data, expected):
     """Test generate_test_content with various inputs."""
     result = generate_test_content(input_data)
@@ -4326,14 +4408,14 @@ def test_generate_test_content_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_test_content(float('inf'))
+    result = generate_test_content(float("inf"))
     assert result == None
 
 
 def test_generate_test_content_coverage():
     """Test generate_test_content to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_test_content(1)
     assert result is not None
     # Test with multiple parameters
@@ -4360,12 +4442,15 @@ def test__generate_function_test():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__generate_function_test_parametrized(input_data, expected):
     """Test _generate_function_test with various inputs."""
     result = _generate_function_test(input_data)
@@ -4397,14 +4482,14 @@ def test__generate_function_test_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _generate_function_test(float('inf'))
+    result = _generate_function_test(float("inf"))
     assert result == None
 
 
 def test__generate_function_test_coverage():
     """Test _generate_function_test to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _generate_function_test(1)
     assert result is not None
     # Test with multiple parameters
@@ -4431,12 +4516,15 @@ def test__generate_class_test():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__generate_class_test_parametrized(input_data, expected):
     """Test _generate_class_test with various inputs."""
     result = _generate_class_test(input_data)
@@ -4468,14 +4556,14 @@ def test__generate_class_test_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _generate_class_test(float('inf'))
+    result = _generate_class_test(float("inf"))
     assert result == None
 
 
 def test__generate_class_test_coverage():
     """Test _generate_class_test to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _generate_class_test(1)
     assert result is not None
     # Test with multiple parameters
@@ -4502,12 +4590,15 @@ def test__generate_generic_test():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__generate_generic_test_parametrized(input_data, expected):
     """Test _generate_generic_test with various inputs."""
     result = _generate_generic_test(input_data)
@@ -4539,14 +4630,14 @@ def test__generate_generic_test_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _generate_generic_test(float('inf'))
+    result = _generate_generic_test(float("inf"))
     assert result == None
 
 
 def test__generate_generic_test_coverage():
     """Test _generate_generic_test to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _generate_generic_test(1)
     assert result is not None
     # Test with multiple parameters
@@ -4573,12 +4664,15 @@ def test_validate_code_quality():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_validate_code_quality_parametrized(input_data, expected):
     """Test validate_code_quality with various inputs."""
     result = validate_code_quality(input_data)
@@ -4610,14 +4704,14 @@ def test_validate_code_quality_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = validate_code_quality(float('inf'))
+    result = validate_code_quality(float("inf"))
     assert result == None
 
 
 def test_validate_code_quality_coverage():
     """Test validate_code_quality to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = validate_code_quality(1)
     assert result is not None
     # Test with multiple parameters
@@ -4644,12 +4738,15 @@ def test_get_recommendations():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_get_recommendations_parametrized(input_data, expected):
     """Test get_recommendations with various inputs."""
     result = get_recommendations(input_data)
@@ -4681,14 +4778,14 @@ def test_get_recommendations_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = get_recommendations(float('inf'))
+    result = get_recommendations(float("inf"))
     assert result == None
 
 
 def test_get_recommendations_coverage():
     """Test get_recommendations to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = get_recommendations(1)
     assert result is not None
     # Test with multiple parameters
@@ -4715,12 +4812,15 @@ def test_export_results():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_export_results_parametrized(input_data, expected):
     """Test export_results with various inputs."""
     result = export_results(input_data)
@@ -4752,14 +4852,14 @@ def test_export_results_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = export_results(float('inf'))
+    result = export_results(float("inf"))
     assert result == None
 
 
 def test_export_results_coverage():
     """Test export_results to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = export_results(1)
     assert result is not None
     # Test with multiple parameters
@@ -4774,6 +4874,7 @@ def test_export_results_coverage():
 
 
 # Tests for src/ai_guard/parsers/common.py
+
 
 def test__extract_mypy_rule():
     """Test _extract_mypy_rule function."""
@@ -4813,14 +4914,14 @@ def test__extract_mypy_rule_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _extract_mypy_rule(float('inf'))
+    result = _extract_mypy_rule(float("inf"))
     assert result == None
 
 
 def test__extract_mypy_rule_coverage():
     """Test _extract_mypy_rule to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _extract_mypy_rule(1)
     assert result is not None
 
@@ -4844,12 +4945,15 @@ def test_normalize_rule():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_normalize_rule_parametrized(input_data, expected):
     """Test normalize_rule with various inputs."""
     result = normalize_rule(input_data)
@@ -4881,14 +4985,14 @@ def test_normalize_rule_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = normalize_rule(float('inf'))
+    result = normalize_rule(float("inf"))
     assert result == None
 
 
 def test_normalize_rule_coverage():
     """Test normalize_rule to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = normalize_rule(1)
     assert result is not None
     # Test with multiple parameters
@@ -4903,6 +5007,7 @@ def test_normalize_rule_coverage():
 
 
 # Tests for src/ai_guard/parsers/typescript.py
+
 
 def test_parse_eslint():
     """Test parse_eslint function."""
@@ -4942,14 +5047,14 @@ def test_parse_eslint_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = parse_eslint(float('inf'))
+    result = parse_eslint(float("inf"))
     assert result == None
 
 
 def test_parse_eslint_coverage():
     """Test parse_eslint to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = parse_eslint(1)
     assert result is not None
 
@@ -4998,14 +5103,14 @@ def test_parse_jest_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = parse_jest(float('inf'))
+    result = parse_jest(float("inf"))
     assert result == None
 
 
 def test_parse_jest_coverage():
     """Test parse_jest to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = parse_jest(1)
     assert result is not None
 
@@ -5017,6 +5122,7 @@ def test_parse_jest_coverage():
 
 
 # Tests for src/ai_guard/performance.py
+
 
 def test_get_performance_monitor():
     """Test get_performance_monitor function."""
@@ -5056,14 +5162,14 @@ def test_get_performance_monitor_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = get_performance_monitor(float('inf'))
+    result = get_performance_monitor(float("inf"))
     assert result == None
 
 
 def test_get_performance_monitor_coverage():
     """Test get_performance_monitor to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = get_performance_monitor(1)
     assert result is not None
 
@@ -5112,14 +5218,14 @@ def test_time_function_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = time_function(float('inf'))
+    result = time_function(float("inf"))
     assert result == None
 
 
 def test_time_function_coverage():
     """Test time_function to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = time_function(1)
     assert result is not None
 
@@ -5187,14 +5293,14 @@ def test_get_cache_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = get_cache(float('inf'))
+    result = get_cache(float("inf"))
     assert result == None
 
 
 def test_get_cache_coverage():
     """Test get_cache to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = get_cache(1)
     assert result is not None
 
@@ -5218,12 +5324,15 @@ def test_cached():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_cached_parametrized(input_data, expected):
     """Test cached with various inputs."""
     result = cached(input_data)
@@ -5255,14 +5364,14 @@ def test_cached_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = cached(float('inf'))
+    result = cached(float("inf"))
     assert result == None
 
 
 def test_cached_coverage():
     """Test cached to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = cached(1)
     assert result is not None
     # Test with multiple parameters
@@ -5289,12 +5398,15 @@ def test_batch_process():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_batch_process_parametrized(input_data, expected):
     """Test batch_process with various inputs."""
     result = batch_process(input_data)
@@ -5326,14 +5438,14 @@ def test_batch_process_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = batch_process(float('inf'))
+    result = batch_process(float("inf"))
     assert result == None
 
 
 def test_batch_process_coverage():
     """Test batch_process to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = batch_process(1)
     assert result is not None
     # Test with multiple parameters
@@ -5385,14 +5497,14 @@ def test_clear_performance_data_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = clear_performance_data(float('inf'))
+    result = clear_performance_data(float("inf"))
     assert result == None
 
 
 def test_clear_performance_data_coverage():
     """Test clear_performance_data to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = clear_performance_data(1)
     assert result is not None
 
@@ -5441,14 +5553,14 @@ def test_reset_global_monitor_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = reset_global_monitor(float('inf'))
+    result = reset_global_monitor(float("inf"))
     assert result == None
 
 
 def test_reset_global_monitor_coverage():
     """Test reset_global_monitor to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = reset_global_monitor(1)
     assert result is not None
 
@@ -5472,12 +5584,15 @@ def test_optimize_quality_gates_execution():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_optimize_quality_gates_execution_parametrized(input_data, expected):
     """Test optimize_quality_gates_execution with various inputs."""
     result = optimize_quality_gates_execution(input_data)
@@ -5509,14 +5624,14 @@ def test_optimize_quality_gates_execution_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = optimize_quality_gates_execution(float('inf'))
+    result = optimize_quality_gates_execution(float("inf"))
     assert result == None
 
 
 def test_optimize_quality_gates_execution_coverage():
     """Test optimize_quality_gates_execution to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = optimize_quality_gates_execution(1)
     assert result is not None
     # Test with multiple parameters
@@ -5568,14 +5683,14 @@ def test__get_cache_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _get_cache(float('inf'))
+    result = _get_cache(float("inf"))
     assert result == None
 
 
 def test__get_cache_coverage():
     """Test _get_cache to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _get_cache(1)
     assert result is not None
 
@@ -5599,12 +5714,15 @@ def test_decorator():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_decorator_parametrized(input_data, expected):
     """Test decorator with various inputs."""
     result = decorator(input_data)
@@ -5636,14 +5754,14 @@ def test_decorator_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = decorator(float('inf'))
+    result = decorator(float("inf"))
     assert result == None
 
 
 def test_decorator_coverage():
     """Test decorator to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = decorator(1)
     assert result is not None
     # Test with multiple parameters
@@ -5695,14 +5813,14 @@ def test_size_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = size(float('inf'))
+    result = size(float("inf"))
     assert result == None
 
 
 def test_size_coverage():
     """Test size to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = size(1)
     assert result is not None
 
@@ -5726,12 +5844,15 @@ def test___getitem__():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test___getitem___parametrized(input_data, expected):
     """Test __getitem__ with various inputs."""
     result = __getitem__(input_data)
@@ -5763,14 +5884,14 @@ def test___getitem___edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = __getitem__(float('inf'))
+    result = __getitem__(float("inf"))
     assert result == None
 
 
 def test___getitem___coverage():
     """Test __getitem__ to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = __getitem__(1)
     assert result is not None
     # Test with multiple parameters
@@ -5822,14 +5943,14 @@ def test_decorator_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = decorator(float('inf'))
+    result = decorator(float("inf"))
     assert result == None
 
 
 def test_decorator_coverage():
     """Test decorator to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = decorator(1)
     assert result is not None
 
@@ -5878,14 +5999,14 @@ def test_wrapper_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = wrapper(float('inf'))
+    result = wrapper(float("inf"))
     assert result == None
 
 
 def test_wrapper_coverage():
     """Test wrapper to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = wrapper(1)
     assert result is not None
 
@@ -5897,6 +6018,7 @@ def test_wrapper_coverage():
 
 
 # Tests for src/ai_guard/pr_annotations.py
+
 
 class TestAnnotationLevel:
     """Test AnnotationLevel class."""
@@ -6006,12 +6128,15 @@ def test_create_pr_annotations():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_create_pr_annotations_parametrized(input_data, expected):
     """Test create_pr_annotations with various inputs."""
     result = create_pr_annotations(input_data)
@@ -6043,14 +6168,14 @@ def test_create_pr_annotations_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = create_pr_annotations(float('inf'))
+    result = create_pr_annotations(float("inf"))
     assert result == None
 
 
 def test_create_pr_annotations_coverage():
     """Test create_pr_annotations to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = create_pr_annotations(1)
     assert result is not None
     # Test with multiple parameters
@@ -6077,12 +6202,15 @@ def test_write_annotations_file():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_write_annotations_file_parametrized(input_data, expected):
     """Test write_annotations_file with various inputs."""
     result = write_annotations_file(input_data)
@@ -6114,14 +6242,14 @@ def test_write_annotations_file_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = write_annotations_file(float('inf'))
+    result = write_annotations_file(float("inf"))
     assert result == None
 
 
 def test_write_annotations_file_coverage():
     """Test write_annotations_file to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = write_annotations_file(1)
     assert result is not None
     # Test with multiple parameters
@@ -6173,14 +6301,14 @@ def test__parse_coverage_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _parse_coverage_output(float('inf'))
+    result = _parse_coverage_output(float("inf"))
     assert result == None
 
 
 def test__parse_coverage_output_coverage():
     """Test _parse_coverage_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _parse_coverage_output(1)
     assert result is not None
 
@@ -6229,14 +6357,14 @@ def test_parse_lint_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = parse_lint_output(float('inf'))
+    result = parse_lint_output(float("inf"))
     assert result == None
 
 
 def test_parse_lint_output_coverage():
     """Test parse_lint_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = parse_lint_output(1)
     assert result is not None
 
@@ -6285,14 +6413,14 @@ def test_parse_mypy_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = parse_mypy_output(float('inf'))
+    result = parse_mypy_output(float("inf"))
     assert result == None
 
 
 def test_parse_mypy_output_coverage():
     """Test parse_mypy_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = parse_mypy_output(1)
     assert result is not None
 
@@ -6341,14 +6469,14 @@ def test_parse_bandit_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = parse_bandit_output(float('inf'))
+    result = parse_bandit_output(float("inf"))
     assert result == None
 
 
 def test_parse_bandit_output_coverage():
     """Test parse_bandit_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = parse_bandit_output(1)
     assert result is not None
 
@@ -6372,12 +6500,15 @@ def test_create_pr_annotation():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_create_pr_annotation_parametrized(input_data, expected):
     """Test create_pr_annotation with various inputs."""
     result = create_pr_annotation(input_data)
@@ -6409,14 +6540,14 @@ def test_create_pr_annotation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = create_pr_annotation(float('inf'))
+    result = create_pr_annotation(float("inf"))
     assert result == None
 
 
 def test_create_pr_annotation_coverage():
     """Test create_pr_annotation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = create_pr_annotation(1)
     assert result is not None
     # Test with multiple parameters
@@ -6468,14 +6599,14 @@ def test_get_annotation_level_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = get_annotation_level(float('inf'))
+    result = get_annotation_level(float("inf"))
     assert result == None
 
 
 def test_get_annotation_level_coverage():
     """Test get_annotation_level to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = get_annotation_level(1)
     assert result is not None
 
@@ -6499,12 +6630,15 @@ def test_create_quality_gate_annotation():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_create_quality_gate_annotation_parametrized(input_data, expected):
     """Test create_quality_gate_annotation with various inputs."""
     result = create_quality_gate_annotation(input_data)
@@ -6536,14 +6670,14 @@ def test_create_quality_gate_annotation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = create_quality_gate_annotation(float('inf'))
+    result = create_quality_gate_annotation(float("inf"))
     assert result == None
 
 
 def test_create_quality_gate_annotation_coverage():
     """Test create_quality_gate_annotation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = create_quality_gate_annotation(1)
     assert result is not None
     # Test with multiple parameters
@@ -6570,12 +6704,15 @@ def test_create_coverage_annotation():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_create_coverage_annotation_parametrized(input_data, expected):
     """Test create_coverage_annotation with various inputs."""
     result = create_coverage_annotation(input_data)
@@ -6607,14 +6744,14 @@ def test_create_coverage_annotation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = create_coverage_annotation(float('inf'))
+    result = create_coverage_annotation(float("inf"))
     assert result == None
 
 
 def test_create_coverage_annotation_coverage():
     """Test create_coverage_annotation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = create_coverage_annotation(1)
     assert result is not None
     # Test with multiple parameters
@@ -6641,12 +6778,15 @@ def test_create_security_annotation():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_create_security_annotation_parametrized(input_data, expected):
     """Test create_security_annotation with various inputs."""
     result = create_security_annotation(input_data)
@@ -6678,14 +6818,14 @@ def test_create_security_annotation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = create_security_annotation(float('inf'))
+    result = create_security_annotation(float("inf"))
     assert result == None
 
 
 def test_create_security_annotation_coverage():
     """Test create_security_annotation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = create_security_annotation(1)
     assert result is not None
     # Test with multiple parameters
@@ -6712,12 +6852,15 @@ def test_create_performance_annotation():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_create_performance_annotation_parametrized(input_data, expected):
     """Test create_performance_annotation with various inputs."""
     result = create_performance_annotation(input_data)
@@ -6749,14 +6892,14 @@ def test_create_performance_annotation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = create_performance_annotation(float('inf'))
+    result = create_performance_annotation(float("inf"))
     assert result == None
 
 
 def test_create_performance_annotation_coverage():
     """Test create_performance_annotation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = create_performance_annotation(1)
     assert result is not None
     # Test with multiple parameters
@@ -6808,14 +6951,14 @@ def test_to_dict_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = to_dict(float('inf'))
+    result = to_dict(float("inf"))
     assert result == None
 
 
 def test_to_dict_coverage():
     """Test to_dict to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = to_dict(1)
     assert result is not None
 
@@ -6839,12 +6982,15 @@ def test___init__():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test___init___parametrized(input_data, expected):
     """Test __init__ with various inputs."""
     result = __init__(input_data)
@@ -6876,14 +7022,14 @@ def test___init___edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = __init__(float('inf'))
+    result = __init__(float("inf"))
     assert result == None
 
 
 def test___init___coverage():
     """Test __init__ to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = __init__(1)
     assert result is not None
     # Test with multiple parameters
@@ -6910,12 +7056,15 @@ def test_add_issue():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_add_issue_parametrized(input_data, expected):
     """Test add_issue with various inputs."""
     result = add_issue(input_data)
@@ -6947,14 +7096,14 @@ def test_add_issue_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = add_issue(float('inf'))
+    result = add_issue(float("inf"))
     assert result == None
 
 
 def test_add_issue_coverage():
     """Test add_issue to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = add_issue(1)
     assert result is not None
     # Test with multiple parameters
@@ -6981,12 +7130,15 @@ def test__issue_to_annotation():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__issue_to_annotation_parametrized(input_data, expected):
     """Test _issue_to_annotation with various inputs."""
     result = _issue_to_annotation(input_data)
@@ -7018,14 +7170,14 @@ def test__issue_to_annotation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _issue_to_annotation(float('inf'))
+    result = _issue_to_annotation(float("inf"))
     assert result == None
 
 
 def test__issue_to_annotation_coverage():
     """Test _issue_to_annotation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _issue_to_annotation(1)
     assert result is not None
     # Test with multiple parameters
@@ -7052,12 +7204,15 @@ def test_add_lint_issues():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_add_lint_issues_parametrized(input_data, expected):
     """Test add_lint_issues with various inputs."""
     result = add_lint_issues(input_data)
@@ -7089,14 +7244,14 @@ def test_add_lint_issues_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = add_lint_issues(float('inf'))
+    result = add_lint_issues(float("inf"))
     assert result == None
 
 
 def test_add_lint_issues_coverage():
     """Test add_lint_issues to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = add_lint_issues(1)
     assert result is not None
     # Test with multiple parameters
@@ -7123,12 +7278,15 @@ def test__generate_lint_suggestion():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__generate_lint_suggestion_parametrized(input_data, expected):
     """Test _generate_lint_suggestion with various inputs."""
     result = _generate_lint_suggestion(input_data)
@@ -7160,14 +7318,14 @@ def test__generate_lint_suggestion_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _generate_lint_suggestion(float('inf'))
+    result = _generate_lint_suggestion(float("inf"))
     assert result == None
 
 
 def test__generate_lint_suggestion_coverage():
     """Test _generate_lint_suggestion to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _generate_lint_suggestion(1)
     assert result is not None
     # Test with multiple parameters
@@ -7194,12 +7352,15 @@ def test_add_coverage_annotation():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_add_coverage_annotation_parametrized(input_data, expected):
     """Test add_coverage_annotation with various inputs."""
     result = add_coverage_annotation(input_data)
@@ -7231,14 +7392,14 @@ def test_add_coverage_annotation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = add_coverage_annotation(float('inf'))
+    result = add_coverage_annotation(float("inf"))
     assert result == None
 
 
 def test_add_coverage_annotation_coverage():
     """Test add_coverage_annotation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = add_coverage_annotation(1)
     assert result is not None
     # Test with multiple parameters
@@ -7265,12 +7426,15 @@ def test_add_security_annotation():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_add_security_annotation_parametrized(input_data, expected):
     """Test add_security_annotation with various inputs."""
     result = add_security_annotation(input_data)
@@ -7302,14 +7466,14 @@ def test_add_security_annotation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = add_security_annotation(float('inf'))
+    result = add_security_annotation(float("inf"))
     assert result == None
 
 
 def test_add_security_annotation_coverage():
     """Test add_security_annotation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = add_security_annotation(1)
     assert result is not None
     # Test with multiple parameters
@@ -7361,14 +7525,14 @@ def test_generate_review_summary_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_review_summary(float('inf'))
+    result = generate_review_summary(float("inf"))
     assert result == None
 
 
 def test_generate_review_summary_coverage():
     """Test generate_review_summary to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_review_summary(1)
     assert result is not None
 
@@ -7417,14 +7581,14 @@ def test__generate_suggestions_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _generate_suggestions(float('inf'))
+    result = _generate_suggestions(float("inf"))
     assert result == None
 
 
 def test__generate_suggestions_coverage():
     """Test _generate_suggestions to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _generate_suggestions(1)
     assert result is not None
 
@@ -7473,14 +7637,14 @@ def test_create_github_annotations_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = create_github_annotations(float('inf'))
+    result = create_github_annotations(float("inf"))
     assert result == None
 
 
 def test_create_github_annotations_coverage():
     """Test create_github_annotations to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = create_github_annotations(1)
     assert result is not None
 
@@ -7504,12 +7668,15 @@ def test_create_review_comment():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_create_review_comment_parametrized(input_data, expected):
     """Test create_review_comment with various inputs."""
     result = create_review_comment(input_data)
@@ -7541,14 +7708,14 @@ def test_create_review_comment_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = create_review_comment(float('inf'))
+    result = create_review_comment(float("inf"))
     assert result == None
 
 
 def test_create_review_comment_coverage():
     """Test create_review_comment to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = create_review_comment(1)
     assert result is not None
     # Test with multiple parameters
@@ -7575,12 +7742,15 @@ def test_save_annotations():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_save_annotations_parametrized(input_data, expected):
     """Test save_annotations with various inputs."""
     result = save_annotations(input_data)
@@ -7612,14 +7782,14 @@ def test_save_annotations_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = save_annotations(float('inf'))
+    result = save_annotations(float("inf"))
     assert result == None
 
 
 def test_save_annotations_coverage():
     """Test save_annotations to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = save_annotations(1)
     assert result is not None
     # Test with multiple parameters
@@ -7671,14 +7841,14 @@ def test_generate_annotations_summary_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_annotations_summary(float('inf'))
+    result = generate_annotations_summary(float("inf"))
     assert result == None
 
 
 def test_generate_annotations_summary_coverage():
     """Test generate_annotations_summary to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_annotations_summary(1)
     assert result is not None
 
@@ -7702,12 +7872,15 @@ def test_write_annotations_to_file():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_write_annotations_to_file_parametrized(input_data, expected):
     """Test write_annotations_to_file with various inputs."""
     result = write_annotations_to_file(input_data)
@@ -7739,14 +7912,14 @@ def test_write_annotations_to_file_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = write_annotations_to_file(float('inf'))
+    result = write_annotations_to_file(float("inf"))
     assert result == None
 
 
 def test_write_annotations_to_file_coverage():
     """Test write_annotations_to_file to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = write_annotations_to_file(1)
     assert result is not None
     # Test with multiple parameters
@@ -7798,14 +7971,14 @@ def test_clear_annotations_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = clear_annotations(float('inf'))
+    result = clear_annotations(float("inf"))
     assert result == None
 
 
 def test_clear_annotations_coverage():
     """Test clear_annotations to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = clear_annotations(1)
     assert result is not None
 
@@ -7829,12 +8002,15 @@ def test__annotation_to_dict():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__annotation_to_dict_parametrized(input_data, expected):
     """Test _annotation_to_dict with various inputs."""
     result = _annotation_to_dict(input_data)
@@ -7866,14 +8042,14 @@ def test__annotation_to_dict_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _annotation_to_dict(float('inf'))
+    result = _annotation_to_dict(float("inf"))
     assert result == None
 
 
 def test__annotation_to_dict_coverage():
     """Test _annotation_to_dict to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _annotation_to_dict(1)
     assert result is not None
     # Test with multiple parameters
@@ -7900,12 +8076,15 @@ def test__issue_to_dict():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__issue_to_dict_parametrized(input_data, expected):
     """Test _issue_to_dict with various inputs."""
     result = _issue_to_dict(input_data)
@@ -7937,14 +8116,14 @@ def test__issue_to_dict_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _issue_to_dict(float('inf'))
+    result = _issue_to_dict(float("inf"))
     assert result == None
 
 
 def test__issue_to_dict_coverage():
     """Test _issue_to_dict to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _issue_to_dict(1)
     assert result is not None
     # Test with multiple parameters
@@ -7959,6 +8138,7 @@ def test__issue_to_dict_coverage():
 
 
 # Tests for src/ai_guard/report.py
+
 
 class TestGateResult:
     """Test GateResult class."""
@@ -8036,14 +8216,14 @@ def test_generate_report_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_report(float('inf'))
+    result = generate_report(float("inf"))
     assert result == None
 
 
 def test_generate_report_coverage():
     """Test generate_report to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_report(1)
     assert result is not None
 
@@ -8067,12 +8247,15 @@ def test_generate_detailed_report():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_generate_detailed_report_parametrized(input_data, expected):
     """Test generate_detailed_report with various inputs."""
     result = generate_detailed_report(input_data)
@@ -8104,14 +8287,14 @@ def test_generate_detailed_report_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_detailed_report(float('inf'))
+    result = generate_detailed_report(float("inf"))
     assert result == None
 
 
 def test_generate_detailed_report_coverage():
     """Test generate_detailed_report to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_detailed_report(1)
     assert result is not None
     # Test with multiple parameters
@@ -8126,6 +8309,7 @@ def test_generate_detailed_report_coverage():
 
 
 # Tests for src/ai_guard/report_html.py
+
 
 class TestHTMLReportGenerator:
     """Test HTMLReportGenerator class."""
@@ -8184,14 +8368,14 @@ def test_generate_html_report_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_html_report(float('inf'))
+    result = generate_html_report(float("inf"))
     assert result == None
 
 
 def test_generate_html_report_coverage():
     """Test generate_html_report to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_html_report(1)
     assert result is not None
 
@@ -8215,12 +8399,15 @@ def test_generate_summary_html():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_generate_summary_html_parametrized(input_data, expected):
     """Test generate_summary_html with various inputs."""
     result = generate_summary_html(input_data)
@@ -8252,14 +8439,14 @@ def test_generate_summary_html_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_summary_html(float('inf'))
+    result = generate_summary_html(float("inf"))
     assert result == None
 
 
 def test_generate_summary_html_coverage():
     """Test generate_summary_html to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_summary_html(1)
     assert result is not None
     # Test with multiple parameters
@@ -8275,6 +8462,7 @@ def test_generate_summary_html_coverage():
 
 # Tests for src/ai_guard/report_json.py
 
+
 def test_write_json():
     """Test write_json function."""
     # Arrange
@@ -8288,12 +8476,15 @@ def test_write_json():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_write_json_parametrized(input_data, expected):
     """Test write_json with various inputs."""
     result = write_json(input_data)
@@ -8325,14 +8516,14 @@ def test_write_json_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = write_json(float('inf'))
+    result = write_json(float("inf"))
     assert result == None
 
 
 def test_write_json_coverage():
     """Test write_json to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = write_json(1)
     assert result is not None
     # Test with multiple parameters
@@ -8384,14 +8575,14 @@ def test_generate_json_report_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_json_report(float('inf'))
+    result = generate_json_report(float("inf"))
     assert result == None
 
 
 def test_generate_json_report_coverage():
     """Test generate_json_report to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_json_report(1)
     assert result is not None
 
@@ -8403,6 +8594,7 @@ def test_generate_json_report_coverage():
 
 
 # Tests for src/ai_guard/sarif_report.py
+
 
 def test_make_location():
     """Test make_location function."""
@@ -8417,12 +8609,15 @@ def test_make_location():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_make_location_parametrized(input_data, expected):
     """Test make_location with various inputs."""
     result = make_location(input_data)
@@ -8454,14 +8649,14 @@ def test_make_location_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = make_location(float('inf'))
+    result = make_location(float("inf"))
     assert result == None
 
 
 def test_make_location_coverage():
     """Test make_location to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = make_location(1)
     assert result is not None
     # Test with multiple parameters
@@ -8513,14 +8708,14 @@ def test_generate_sarif_report_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = generate_sarif_report(float('inf'))
+    result = generate_sarif_report(float("inf"))
     assert result == None
 
 
 def test_generate_sarif_report_coverage():
     """Test generate_sarif_report to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = generate_sarif_report(1)
     assert result is not None
 
@@ -8532,6 +8727,7 @@ def test_generate_sarif_report_coverage():
 
 
 # Tests for src/ai_guard/security_scanner.py
+
 
 def test_run_bandit():
     """Test run_bandit function."""
@@ -8571,14 +8767,14 @@ def test_run_bandit_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_bandit(float('inf'))
+    result = run_bandit(float("inf"))
     assert result == None
 
 
 def test_run_bandit_coverage():
     """Test run_bandit to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_bandit(1)
     assert result is not None
 
@@ -8646,14 +8842,14 @@ def test_scan_for_vulnerabilities_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = scan_for_vulnerabilities(float('inf'))
+    result = scan_for_vulnerabilities(float("inf"))
     assert result == None
 
 
 def test_scan_for_vulnerabilities_coverage():
     """Test scan_for_vulnerabilities to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = scan_for_vulnerabilities(1)
     assert result is not None
 
@@ -8702,14 +8898,14 @@ def test_run_all_security_checks_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_all_security_checks(float('inf'))
+    result = run_all_security_checks(float("inf"))
     assert result == None
 
 
 def test_run_all_security_checks_coverage():
     """Test run_all_security_checks to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_all_security_checks(1)
     assert result is not None
 
@@ -8721,6 +8917,7 @@ def test_run_all_security_checks_coverage():
 
 
 # Tests for src/ai_guard/tests_runner.py
+
 
 def test_run_pytest():
     """Test run_pytest function."""
@@ -8760,14 +8957,14 @@ def test_run_pytest_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_pytest(float('inf'))
+    result = run_pytest(float("inf"))
     assert result == None
 
 
 def test_run_pytest_coverage():
     """Test run_pytest to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_pytest(1)
     assert result is not None
 
@@ -8835,14 +9032,14 @@ def test_run_tests_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_tests(float('inf'))
+    result = run_tests(float("inf"))
     assert result == None
 
 
 def test_run_tests_coverage():
     """Test run_tests to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_tests(1)
     assert result is not None
 
@@ -8866,12 +9063,15 @@ def test_run_tests():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_run_tests_parametrized(input_data, expected):
     """Test run_tests with various inputs."""
     result = run_tests(input_data)
@@ -8903,14 +9103,14 @@ def test_run_tests_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_tests(float('inf'))
+    result = run_tests(float("inf"))
     assert result == None
 
 
 def test_run_tests_coverage():
     """Test run_tests to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_tests(1)
     assert result is not None
     # Test with multiple parameters
@@ -8925,6 +9125,7 @@ def test_run_tests_coverage():
 
 
 # Tests for src/ai_guard/utils/error_formatter.py
+
 
 class TestErrorCategory:
     """Test ErrorCategory class."""
@@ -8977,12 +9178,15 @@ def test_format_performance_message():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_format_performance_message_parametrized(input_data, expected):
     """Test format_performance_message with various inputs."""
     result = format_performance_message(input_data)
@@ -9014,14 +9218,14 @@ def test_format_performance_message_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = format_performance_message(float('inf'))
+    result = format_performance_message(float("inf"))
     assert result == None
 
 
 def test_format_performance_message_coverage():
     """Test format_performance_message to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = format_performance_message(1)
     assert result is not None
     # Test with multiple parameters
@@ -9048,12 +9252,15 @@ def test_format_error_message():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_format_error_message_parametrized(input_data, expected):
     """Test format_error_message with various inputs."""
     result = format_error_message(input_data)
@@ -9085,14 +9292,14 @@ def test_format_error_message_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = format_error_message(float('inf'))
+    result = format_error_message(float("inf"))
     assert result == None
 
 
 def test_format_error_message_coverage():
     """Test format_error_message to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = format_error_message(1)
     assert result is not None
     # Test with multiple parameters
@@ -9119,12 +9326,15 @@ def test___init__():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test___init___parametrized(input_data, expected):
     """Test __init__ with various inputs."""
     result = __init__(input_data)
@@ -9156,14 +9366,14 @@ def test___init___edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = __init__(float('inf'))
+    result = __init__(float("inf"))
     assert result == None
 
 
 def test___init___coverage():
     """Test __init__ to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = __init__(1)
     assert result is not None
     # Test with multiple parameters
@@ -9178,6 +9388,7 @@ def test___init___coverage():
 
 
 # Tests for src/ai_guard/utils/subprocess_runner.py
+
 
 class TestToolExecutionError:
     """Test ToolExecutionError class."""
@@ -9211,12 +9422,15 @@ def test_run_cmd():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_run_cmd_parametrized(input_data, expected):
     """Test run_cmd with various inputs."""
     result = run_cmd(input_data)
@@ -9248,14 +9462,14 @@ def test_run_cmd_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = run_cmd(float('inf'))
+    result = run_cmd(float("inf"))
     assert result == None
 
 
 def test_run_cmd_coverage():
     """Test run_cmd to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = run_cmd(1)
     assert result is not None
     # Test with multiple parameters
@@ -9282,12 +9496,15 @@ def test__format_command_output():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test__format_command_output_parametrized(input_data, expected):
     """Test _format_command_output with various inputs."""
     result = _format_command_output(input_data)
@@ -9319,14 +9536,14 @@ def test__format_command_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _format_command_output(float('inf'))
+    result = _format_command_output(float("inf"))
     assert result == None
 
 
 def test__format_command_output_coverage():
     """Test _format_command_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _format_command_output(1)
     assert result is not None
     # Test with multiple parameters
@@ -9341,6 +9558,7 @@ def test__format_command_output_coverage():
 
 
 # Tests for test_functionality.py
+
 
 def test_test_imports():
     """Test test_imports function."""
@@ -9380,14 +9598,14 @@ def test_test_imports_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_imports(float('inf'))
+    result = test_imports(float("inf"))
     assert result == None
 
 
 def test_test_imports_coverage():
     """Test test_imports to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_imports(1)
     assert result is not None
 
@@ -9436,14 +9654,14 @@ def test_test_html_report_generation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_html_report_generation(float('inf'))
+    result = test_html_report_generation(float("inf"))
     assert result == None
 
 
 def test_test_html_report_generation_coverage():
     """Test test_html_report_generation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_html_report_generation(1)
     assert result is not None
 
@@ -9492,14 +9710,14 @@ def test_test_coverage_evaluation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_coverage_evaluation(float('inf'))
+    result = test_coverage_evaluation(float("inf"))
     assert result == None
 
 
 def test_test_coverage_evaluation_coverage():
     """Test test_coverage_evaluation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_coverage_evaluation(1)
     assert result is not None
 
@@ -9548,14 +9766,14 @@ def test_test_analyzer_functions_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_analyzer_functions(float('inf'))
+    result = test_analyzer_functions(float("inf"))
     assert result == None
 
 
 def test_test_analyzer_functions_coverage():
     """Test test_analyzer_functions to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_analyzer_functions(1)
     assert result is not None
 
@@ -9604,14 +9822,14 @@ def test_test_config_loading_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_config_loading(float('inf'))
+    result = test_config_loading(float("inf"))
     assert result == None
 
 
 def test_test_config_loading_coverage():
     """Test test_config_loading to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_config_loading(1)
     assert result is not None
 
@@ -9660,14 +9878,14 @@ def test_main_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = main(float('inf'))
+    result = main(float("inf"))
     assert result == None
 
 
 def test_main_coverage():
     """Test main to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = main(1)
     assert result is not None
 
@@ -9679,6 +9897,7 @@ def test_main_coverage():
 
 
 # Tests for tests/conftest.py
+
 
 def test_deterministic_env():
     """Test deterministic_env function."""
@@ -9718,14 +9937,14 @@ def test_deterministic_env_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = deterministic_env(float('inf'))
+    result = deterministic_env(float("inf"))
     assert result == None
 
 
 def test_deterministic_env_coverage():
     """Test deterministic_env to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = deterministic_env(1)
     assert result is not None
 
@@ -9774,14 +9993,14 @@ def test_load_fixture_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = load_fixture(float('inf'))
+    result = load_fixture(float("inf"))
     assert result == None
 
 
 def test_load_fixture_coverage():
     """Test load_fixture to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = load_fixture(1)
     assert result is not None
 
@@ -9830,14 +10049,14 @@ def test__loader_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = _loader(float('inf'))
+    result = _loader(float("inf"))
     assert result == None
 
 
 def test__loader_coverage():
     """Test _loader to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = _loader(1)
     assert result is not None
 
@@ -9849,6 +10068,7 @@ def test__loader_coverage():
 
 
 # Tests for tests/fixtures/sample.py
+
 
 def test_sample_function():
     """Test sample_function function."""
@@ -9888,14 +10108,14 @@ def test_sample_function_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = sample_function(float('inf'))
+    result = sample_function(float("inf"))
     assert result == None
 
 
 def test_sample_function_coverage():
     """Test sample_function to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = sample_function(1)
     assert result is not None
 
@@ -9944,14 +10164,14 @@ def test_sample_function_with_bug_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = sample_function_with_bug(float('inf'))
+    result = sample_function_with_bug(float("inf"))
     assert result == None
 
 
 def test_sample_function_with_bug_coverage():
     """Test sample_function_with_bug to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = sample_function_with_bug(1)
     assert result is not None
 
@@ -9963,6 +10183,7 @@ def test_sample_function_with_bug_coverage():
 
 
 # Tests for tests/test_config_basic.py
+
 
 def test_test_config_import():
     """Test test_config_import function."""
@@ -10002,14 +10223,14 @@ def test_test_config_import_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_config_import(float('inf'))
+    result = test_config_import(float("inf"))
     assert result == None
 
 
 def test_test_config_import_coverage():
     """Test test_config_import to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_config_import(1)
     assert result is not None
 
@@ -10058,14 +10279,14 @@ def test_test_load_config_function_exists_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_load_config_function_exists(float('inf'))
+    result = test_load_config_function_exists(float("inf"))
     assert result == None
 
 
 def test_test_load_config_function_exists_coverage():
     """Test test_load_config_function_exists to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_load_config_function_exists(1)
     assert result is not None
 
@@ -10114,14 +10335,14 @@ def test_test_load_config_basic_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_load_config_basic(float('inf'))
+    result = test_load_config_basic(float("inf"))
     assert result == None
 
 
 def test_test_load_config_basic_coverage():
     """Test test_load_config_basic to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_load_config_basic(1)
     assert result is not None
 
@@ -10145,12 +10366,15 @@ def test_test_load_config_file_exists():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_load_config_file_exists_parametrized(input_data, expected):
     """Test test_load_config_file_exists with various inputs."""
     result = test_load_config_file_exists(input_data)
@@ -10182,14 +10406,14 @@ def test_test_load_config_file_exists_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_load_config_file_exists(float('inf'))
+    result = test_load_config_file_exists(float("inf"))
     assert result == None
 
 
 def test_test_load_config_file_exists_coverage():
     """Test test_load_config_file_exists to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_load_config_file_exists(1)
     assert result is not None
     # Test with multiple parameters
@@ -10241,14 +10465,14 @@ def test_test_load_config_file_not_exists_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_load_config_file_not_exists(float('inf'))
+    result = test_load_config_file_not_exists(float("inf"))
     assert result == None
 
 
 def test_test_load_config_file_not_exists_coverage():
     """Test test_load_config_file_not_exists to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_load_config_file_not_exists(1)
     assert result is not None
 
@@ -10260,6 +10484,7 @@ def test_test_load_config_file_not_exists_coverage():
 
 
 # Tests for tests/test_config_comprehensive.py
+
 
 class TestTestGates:
     """Test TestGates class."""
@@ -10337,14 +10562,14 @@ def test_test_gates_init_custom_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_gates_init_custom(float('inf'))
+    result = test_gates_init_custom(float("inf"))
     assert result == None
 
 
 def test_test_gates_init_custom_coverage():
     """Test test_gates_init_custom to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_gates_init_custom(1)
     assert result is not None
 
@@ -10393,14 +10618,14 @@ def test_test_config_init_default_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_config_init_default(float('inf'))
+    result = test_config_init_default(float("inf"))
     assert result == None
 
 
 def test_test_config_init_default_coverage():
     """Test test_config_init_default to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_config_init_default(1)
     assert result is not None
 
@@ -10412,6 +10637,7 @@ def test_test_config_init_default_coverage():
 
 
 # Tests for tests/test_coverage_eval_comprehensive.py
+
 
 class TestTestCoverageResult:
     """Test TestCoverageResult class."""
@@ -10489,14 +10715,14 @@ def test_test_coverage_result_init_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_coverage_result_init(float('inf'))
+    result = test_coverage_result_init(float("inf"))
     assert result == None
 
 
 def test_test_coverage_result_init_coverage():
     """Test test_coverage_result_init to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_coverage_result_init(1)
     assert result is not None
 
@@ -10545,14 +10771,14 @@ def test_test_coverage_result_failed_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_coverage_result_failed(float('inf'))
+    result = test_coverage_result_failed(float("inf"))
     assert result == None
 
 
 def test_test_coverage_result_failed_coverage():
     """Test test_coverage_result_failed to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_coverage_result_failed(1)
     assert result is not None
 
@@ -10601,14 +10827,14 @@ def test_test_evaluate_coverage_str_line_rate_passed_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_evaluate_coverage_str_line_rate_passed(float('inf'))
+    result = test_evaluate_coverage_str_line_rate_passed(float("inf"))
     assert result == None
 
 
 def test_test_evaluate_coverage_str_line_rate_passed_coverage():
     """Test test_evaluate_coverage_str_line_rate_passed to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_evaluate_coverage_str_line_rate_passed(1)
     assert result is not None
 
@@ -10620,6 +10846,7 @@ def test_test_evaluate_coverage_str_line_rate_passed_coverage():
 
 
 # Tests for tests/test_coverage_gate.py
+
 
 def test_test_coverage_fails_below_threshold():
     """Test test_coverage_fails_below_threshold function."""
@@ -10659,14 +10886,14 @@ def test_test_coverage_fails_below_threshold_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_coverage_fails_below_threshold(float('inf'))
+    result = test_coverage_fails_below_threshold(float("inf"))
     assert result == None
 
 
 def test_test_coverage_fails_below_threshold_coverage():
     """Test test_coverage_fails_below_threshold to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_coverage_fails_below_threshold(1)
     assert result is not None
 
@@ -10715,14 +10942,14 @@ def test_test_coverage_passes_threshold_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_coverage_passes_threshold(float('inf'))
+    result = test_coverage_passes_threshold(float("inf"))
     assert result == None
 
 
 def test_test_coverage_passes_threshold_coverage():
     """Test test_coverage_passes_threshold to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_coverage_passes_threshold(1)
     assert result is not None
 
@@ -10734,6 +10961,7 @@ def test_test_coverage_passes_threshold_coverage():
 
 
 # Tests for tests/test_diff_parser_basic.py
+
 
 def test_test_diff_parser_import():
     """Test test_diff_parser_import function."""
@@ -10773,14 +11001,14 @@ def test_test_diff_parser_import_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_diff_parser_import(float('inf'))
+    result = test_diff_parser_import(float("inf"))
     assert result == None
 
 
 def test_test_diff_parser_import_coverage():
     """Test test_diff_parser_import to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_diff_parser_import(1)
     assert result is not None
 
@@ -10829,14 +11057,14 @@ def test_test_parse_diff_empty_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_parse_diff_empty(float('inf'))
+    result = test_parse_diff_empty(float("inf"))
     assert result == None
 
 
 def test_test_parse_diff_empty_coverage():
     """Test test_parse_diff_empty to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_parse_diff_empty(1)
     assert result is not None
 
@@ -10885,14 +11113,14 @@ def test_test_parse_diff_basic_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_parse_diff_basic(float('inf'))
+    result = test_parse_diff_basic(float("inf"))
     assert result == None
 
 
 def test_test_parse_diff_basic_coverage():
     """Test test_parse_diff_basic to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_parse_diff_basic(1)
     assert result is not None
 
@@ -10941,14 +11169,14 @@ def test_test_parse_diff_with_new_file_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_parse_diff_with_new_file(float('inf'))
+    result = test_parse_diff_with_new_file(float("inf"))
     assert result == None
 
 
 def test_test_parse_diff_with_new_file_coverage():
     """Test test_parse_diff_with_new_file to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_parse_diff_with_new_file(1)
     assert result is not None
 
@@ -10997,14 +11225,14 @@ def test_test_parse_diff_with_deleted_file_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_parse_diff_with_deleted_file(float('inf'))
+    result = test_parse_diff_with_deleted_file(float("inf"))
     assert result == None
 
 
 def test_test_parse_diff_with_deleted_file_coverage():
     """Test test_parse_diff_with_deleted_file to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_parse_diff_with_deleted_file(1)
     assert result is not None
 
@@ -11016,6 +11244,7 @@ def test_test_parse_diff_with_deleted_file_coverage():
 
 
 # Tests for tests/test_performance_comprehensive.py
+
 
 class TestTestTimeFunction:
     """Test TestTimeFunction class."""
@@ -11093,14 +11322,14 @@ def test_test_time_function_with_kwargs_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_time_function_with_kwargs(float('inf'))
+    result = test_time_function_with_kwargs(float("inf"))
     assert result == None
 
 
 def test_test_time_function_with_kwargs_coverage():
     """Test test_time_function_with_kwargs to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_time_function_with_kwargs(1)
     assert result is not None
 
@@ -11149,14 +11378,14 @@ def test_test_cached_basic_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_cached_basic(float('inf'))
+    result = test_cached_basic(float("inf"))
     assert result == None
 
 
 def test_test_cached_basic_coverage():
     """Test test_cached_basic to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_cached_basic(1)
     assert result is not None
 
@@ -11180,12 +11409,15 @@ def test_test_func():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_func_parametrized(input_data, expected):
     """Test test_func with various inputs."""
     result = test_func(input_data)
@@ -11217,14 +11449,14 @@ def test_test_func_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_func(float('inf'))
+    result = test_func(float("inf"))
     assert result == None
 
 
 def test_test_func_coverage():
     """Test test_func to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_func(1)
     assert result is not None
     # Test with multiple parameters
@@ -11240,6 +11472,7 @@ def test_test_func_coverage():
 
 # Tests for tests/test_rule_normalize.py
 
+
 def test_test_normalize_rule():
     """Test test_normalize_rule function."""
     # Arrange
@@ -11253,12 +11486,15 @@ def test_test_normalize_rule():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_normalize_rule_parametrized(input_data, expected):
     """Test test_normalize_rule with various inputs."""
     result = test_normalize_rule(input_data)
@@ -11290,14 +11526,14 @@ def test_test_normalize_rule_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_normalize_rule(float('inf'))
+    result = test_normalize_rule(float("inf"))
     assert result == None
 
 
 def test_test_normalize_rule_coverage():
     """Test test_normalize_rule to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_normalize_rule(1)
     assert result is not None
     # Test with multiple parameters
@@ -11312,6 +11548,7 @@ def test_test_normalize_rule_coverage():
 
 
 # Tests for tests/test_security_scanner.py
+
 
 class TestTestSecurityScanner:
     """Test TestSecurityScanner class."""
@@ -11427,14 +11664,14 @@ def test_test_security_scanner_init_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_security_scanner_init(float('inf'))
+    result = test_security_scanner_init(float("inf"))
     assert result == None
 
 
 def test_test_security_scanner_init_coverage():
     """Test test_security_scanner_init to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_security_scanner_init(1)
     assert result is not None
 
@@ -11483,14 +11720,14 @@ def test_test_security_scanner_scan_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_security_scanner_scan(float('inf'))
+    result = test_security_scanner_scan(float("inf"))
     assert result == None
 
 
 def test_test_security_scanner_scan_coverage():
     """Test test_security_scanner_scan to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_security_scanner_scan(1)
     assert result is not None
 
@@ -11514,12 +11751,15 @@ def test_test_run_bandit_success():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_bandit_success_parametrized(input_data, expected):
     """Test test_run_bandit_success with various inputs."""
     result = test_run_bandit_success(input_data)
@@ -11551,14 +11791,14 @@ def test_test_run_bandit_success_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_bandit_success(float('inf'))
+    result = test_run_bandit_success(float("inf"))
     assert result == None
 
 
 def test_test_run_bandit_success_coverage():
     """Test test_run_bandit_success to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_bandit_success(1)
     assert result is not None
     # Test with multiple parameters
@@ -11585,12 +11825,15 @@ def test_test_run_bandit_with_extra_args():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_bandit_with_extra_args_parametrized(input_data, expected):
     """Test test_run_bandit_with_extra_args with various inputs."""
     result = test_run_bandit_with_extra_args(input_data)
@@ -11622,14 +11865,14 @@ def test_test_run_bandit_with_extra_args_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_bandit_with_extra_args(float('inf'))
+    result = test_run_bandit_with_extra_args(float("inf"))
     assert result == None
 
 
 def test_test_run_bandit_with_extra_args_coverage():
     """Test test_run_bandit_with_extra_args to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_bandit_with_extra_args(1)
     assert result is not None
     # Test with multiple parameters
@@ -11656,12 +11899,15 @@ def test_test_run_bandit_failure():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_bandit_failure_parametrized(input_data, expected):
     """Test test_run_bandit_failure with various inputs."""
     result = test_run_bandit_failure(input_data)
@@ -11693,14 +11939,14 @@ def test_test_run_bandit_failure_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_bandit_failure(float('inf'))
+    result = test_run_bandit_failure(float("inf"))
     assert result == None
 
 
 def test_test_run_bandit_failure_coverage():
     """Test test_run_bandit_failure to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_bandit_failure(1)
     assert result is not None
     # Test with multiple parameters
@@ -11727,12 +11973,15 @@ def test_test_run_bandit_with_config():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_bandit_with_config_parametrized(input_data, expected):
     """Test test_run_bandit_with_config with various inputs."""
     result = test_run_bandit_with_config(input_data)
@@ -11764,14 +12013,14 @@ def test_test_run_bandit_with_config_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_bandit_with_config(float('inf'))
+    result = test_run_bandit_with_config(float("inf"))
     assert result == None
 
 
 def test_test_run_bandit_with_config_coverage():
     """Test test_run_bandit_with_config to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_bandit_with_config(1)
     assert result is not None
     # Test with multiple parameters
@@ -11798,12 +12047,15 @@ def test_test_run_safety_check_success():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_safety_check_success_parametrized(input_data, expected):
     """Test test_run_safety_check_success with various inputs."""
     result = test_run_safety_check_success(input_data)
@@ -11835,14 +12087,14 @@ def test_test_run_safety_check_success_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_safety_check_success(float('inf'))
+    result = test_run_safety_check_success(float("inf"))
     assert result == None
 
 
 def test_test_run_safety_check_success_coverage():
     """Test test_run_safety_check_success to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_safety_check_success(1)
     assert result is not None
     # Test with multiple parameters
@@ -11869,12 +12121,15 @@ def test_test_run_safety_check_failure():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_safety_check_failure_parametrized(input_data, expected):
     """Test test_run_safety_check_failure with various inputs."""
     result = test_run_safety_check_failure(input_data)
@@ -11906,14 +12161,14 @@ def test_test_run_safety_check_failure_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_safety_check_failure(float('inf'))
+    result = test_run_safety_check_failure(float("inf"))
     assert result == None
 
 
 def test_test_run_safety_check_failure_coverage():
     """Test test_run_safety_check_failure to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_safety_check_failure(1)
     assert result is not None
     # Test with multiple parameters
@@ -11940,12 +12195,15 @@ def test_test_run_safety_check_not_found():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_safety_check_not_found_parametrized(input_data, expected):
     """Test test_run_safety_check_not_found with various inputs."""
     result = test_run_safety_check_not_found(input_data)
@@ -11977,14 +12235,14 @@ def test_test_run_safety_check_not_found_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_safety_check_not_found(float('inf'))
+    result = test_run_safety_check_not_found(float("inf"))
     assert result == None
 
 
 def test_test_run_safety_check_not_found_coverage():
     """Test test_run_safety_check_not_found to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_safety_check_not_found(1)
     assert result is not None
     # Test with multiple parameters
@@ -12036,14 +12294,14 @@ def test_test_security_scanner_with_empty_paths_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_security_scanner_with_empty_paths(float('inf'))
+    result = test_security_scanner_with_empty_paths(float("inf"))
     assert result == None
 
 
 def test_test_security_scanner_with_empty_paths_coverage():
     """Test test_security_scanner_with_empty_paths to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_security_scanner_with_empty_paths(1)
     assert result is not None
 
@@ -12092,14 +12350,14 @@ def test_test_security_scanner_with_none_paths_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_security_scanner_with_none_paths(float('inf'))
+    result = test_security_scanner_with_none_paths(float("inf"))
     assert result == None
 
 
 def test_test_security_scanner_with_none_paths_coverage():
     """Test test_security_scanner_with_none_paths to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_security_scanner_with_none_paths(1)
     assert result is not None
 
@@ -12148,14 +12406,14 @@ def test_test_run_bandit_with_none_args_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_bandit_with_none_args(float('inf'))
+    result = test_run_bandit_with_none_args(float("inf"))
     assert result == None
 
 
 def test_test_run_bandit_with_none_args_coverage():
     """Test test_run_bandit_with_none_args to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_bandit_with_none_args(1)
     assert result is not None
 
@@ -12204,14 +12462,14 @@ def test_test_run_safety_check_exception_handling_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_safety_check_exception_handling(float('inf'))
+    result = test_run_safety_check_exception_handling(float("inf"))
     assert result == None
 
 
 def test_test_run_safety_check_exception_handling_coverage():
     """Test test_run_safety_check_exception_handling to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_safety_check_exception_handling(1)
     assert result is not None
 
@@ -12223,6 +12481,7 @@ def test_test_run_safety_check_exception_handling_coverage():
 
 
 # Tests for tests/test_ts_parsers.py
+
 
 def test_test_parse_eslint_json():
     """Test test_parse_eslint_json function."""
@@ -12262,14 +12521,14 @@ def test_test_parse_eslint_json_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_parse_eslint_json(float('inf'))
+    result = test_parse_eslint_json(float("inf"))
     assert result == None
 
 
 def test_test_parse_eslint_json_coverage():
     """Test test_parse_eslint_json to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_parse_eslint_json(1)
     assert result is not None
 
@@ -12318,14 +12577,14 @@ def test_test_parse_eslint_stylish_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_parse_eslint_stylish(float('inf'))
+    result = test_parse_eslint_stylish(float("inf"))
     assert result == None
 
 
 def test_test_parse_eslint_stylish_coverage():
     """Test test_parse_eslint_stylish to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_parse_eslint_stylish(1)
     assert result is not None
 
@@ -12374,14 +12633,14 @@ def test_test_parse_jest_human_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_parse_jest_human(float('inf'))
+    result = test_parse_jest_human(float("inf"))
     assert result == None
 
 
 def test_test_parse_jest_human_coverage():
     """Test test_parse_jest_human to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_parse_jest_human(1)
     assert result is not None
 
@@ -12393,6 +12652,7 @@ def test_test_parse_jest_human_coverage():
 
 
 # Tests for tests/test_utils_comprehensive.py
+
 
 class TestTestToolExecutionError:
     """Test TestToolExecutionError class."""
@@ -12508,14 +12768,14 @@ def test_test_tool_execution_error_creation_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_tool_execution_error_creation(float('inf'))
+    result = test_tool_execution_error_creation(float("inf"))
     assert result == None
 
 
 def test_test_tool_execution_error_creation_coverage():
     """Test test_tool_execution_error_creation to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_tool_execution_error_creation(1)
     assert result is not None
 
@@ -12539,12 +12799,15 @@ def test_test_run_cmd_success():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_cmd_success_parametrized(input_data, expected):
     """Test test_run_cmd_success with various inputs."""
     result = test_run_cmd_success(input_data)
@@ -12576,14 +12839,14 @@ def test_test_run_cmd_success_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_cmd_success(float('inf'))
+    result = test_run_cmd_success(float("inf"))
     assert result == None
 
 
 def test_test_run_cmd_success_coverage():
     """Test test_run_cmd_success to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_cmd_success(1)
     assert result is not None
     # Test with multiple parameters
@@ -12610,12 +12873,15 @@ def test_test_run_cmd_with_cwd_and_timeout():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_cmd_with_cwd_and_timeout_parametrized(input_data, expected):
     """Test test_run_cmd_with_cwd_and_timeout with various inputs."""
     result = test_run_cmd_with_cwd_and_timeout(input_data)
@@ -12647,14 +12913,14 @@ def test_test_run_cmd_with_cwd_and_timeout_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_cmd_with_cwd_and_timeout(float('inf'))
+    result = test_run_cmd_with_cwd_and_timeout(float("inf"))
     assert result == None
 
 
 def test_test_run_cmd_with_cwd_and_timeout_coverage():
     """Test test_run_cmd_with_cwd_and_timeout to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_cmd_with_cwd_and_timeout(1)
     assert result is not None
     # Test with multiple parameters
@@ -12681,12 +12947,15 @@ def test_test_run_cmd_failure_with_output():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_cmd_failure_with_output_parametrized(input_data, expected):
     """Test test_run_cmd_failure_with_output with various inputs."""
     result = test_run_cmd_failure_with_output(input_data)
@@ -12718,14 +12987,14 @@ def test_test_run_cmd_failure_with_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_cmd_failure_with_output(float('inf'))
+    result = test_run_cmd_failure_with_output(float("inf"))
     assert result == None
 
 
 def test_test_run_cmd_failure_with_output_coverage():
     """Test test_run_cmd_failure_with_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_cmd_failure_with_output(1)
     assert result is not None
     # Test with multiple parameters
@@ -12752,12 +13021,15 @@ def test_test_run_cmd_failure_without_output():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_cmd_failure_without_output_parametrized(input_data, expected):
     """Test test_run_cmd_failure_without_output with various inputs."""
     result = test_run_cmd_failure_without_output(input_data)
@@ -12789,14 +13061,14 @@ def test_test_run_cmd_failure_without_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_cmd_failure_without_output(float('inf'))
+    result = test_run_cmd_failure_without_output(float("inf"))
     assert result == None
 
 
 def test_test_run_cmd_failure_without_output_coverage():
     """Test test_run_cmd_failure_without_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_cmd_failure_without_output(1)
     assert result is not None
     # Test with multiple parameters
@@ -12823,12 +13095,15 @@ def test_test_run_cmd_failure_with_whitespace_output():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_cmd_failure_with_whitespace_output_parametrized(input_data, expected):
     """Test test_run_cmd_failure_with_whitespace_output with various inputs."""
     result = test_run_cmd_failure_with_whitespace_output(input_data)
@@ -12860,14 +13135,14 @@ def test_test_run_cmd_failure_with_whitespace_output_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_cmd_failure_with_whitespace_output(float('inf'))
+    result = test_run_cmd_failure_with_whitespace_output(float("inf"))
     assert result == None
 
 
 def test_test_run_cmd_failure_with_whitespace_output_coverage():
     """Test test_run_cmd_failure_with_whitespace_output to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_cmd_failure_with_whitespace_output(1)
     assert result is not None
     # Test with multiple parameters
@@ -12894,12 +13169,15 @@ def test_test_run_cmd_none_command():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_cmd_none_command_parametrized(input_data, expected):
     """Test test_run_cmd_none_command with various inputs."""
     result = test_run_cmd_none_command(input_data)
@@ -12931,14 +13209,14 @@ def test_test_run_cmd_none_command_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_cmd_none_command(float('inf'))
+    result = test_run_cmd_none_command(float("inf"))
     assert result == None
 
 
 def test_test_run_cmd_none_command_coverage():
     """Test test_run_cmd_none_command to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_cmd_none_command(1)
     assert result is not None
     # Test with multiple parameters
@@ -12965,12 +13243,15 @@ def test_test_run_cmd_empty_command():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_cmd_empty_command_parametrized(input_data, expected):
     """Test test_run_cmd_empty_command with various inputs."""
     result = test_run_cmd_empty_command(input_data)
@@ -13002,14 +13283,14 @@ def test_test_run_cmd_empty_command_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_cmd_empty_command(float('inf'))
+    result = test_run_cmd_empty_command(float("inf"))
     assert result == None
 
 
 def test_test_run_cmd_empty_command_coverage():
     """Test test_run_cmd_empty_command to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_cmd_empty_command(1)
     assert result is not None
     # Test with multiple parameters
@@ -13036,12 +13317,15 @@ def test_test_run_cmd_none_stdout():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_cmd_none_stdout_parametrized(input_data, expected):
     """Test test_run_cmd_none_stdout with various inputs."""
     result = test_run_cmd_none_stdout(input_data)
@@ -13073,14 +13357,14 @@ def test_test_run_cmd_none_stdout_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_cmd_none_stdout(float('inf'))
+    result = test_run_cmd_none_stdout(float("inf"))
     assert result == None
 
 
 def test_test_run_cmd_none_stdout_coverage():
     """Test test_run_cmd_none_stdout to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_cmd_none_stdout(1)
     assert result is not None
     # Test with multiple parameters
@@ -13107,12 +13391,15 @@ def test_test_run_command_with_cmd():
     assert isinstance(result, (str, int, float, bool))
 
 
-@pytest.mark.parametrize("input_data,expected", [
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
         ("test_input", "expected_output"),
-    ("", ""),
-    (None, None),
-    (("arg1", "arg2"), "expected_output"),
-])
+        ("", ""),
+        (None, None),
+        (("arg1", "arg2"), "expected_output"),
+    ],
+)
 def test_test_run_command_with_cmd_parametrized(input_data, expected):
     """Test test_run_command_with_cmd with various inputs."""
     result = test_run_command_with_cmd(input_data)
@@ -13144,14 +13431,14 @@ def test_test_run_command_with_cmd_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_command_with_cmd(float('inf'))
+    result = test_run_command_with_cmd(float("inf"))
     assert result == None
 
 
 def test_test_run_command_with_cmd_coverage():
     """Test test_run_command_with_cmd to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_command_with_cmd(1)
     assert result is not None
     # Test with multiple parameters
@@ -13203,14 +13490,14 @@ def test_test_run_command_none_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_command_none(float('inf'))
+    result = test_run_command_none(float("inf"))
     assert result == None
 
 
 def test_test_run_command_none_coverage():
     """Test test_run_command_none to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_command_none(1)
     assert result is not None
 
@@ -13259,14 +13546,14 @@ def test_test_run_command_empty_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_run_command_empty(float('inf'))
+    result = test_run_command_empty(float("inf"))
     assert result == None
 
 
 def test_test_run_command_empty_coverage():
     """Test test_run_command_empty to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_run_command_empty(1)
     assert result is not None
 
@@ -13315,14 +13602,14 @@ def test_test_format_command_output_both_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_format_command_output_both(float('inf'))
+    result = test_format_command_output_both(float("inf"))
     assert result == None
 
 
 def test_test_format_command_output_both_coverage():
     """Test test_format_command_output_both to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_format_command_output_both(1)
     assert result is not None
 
@@ -13371,14 +13658,14 @@ def test_test_format_command_output_stdout_only_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_format_command_output_stdout_only(float('inf'))
+    result = test_format_command_output_stdout_only(float("inf"))
     assert result == None
 
 
 def test_test_format_command_output_stdout_only_coverage():
     """Test test_format_command_output_stdout_only to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_format_command_output_stdout_only(1)
     assert result is not None
 
@@ -13427,14 +13714,14 @@ def test_test_format_command_output_stderr_only_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_format_command_output_stderr_only(float('inf'))
+    result = test_format_command_output_stderr_only(float("inf"))
     assert result == None
 
 
 def test_test_format_command_output_stderr_only_coverage():
     """Test test_format_command_output_stderr_only to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_format_command_output_stderr_only(1)
     assert result is not None
 
@@ -13483,14 +13770,14 @@ def test_test_format_command_output_neither_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_format_command_output_neither(float('inf'))
+    result = test_format_command_output_neither(float("inf"))
     assert result == None
 
 
 def test_test_format_command_output_neither_coverage():
     """Test test_format_command_output_neither to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_format_command_output_neither(1)
     assert result is not None
 
@@ -13539,14 +13826,14 @@ def test_test_format_command_output_none_values_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_format_command_output_none_values(float('inf'))
+    result = test_format_command_output_none_values(float("inf"))
     assert result == None
 
 
 def test_test_format_command_output_none_values_coverage():
     """Test test_format_command_output_none_values to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_format_command_output_none_values(1)
     assert result is not None
 
@@ -13595,14 +13882,14 @@ def test_test_format_command_output_mixed_none_edge_cases():
     assert result == None
 
     # Test with extreme values
-    result = test_format_command_output_mixed_none(float('inf'))
+    result = test_format_command_output_mixed_none(float("inf"))
     assert result == None
 
 
 def test_test_format_command_output_mixed_none_coverage():
     """Test test_format_command_output_mixed_none to improve code coverage."""
     # Test all code paths
-        # Test with different input types
+    # Test with different input types
     result = test_format_command_output_mixed_none(1)
     assert result is not None
 
@@ -13611,4 +13898,3 @@ def test_test_format_command_output_mixed_none_coverage():
 
     # Test return value variations
     # Add return value tests here
-

@@ -25,7 +25,7 @@ from src.ai_guard.performance import (
     optimize_file_operations,
     memory_efficient_file_reader,
     get_performance_monitor,
-    clear_performance_data
+    clear_performance_data,
 )
 
 
@@ -39,7 +39,7 @@ class TestPerformanceMetrics:
             execution_time=1.5,
             memory_usage=1024.0,
             cache_hits=5,
-            cache_misses=2
+            cache_misses=2,
         )
         assert metric.function_name == "test_func"
         assert metric.execution_time == 1.5
@@ -49,10 +49,7 @@ class TestPerformanceMetrics:
 
     def test_performance_metrics_minimal(self):
         """Test PerformanceMetrics with minimal parameters."""
-        metric = PerformanceMetrics(
-            function_name="test_func",
-            execution_time=1.0
-        )
+        metric = PerformanceMetrics(function_name="test_func", execution_time=1.0)
         assert metric.function_name == "test_func"
         assert metric.execution_time == 1.0
         assert metric.memory_usage is None
@@ -73,7 +70,7 @@ class TestPerformanceMonitor:
         """Test recording a performance metric."""
         monitor = PerformanceMonitor()
         metric = PerformanceMetrics("test_func", 1.0)
-        
+
         monitor.record_metric(metric)
         assert len(monitor.metrics) == 1
         assert monitor.metrics[0] == metric
@@ -81,12 +78,12 @@ class TestPerformanceMonitor:
     def test_get_average_time_existing_function(self):
         """Test getting average time for existing function."""
         monitor = PerformanceMonitor()
-        
+
         # Add multiple metrics for same function
         monitor.record_metric(PerformanceMetrics("test_func", 1.0))
         monitor.record_metric(PerformanceMetrics("test_func", 2.0))
         monitor.record_metric(PerformanceMetrics("test_func", 3.0))
-        
+
         avg_time = monitor.get_average_time("test_func")
         assert avg_time == 2.0
 
@@ -100,7 +97,7 @@ class TestPerformanceMonitor:
         """Test getting total number of metrics."""
         monitor = PerformanceMonitor()
         assert monitor.get_total_metrics() == 0
-        
+
         monitor.record_metric(PerformanceMetrics("func1", 1.0))
         monitor.record_metric(PerformanceMetrics("func2", 2.0))
         assert monitor.get_total_metrics() == 2
@@ -111,23 +108,24 @@ class TestTimeFunction:
 
     def test_time_function_basic(self):
         """Test basic time_function decorator."""
+
         @time_function
         def test_func():
             time.sleep(0.01)
             return "result"
-        
+
         result = test_func()
         assert result == "result"
 
     def test_time_function_with_monitor(self):
         """Test time_function with custom monitor."""
         monitor = PerformanceMonitor()
-        
+
         @time_function(monitor=monitor)
         def test_func():
             time.sleep(0.01)
             return "result"
-        
+
         result = test_func()
         assert result == "result"
         assert monitor.get_total_metrics() == 1
@@ -135,19 +133,21 @@ class TestTimeFunction:
 
     def test_time_function_with_args(self):
         """Test time_function with function arguments."""
+
         @time_function
         def test_func(x, y):
             return x + y
-        
+
         result = test_func(1, 2)
         assert result == 3
 
     def test_time_function_with_kwargs(self):
         """Test time_function with keyword arguments."""
+
         @time_function
         def test_func(x=1, y=2):
             return x + y
-        
+
         result = test_func(x=3, y=4)
         assert result == 7
 
@@ -158,18 +158,18 @@ class TestCached:
     def test_cached_basic(self):
         """Test basic cached decorator."""
         call_count = 0
-        
+
         @cached
         def expensive_func(x):
             nonlocal call_count
             call_count += 1
             return x * 2
-        
+
         # First call
         result1 = expensive_func(5)
         assert result1 == 10
         assert call_count == 1
-        
+
         # Second call should use cache
         result2 = expensive_func(5)
         assert result2 == 10
@@ -178,13 +178,13 @@ class TestCached:
     def test_cached_different_args(self):
         """Test cached decorator with different arguments."""
         call_count = 0
-        
+
         @cached
         def expensive_func(x):
             nonlocal call_count
             call_count += 1
             return x * 2
-        
+
         result1 = expensive_func(5)
         result2 = expensive_func(10)
         assert result1 == 10
@@ -194,21 +194,21 @@ class TestCached:
     def test_cached_with_ttl(self):
         """Test cached decorator with TTL."""
         call_count = 0
-        
+
         @cached(ttl=0.1)
         def expensive_func(x):
             nonlocal call_count
             call_count += 1
             return x * 2
-        
+
         # First call
         result1 = expensive_func(5)
         assert result1 == 10
         assert call_count == 1
-        
+
         # Wait for cache to expire
         time.sleep(0.2)
-        
+
         # Second call should not use cache
         result2 = expensive_func(5)
         assert result2 == 10
@@ -222,7 +222,7 @@ class TestGetPerformanceSummary:
         """Test performance summary with empty metrics."""
         monitor = PerformanceMonitor()
         summary = get_performance_summary(monitor)
-        
+
         assert summary["total_functions"] == 0
         assert summary["total_execution_time"] == 0.0
         assert summary["average_execution_time"] == 0.0
@@ -230,13 +230,13 @@ class TestGetPerformanceSummary:
     def test_get_performance_summary_with_data(self):
         """Test performance summary with data."""
         monitor = PerformanceMonitor()
-        
+
         monitor.record_metric(PerformanceMetrics("func1", 1.0))
         monitor.record_metric(PerformanceMetrics("func2", 2.0))
         monitor.record_metric(PerformanceMetrics("func1", 1.5))
-        
+
         summary = get_performance_summary(monitor)
-        
+
         assert summary["total_functions"] == 2
         assert summary["total_execution_time"] == 4.5
         assert summary["average_execution_time"] == 1.5
@@ -249,20 +249,22 @@ class TestMeasureMemoryUsage:
 
     def test_measure_memory_usage_basic(self):
         """Test basic memory usage measurement."""
+
         def test_func():
             data = [1] * 1000
             return len(data)
-        
+
         memory_usage = measure_memory_usage(test_func)
         assert memory_usage > 0
         assert isinstance(memory_usage, float)
 
     def test_measure_memory_usage_with_args(self):
         """Test memory usage measurement with arguments."""
+
         def test_func(size):
             data = [1] * size
             return len(data)
-        
+
         memory_usage = measure_memory_usage(test_func, 1000)
         assert memory_usage > 0
 
@@ -272,24 +274,26 @@ class TestBenchmarkFunction:
 
     def test_benchmark_function_basic(self):
         """Test basic function benchmarking."""
+
         def test_func():
             time.sleep(0.01)
             return "result"
-        
+
         results = benchmark_function(test_func, iterations=3)
-        
+
         assert len(results) == 3
         assert all(result > 0 for result in results)
         assert all(isinstance(result, float) for result in results)
 
     def test_benchmark_function_with_args(self):
         """Test function benchmarking with arguments."""
+
         def test_func(x):
             time.sleep(0.01)
             return x * 2
-        
+
         results = benchmark_function(test_func, 5, iterations=2)
-        
+
         assert len(results) == 2
         assert all(result > 0 for result in results)
 
@@ -315,7 +319,7 @@ class TestPerformanceProfiler:
         profiler.start_profiling()
         time.sleep(0.01)
         profiler.stop_profiling()
-        
+
         assert profiler.start_time is not None
         assert profiler.end_time is not None
         assert profiler.total_time > 0
@@ -326,7 +330,7 @@ class TestPerformanceProfiler:
         profiler.start_profiling()
         time.sleep(0.01)
         profiler.stop_profiling()
-        
+
         report = profiler.get_profile_report()
         assert "total_time" in report
         assert "metrics_count" in report
@@ -345,11 +349,11 @@ class TestCacheManager:
     def test_get_set_cache(self):
         """Test getting and setting cache values."""
         cache = CacheManager()
-        
+
         # Set value
         cache.set("key1", "value1")
         assert cache.get("key1") == "value1"
-        
+
         # Get nonexistent key
         assert cache.get("nonexistent") is None
 
@@ -358,7 +362,7 @@ class TestCacheManager:
         cache = CacheManager()
         cache.set("key1", "value1")
         cache.set("key2", "value2")
-        
+
         assert len(cache._cache) == 2
         cache.clear()
         assert len(cache._cache) == 0
@@ -367,10 +371,10 @@ class TestCacheManager:
         """Test getting cache size."""
         cache = CacheManager()
         assert cache.size() == 0
-        
+
         cache.set("key1", "value1")
         assert cache.size() == 1
-        
+
         cache.set("key2", "value2")
         assert cache.size() == 2
 
@@ -388,7 +392,7 @@ class TestThreadSafeCounter:
         counter = ThreadSafeCounter()
         counter.increment()
         assert counter.value == 1
-        
+
         counter.increment(5)
         assert counter.value == 6
 
@@ -398,7 +402,7 @@ class TestThreadSafeCounter:
         counter.increment(10)
         counter.decrement()
         assert counter.value == 9
-        
+
         counter.decrement(3)
         assert counter.value == 6
 
@@ -423,7 +427,7 @@ class TestResourceMonitor:
         """Test updating resource metrics."""
         monitor = ResourceMonitor()
         monitor.update_metrics()
-        
+
         # Metrics should be updated (may be 0 on some systems)
         assert isinstance(monitor.cpu_usage, float)
         assert isinstance(monitor.memory_usage, float)
@@ -432,7 +436,7 @@ class TestResourceMonitor:
         """Test getting resource summary."""
         monitor = ResourceMonitor()
         monitor.update_metrics()
-        
+
         summary = monitor.get_resource_summary()
         assert "cpu_usage" in summary
         assert "memory_usage" in summary
@@ -448,7 +452,7 @@ class TestPerformanceConfig:
             enable_profiling=True,
             cache_ttl=300,
             max_cache_size=1000,
-            enable_memory_monitoring=True
+            enable_memory_monitoring=True,
         )
         assert config.enable_profiling is True
         assert config.cache_ttl == 300
@@ -469,9 +473,10 @@ class TestOptimizeFunctionCalls:
 
     def test_optimize_function_calls_basic(self):
         """Test basic function call optimization."""
+
         def test_func(x):
             return x * 2
-        
+
         optimized_func = optimize_function_calls(test_func)
         result = optimized_func(5)
         assert result == 10
@@ -479,19 +484,19 @@ class TestOptimizeFunctionCalls:
     def test_optimize_function_calls_with_cache(self):
         """Test function call optimization with caching."""
         call_count = 0
-        
+
         def test_func(x):
             nonlocal call_count
             call_count += 1
             return x * 2
-        
+
         optimized_func = optimize_function_calls(test_func, enable_caching=True)
-        
+
         # First call
         result1 = optimized_func(5)
         assert result1 == 10
         assert call_count == 1
-        
+
         # Second call should use cache
         result2 = optimized_func(5)
         assert result2 == 10
@@ -504,7 +509,7 @@ class TestGetSystemInfo:
     def test_get_system_info(self):
         """Test getting system information."""
         info = get_system_info()
-        
+
         assert "platform" in info
         assert "python_version" in info
         assert "cpu_count" in info
@@ -520,11 +525,11 @@ class TestLogPerformanceMetrics:
         """Test logging performance metrics."""
         monitor = PerformanceMonitor()
         monitor.record_metric(PerformanceMetrics("test_func", 1.0))
-        
+
         # This should not raise an exception
         log_performance_metrics(monitor)
-        
+
         # Test with custom logger
-        with patch('src.ai_guard.performance.logger') as mock_logger:
+        with patch("src.ai_guard.performance.logger") as mock_logger:
             log_performance_metrics(monitor)
             mock_logger.info.assert_called()

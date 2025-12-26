@@ -11,7 +11,7 @@ from src.ai_guard.config import (
     load_config,
     merge_configs,
     Gates,
-    Config
+    Config,
 )
 
 
@@ -20,37 +20,45 @@ class TestGetTomlLoader:
 
     def test_get_toml_loader_tomllib(self):
         """Test getting tomllib loader."""
-        with patch('builtins.__import__', side_effect=lambda name, *args, **kwargs: 
-                   mock_tomllib if name == 'tomllib' else __import__(name, *args, **kwargs)):
+        with patch(
+            "builtins.__import__",
+            side_effect=lambda name, *args, **kwargs: (
+                mock_tomllib if name == "tomllib" else __import__(name, *args, **kwargs)
+            ),
+        ):
             mock_tomllib = MagicMock()
             loader = _get_toml_loader()
             assert loader == mock_tomllib
 
     def test_get_toml_loader_tomli_fallback(self):
         """Test getting tomli loader as fallback."""
+
         def mock_import(name, *args, **kwargs):
-            if name == 'tomllib':
+            if name == "tomllib":
                 raise ImportError("No module named 'tomllib'")
-            elif name == 'tomli':
+            elif name == "tomli":
                 return mock_tomli
             else:
                 return __import__(name, *args, **kwargs)
-        
+
         mock_tomli = MagicMock()
-        with patch('builtins.__import__', side_effect=mock_import):
+        with patch("builtins.__import__", side_effect=mock_import):
             loader = _get_toml_loader()
             assert loader == mock_tomli
 
     def test_get_toml_loader_no_loader_available(self):
         """Test error when no TOML loader is available."""
+
         def mock_import(name, *args, **kwargs):
-            if name in ('tomllib', 'tomli'):
+            if name in ("tomllib", "tomli"):
                 raise ImportError(f"No module named '{name}'")
             else:
                 return __import__(name, *args, **kwargs)
-        
-        with patch('builtins.__import__', side_effect=mock_import):
-            with pytest.raises(ImportError, match="Neither tomllib nor tomli is available"):
+
+        with patch("builtins.__import__", side_effect=mock_import):
+            with pytest.raises(
+                ImportError, match="Neither tomllib nor tomli is available"
+            ):
                 _get_toml_loader()
 
 
@@ -60,7 +68,7 @@ class TestGetDefaultConfig:
     def test_get_default_config(self):
         """Test getting default configuration."""
         config = get_default_config()
-        
+
         assert "gates" in config
         assert "min_coverage" in config
         assert "skip_tests" in config
@@ -108,12 +116,12 @@ fail_on_bandit = true
 
 skip_tests = false
 """
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.toml', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write(config_data)
             f.flush()
             temp_path = f.name
-        
+
         try:
             config = load_config(temp_path)
             assert config["min_coverage"] == 90
@@ -131,11 +139,11 @@ skip_tests = false
 
     def test_load_config_invalid_toml(self):
         """Test loading config with invalid TOML."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.toml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write("invalid toml content")
             f.flush()
             temp_path = f.name
-        
+
         try:
             config = load_config(temp_path)
             # Should return default config on error
@@ -154,7 +162,7 @@ class TestMergeConfigs:
         """Test basic config merging."""
         base = {"a": 1, "b": 2}
         override = {"b": 3, "c": 4}
-        
+
         merged = merge_configs(base, override)
         assert merged["a"] == 1
         assert merged["b"] == 3
@@ -164,7 +172,7 @@ class TestMergeConfigs:
         """Test merging nested configs."""
         base = {"gates": {"min_coverage": 80, "fail_on_bandit": True}}
         override = {"gates": {"min_coverage": 90}}
-        
+
         merged = merge_configs(base, override)
         assert merged["gates"]["min_coverage"] == 90
         assert merged["gates"]["fail_on_bandit"] is True
@@ -218,7 +226,7 @@ class TestConfig:
         """Test Config to_dict method."""
         config = Config()
         config_dict = config.to_dict()
-        
+
         assert isinstance(config_dict, dict)
         assert "gates" in config_dict
         assert "min_coverage" in config_dict
@@ -231,9 +239,9 @@ class TestConfig:
             "gates": {"min_coverage": 90, "fail_on_bandit": False},
             "min_coverage": 90,
             "skip_tests": True,
-            "report_format": "json"
+            "report_format": "json",
         }
-        
+
         config = Config.from_dict(config_data)
         assert config.gates.min_coverage == 90
         assert config.gates.fail_on_bandit is False

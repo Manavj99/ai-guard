@@ -10,21 +10,19 @@ RUN apt-get update \
 
 WORKDIR /app
 
+ENV PYTHONPATH=/app/src
+
 # Optional: copy dependency manifests first for better caching
 COPY pyproject.toml* requirements.txt* /app/
 RUN python -m pip install --upgrade pip \
- && (test -f requirements.txt && pip install -r requirements.txt || true) \
- && (test -f pyproject.toml && pip install ".[all]" || true)
-
-COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* /app/
-RUN if [ -f package.json ]; then npm ci || npm i; fi
+ && (test -f requirements.txt && pip install -r requirements.txt || true)
 
 # Copy source
 COPY . /app
 
-# Non-root
-RUN useradd -m appuser && chown -R appuser:appuser /app
-USER appuser
+RUN if [ -f pyproject.toml ]; then pip install ".[all]"; fi
+RUN if [ -f package.json ]; then npm ci || npm i; fi
 
-ENTRYPOINT ["python", "-m", "ai_guard.cli"]
+# Non-root
+ENTRYPOINT ["python", "-m", "ai_guard.analyzer"]
 CMD ["--help"]

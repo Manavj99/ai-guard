@@ -1,0 +1,265 @@
+{
+  "workflows": [
+    {
+      "name": "Daily Security Report",
+      "description": "Automated daily security report generation and distribution",
+      "nodes": [
+        {
+          "id": "cron-trigger",
+          "name": "Daily Trigger",
+          "type": "n8n-nodes-base.cron",
+          "position": [240, 300],
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "cronExpression",
+                  "expression": "0 9 * * *"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "query-security-data",
+          "name": "Query Security Data",
+          "type": "n8n-nodes-base.postgres",
+          "position": [460, 300],
+          "parameters": {
+            "operation": "executeQuery",
+            "query": "SELECT COUNT(*) as total_scans, AVG(execution_time) as avg_time, MAX(created_at) as last_scan FROM security_scans WHERE created_at >= NOW() - INTERVAL '24 hours'"
+          }
+        },
+        {
+          "id": "generate-report",
+          "name": "Generate Report",
+          "type": "n8n-nodes-base.httpRequest",
+          "position": [680, 300],
+          "parameters": {
+            "url": "http://localhost:5000/api/reports/generate",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "report_type": "daily_security",
+              "format": "html"
+            }
+          }
+        },
+        {
+          "id": "send-email",
+          "name": "Send Email Report",
+          "type": "n8n-nodes-base.emailSend",
+          "position": [900, 300],
+          "parameters": {
+            "to": "security-team@company.com",
+            "subject": "Daily Security Report - {{ new Date().toLocaleDateString() }}",
+            "text": "Daily security report attached",
+            "attachments": "={{ $json.report_file }}"
+          }
+        }
+      ],
+      "connections": {
+        "Daily Trigger": {
+          "main": [
+            [
+              {
+                "node": "Query Security Data",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Query Security Data": {
+          "main": [
+            [
+              {
+                "node": "Generate Report",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Generate Report": {
+          "main": [
+            [
+              {
+                "node": "Send Email Report",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "Real-time Security Alerts",
+      "description": "Process security alerts and send notifications",
+      "nodes": [
+        {
+          "id": "webhook-trigger",
+          "name": "Security Alert Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "position": [240, 300],
+          "parameters": {
+            "path": "security-alert",
+            "httpMethod": "POST"
+          }
+        },
+        {
+          "id": "process-alert",
+          "name": "Process Alert",
+          "type": "n8n-nodes-base.function",
+          "position": [460, 300],
+          "parameters": {
+            "functionCode": "// Process security alert data\nconst alert = $input.first().json;\nconst severity = alert.severity || 'medium';\nconst message = alert.message || 'Security alert detected';\nconst timestamp = new Date().toISOString();\n\nreturn {\n  severity: severity,\n  message: message,\n  timestamp: timestamp,\n  project: alert.project || 'Unknown',\n  user: alert.user || 'System'\n};"
+          }
+        },
+        {
+          "id": "slack-notification",
+          "name": "Slack Alert",
+          "type": "n8n-nodes-base.slack",
+          "position": [680, 200],
+          "parameters": {
+            "resource": "message",
+            "operation": "post",
+            "channel": "#security-alerts",
+            "text": "🚨 *Security Alert*\\n*Severity:* {{ $json.severity }}\\n*Message:* {{ $json.message }}\\n*Project:* {{ $json.project }}\\n*Time:* {{ $json.timestamp }}"
+          }
+        },
+        {
+          "id": "email-notification",
+          "name": "Email Alert",
+          "type": "n8n-nodes-base.emailSend",
+          "position": [680, 400],
+          "parameters": {
+            "to": "security-team@company.com",
+            "subject": "🚨 Security Alert: {{ $json.severity.toUpperCase() }}",
+            "text": "Security Alert Details:\\n\\nSeverity: {{ $json.severity }}\\nMessage: {{ $json.message }}\\nProject: {{ $json.project }}\\nUser: {{ $json.user }}\\nTimestamp: {{ $json.timestamp }}"
+          }
+        }
+      ],
+      "connections": {
+        "Security Alert Webhook": {
+          "main": [
+            [
+              {
+                "node": "Process Alert",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Process Alert": {
+          "main": [
+            [
+              {
+                "node": "Slack Alert",
+                "type": "main",
+                "index": 0
+              },
+              {
+                "node": "Email Alert",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "User Activity Monitoring",
+      "description": "Monitor user activity and generate insights",
+      "nodes": [
+        {
+          "id": "cron-trigger-activity",
+          "name": "Hourly Trigger",
+          "type": "n8n-nodes-base.cron",
+          "position": [240, 300],
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "cronExpression",
+                  "expression": "0 * * * *"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "query-user-activity",
+          "name": "Query User Activity",
+          "type": "n8n-nodes-base.postgres",
+          "position": [460, 300],
+          "parameters": {
+            "operation": "executeQuery",
+            "query": "SELECT u.username, COUNT(s.id) as scan_count, MAX(s.created_at) as last_activity FROM users u LEFT JOIN security_scans s ON u.id = s.user_id WHERE s.created_at >= NOW() - INTERVAL '1 hour' GROUP BY u.id, u.username"
+          }
+        },
+        {
+          "id": "process-activity",
+          "name": "Process Activity Data",
+          "type": "n8n-nodes-base.function",
+          "position": [680, 300],
+          "parameters": {
+            "functionCode": "// Process user activity data\nconst activities = $input.all();\nconst totalUsers = activities.length;\nconst activeUsers = activities.filter(a => a.json.scan_count > 0).length;\nconst totalScans = activities.reduce((sum, a) => sum + (a.json.scan_count || 0), 0);\n\nreturn {\n  total_users: totalUsers,\n  active_users: activeUsers,\n  total_scans: totalScans,\n  activity_rate: totalUsers > 0 ? (activeUsers / totalUsers * 100).toFixed(2) : 0,\n  timestamp: new Date().toISOString()\n};"
+          }
+        },
+        {
+          "id": "store-analytics",
+          "name": "Store Analytics",
+          "type": "n8n-nodes-base.postgres",
+          "position": [900, 300],
+          "parameters": {
+            "operation": "insert",
+            "table": "analytics",
+            "columns": "timestamp, metric_name, metric_value",
+            "values": "={{ $json.timestamp }}, 'user_activity', {{ $json.activity_rate }}"
+          }
+        }
+      ],
+      "connections": {
+        "Hourly Trigger": {
+          "main": [
+            [
+              {
+                "node": "Query User Activity",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Query User Activity": {
+          "main": [
+            [
+              {
+                "node": "Process Activity Data",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Process Activity Data": {
+          "main": [
+            [
+              {
+                "node": "Store Analytics",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}

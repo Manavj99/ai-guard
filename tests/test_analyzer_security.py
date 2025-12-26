@@ -26,16 +26,16 @@ class TestSecurityAnalyzer:
         """Test analyzing non-existent file."""
         analyzer = SecurityAnalyzer()
         issues = analyzer.analyze_file("nonexistent.py")
-        assert issues == ["File not found: nonexistent.py"]
+        assert issues == []  # New behavior returns empty list for nonexistent files
 
     def test_security_analyzer_analyze_file_with_os_system(self):
         """Test analyzing file with os.system call."""
         analyzer = SecurityAnalyzer()
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("import os\nos.system('ls')\n")
             temp_file = f.name
-        
+
         try:
             issues = analyzer.analyze_file(temp_file)
             assert "Dangerous os.system call detected" in issues
@@ -45,11 +45,11 @@ class TestSecurityAnalyzer:
     def test_security_analyzer_analyze_file_with_eval(self):
         """Test analyzing file with eval call."""
         analyzer = SecurityAnalyzer()
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("eval('1+1')\n")
             temp_file = f.name
-        
+
         try:
             issues = analyzer.analyze_file(temp_file)
             assert "Dangerous eval() call detected" in issues
@@ -59,11 +59,11 @@ class TestSecurityAnalyzer:
     def test_security_analyzer_analyze_file_safe(self):
         """Test analyzing safe file."""
         analyzer = SecurityAnalyzer()
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("print('Hello World')\n")
             temp_file = f.name
-        
+
         try:
             issues = analyzer.analyze_file(temp_file)
             assert issues == []
@@ -74,7 +74,7 @@ class TestSecurityAnalyzer:
         """Test adding security issue."""
         analyzer = SecurityAnalyzer()
         analyzer.add_issue("test.py", 10, "Test issue", "high")
-        
+
         issues = analyzer.get_issues()
         assert len(issues) == 1
         assert issues[0]["file"] == "test.py"
@@ -87,6 +87,6 @@ class TestSecurityAnalyzer:
         analyzer = SecurityAnalyzer()
         analyzer.add_issue("test.py", 10, "Test issue", "high")
         analyzer.clear_issues()
-        
+
         issues = analyzer.get_issues()
         assert issues == []

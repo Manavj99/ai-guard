@@ -7,10 +7,15 @@ import tempfile
 import os
 
 from src.ai_guard.gates.coverage_eval import (
-    CoverageResult, evaluate_coverage_str, _percent_from_root
+    CoverageResult,
+    evaluate_coverage_str,
+    _percent_from_root,
 )
 from src.ai_guard.analyzer import (
-    run_lint_check, run_type_check, run_security_check, run_coverage_check
+    run_lint_check,
+    run_type_check,
+    run_security_check,
+    run_coverage_check,
 )
 from src.ai_guard.report import GateResult
 from src.ai_guard.sarif_report import SarifResult
@@ -64,12 +69,12 @@ class TestCoverageEvalComprehensive:
         counter1.attrib["type"] = "LINE"
         counter1.attrib["covered"] = "80"
         counter1.attrib["missed"] = "20"
-        
+
         counter2 = ET.SubElement(root, "counter")
         counter2.attrib["type"] = "BRANCH"
         counter2.attrib["covered"] = "10"
         counter2.attrib["missed"] = "5"
-        
+
         result = _percent_from_root(root)
         assert result == 80.0  # 80/(80+20) = 80%
 
@@ -80,7 +85,7 @@ class TestCoverageEvalComprehensive:
         counter.attrib["type"] = "BRANCH"
         counter.attrib["covered"] = "10"
         counter.attrib["missed"] = "5"
-        
+
         result = _percent_from_root(root)
         assert result == 0.0
 
@@ -89,7 +94,7 @@ class TestCoverageEvalComprehensive:
         xml_content = """<?xml version="1.0"?>
         <coverage line-rate="0.85">
         </coverage>"""
-        
+
         result = evaluate_coverage_str(xml_content, threshold=80.0)
         assert result.passed is True
         assert result.percent == 85.0
@@ -99,7 +104,7 @@ class TestCoverageEvalComprehensive:
         xml_content = """<?xml version="1.0"?>
         <coverage line-rate="0.75">
         </coverage>"""
-        
+
         result = evaluate_coverage_str(xml_content, threshold=80.0)
         assert result.passed is False
         assert result.percent == 75.0
@@ -114,7 +119,7 @@ class TestCoverageEvalComprehensive:
         xml_content = """<?xml version="1.0"?>
         <coverage line-rate="0.85">
         </coverage>"""
-        
+
         result = evaluate_coverage_str(xml_content)
         assert result.passed is True
         assert result.percent == 85.0
@@ -129,7 +134,7 @@ class TestLintGateComprehensive:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = ""
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_lint_check(["src/test.py"])
             assert result.passed is True
             assert result.name == "Lint (flake8)"
@@ -142,7 +147,7 @@ class TestLintGateComprehensive:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = "src/test.py:1:1: W291 trailing whitespace"
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_lint_check(["src/test.py"])
             assert result.passed is True
             assert sarif is not None
@@ -152,9 +157,11 @@ class TestLintGateComprehensive:
         """Test lint check failure with parseable output."""
         with patch("subprocess.run") as mock_run:
             mock_run.return_value.returncode = 1
-            mock_run.return_value.stdout = "src/test.py:10:5: E501 line too long (80 > 79 characters)"
+            mock_run.return_value.stdout = (
+                "src/test.py:10:5: E501 line too long (80 > 79 characters)"
+            )
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_lint_check(["src/test.py"])
             assert result.passed is False
             assert sarif is not None
@@ -166,8 +173,10 @@ class TestLintGateComprehensive:
         with patch("subprocess.run") as mock_run:
             mock_run.return_value.returncode = 1
             mock_run.return_value.stdout = ""
-            mock_run.return_value.stderr = "flake8: error: cannot open file 'nonexistent.py'"
-            
+            mock_run.return_value.stderr = (
+                "flake8: error: cannot open file 'nonexistent.py'"
+            )
+
             result, sarif = run_lint_check(["nonexistent.py"])
             assert result.passed is False
             assert sarif is None
@@ -187,7 +196,7 @@ class TestLintGateComprehensive:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = ""
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_lint_check(None)
             assert result.passed is True
             mock_run.assert_called_once_with(["flake8"], capture_output=True, text=True)
@@ -197,12 +206,12 @@ class TestLintGateComprehensive:
         output = """src/test.py:10:5: E501 line too long
 src/test.py:15:1: E302 expected 2 blank lines
 src/test.py:20:1: W291 trailing whitespace"""
-        
+
         with patch("subprocess.run") as mock_run:
             mock_run.return_value.returncode = 1
             mock_run.return_value.stdout = output
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_lint_check(["src/test.py"])
             assert result.passed is False
             assert sarif is not None
@@ -218,7 +227,7 @@ class TestTypeGateComprehensive:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = ""
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_type_check(["src/test.py"])
             assert result.passed is True
             assert result.name == "Static types (mypy)"
@@ -231,7 +240,7 @@ class TestTypeGateComprehensive:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = "src/test.py:1: note: mypy version 0.991"
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_type_check(["src/test.py"])
             assert result.passed is True
             # Info messages should not create SARIF results
@@ -241,9 +250,11 @@ class TestTypeGateComprehensive:
         """Test type check failure with error code."""
         with patch("subprocess.run") as mock_run:
             mock_run.return_value.returncode = 1
-            mock_run.return_value.stdout = "src/test.py:10:5: error: Name 'x' is not defined [name-defined]"
+            mock_run.return_value.stdout = (
+                "src/test.py:10:5: error: Name 'x' is not defined [name-defined]"
+            )
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_type_check(["src/test.py"])
             assert result.passed is False
             assert sarif is not None
@@ -254,9 +265,11 @@ class TestTypeGateComprehensive:
         """Test type check failure without error code in message."""
         with patch("subprocess.run") as mock_run:
             mock_run.return_value.returncode = 1
-            mock_run.return_value.stdout = "src/test.py:10:5: error: Name 'x' is not defined"
+            mock_run.return_value.stdout = (
+                "src/test.py:10:5: error: Name 'x' is not defined"
+            )
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_type_check(["src/test.py"])
             assert result.passed is False
             assert sarif is not None
@@ -268,8 +281,10 @@ class TestTypeGateComprehensive:
         with patch("subprocess.run") as mock_run:
             mock_run.return_value.returncode = 1
             mock_run.return_value.stdout = ""
-            mock_run.return_value.stderr = "mypy: error: cannot find module 'nonexistent'"
-            
+            mock_run.return_value.stderr = (
+                "mypy: error: cannot find module 'nonexistent'"
+            )
+
             result, sarif = run_type_check(["src/test.py"])
             assert result.passed is False
             assert sarif is None
@@ -289,7 +304,7 @@ class TestTypeGateComprehensive:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = ""
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_type_check(None)
             assert result.passed is True
             mock_run.assert_called_once_with(["mypy"], capture_output=True, text=True)
@@ -304,7 +319,7 @@ class TestSecurityGateComprehensive:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = '{"results": []}'
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_security_check()
             assert result.passed is True
             assert result.name == "Security (bandit)"
@@ -321,16 +336,16 @@ class TestSecurityGateComprehensive:
                     "issue_severity": "LOW",
                     "issue_confidence": "LOW",
                     "issue_text": "Low severity issue",
-                    "test_id": "B101"
+                    "test_id": "B101",
                 }
             ]
         }
-        
+
         with patch("subprocess.run") as mock_run:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = str(bandit_data).replace("'", '"')
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_security_check()
             assert result.passed is True
             assert sarif is not None
@@ -345,16 +360,16 @@ class TestSecurityGateComprehensive:
                     "issue_severity": "HIGH",
                     "issue_confidence": "HIGH",
                     "issue_text": "High severity security issue",
-                    "test_id": "B101"
+                    "test_id": "B101",
                 }
             ]
         }
-        
+
         with patch("subprocess.run") as mock_run:
             mock_run.return_value.returncode = 1
             mock_run.return_value.stdout = str(bandit_data).replace("'", '"')
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_security_check()
             assert result.passed is False
             assert sarif is not None
@@ -367,7 +382,7 @@ class TestSecurityGateComprehensive:
             mock_run.return_value.returncode = 1
             mock_run.return_value.stdout = "invalid json"
             mock_run.return_value.stderr = "bandit: error: invalid configuration"
-            
+
             result, sarif = run_security_check()
             assert result.passed is False
             assert sarif is None
@@ -387,7 +402,7 @@ class TestSecurityGateComprehensive:
             mock_run.return_value.returncode = 0
             mock_run.return_value.stdout = '{"invalid": json}'
             mock_run.return_value.stderr = ""
-            
+
             result, sarif = run_security_check()
             assert result.passed is True
             assert sarif is None
@@ -459,42 +474,60 @@ class TestGateIntegration:
 
     def test_all_gates_success(self):
         """Test all gates passing successfully."""
-        with patch("src.ai_guard.analyzer.run_lint_check") as mock_lint, \
-             patch("src.ai_guard.analyzer.run_type_check") as mock_type, \
-             patch("src.ai_guard.analyzer.run_security_check") as mock_security, \
-             patch("src.ai_guard.analyzer.run_coverage_check") as mock_coverage:
-            
+        with (
+            patch("src.ai_guard.analyzer.run_lint_check") as mock_lint,
+            patch("src.ai_guard.analyzer.run_type_check") as mock_type,
+            patch("src.ai_guard.analyzer.run_security_check") as mock_security,
+            patch("src.ai_guard.analyzer.run_coverage_check") as mock_coverage,
+        ):
+
             mock_lint.return_value = (GateResult("Lint", True, "No issues"), None)
             mock_type.return_value = (GateResult("Type", True, "No issues"), None)
-            mock_security.return_value = (GateResult("Security", True, "No issues"), None)
+            mock_security.return_value = (
+                GateResult("Security", True, "No issues"),
+                None,
+            )
             mock_coverage.return_value = (GateResult("Coverage", True, "85%"), None)
-            
+
             # Test each gate individually using the mocked functions
             lint_result, _ = mock_lint(["src/test.py"])
             type_result, _ = mock_type(["src/test.py"])
             security_result, _ = mock_security()
             coverage_result, _ = mock_coverage(80)
-            
-            assert all(result.passed for result in [lint_result, type_result, security_result, coverage_result])
+
+            assert all(
+                result.passed
+                for result in [
+                    lint_result,
+                    type_result,
+                    security_result,
+                    coverage_result,
+                ]
+            )
 
     def test_gates_with_mixed_results(self):
         """Test gates with mixed pass/fail results."""
-        with patch("src.ai_guard.analyzer.run_lint_check") as mock_lint, \
-             patch("src.ai_guard.analyzer.run_type_check") as mock_type, \
-             patch("src.ai_guard.analyzer.run_security_check") as mock_security, \
-             patch("src.ai_guard.analyzer.run_coverage_check") as mock_coverage:
-            
+        with (
+            patch("src.ai_guard.analyzer.run_lint_check") as mock_lint,
+            patch("src.ai_guard.analyzer.run_type_check") as mock_type,
+            patch("src.ai_guard.analyzer.run_security_check") as mock_security,
+            patch("src.ai_guard.analyzer.run_coverage_check") as mock_coverage,
+        ):
+
             mock_lint.return_value = (GateResult("Lint", True, "No issues"), None)
             mock_type.return_value = (GateResult("Type", False, "Type error"), None)
-            mock_security.return_value = (GateResult("Security", True, "No issues"), None)
+            mock_security.return_value = (
+                GateResult("Security", True, "No issues"),
+                None,
+            )
             mock_coverage.return_value = (GateResult("Coverage", False, "75%"), None)
-            
+
             # Test each gate individually using the mocked functions
             lint_result, _ = mock_lint(["src/test.py"])
             type_result, _ = mock_type(["src/test.py"])
             security_result, _ = mock_security()
             coverage_result, _ = mock_coverage(80)
-            
+
             assert lint_result.passed is True
             assert type_result.passed is False
             assert security_result.passed is True
@@ -502,10 +535,14 @@ class TestGateIntegration:
 
     def test_gate_error_handling(self):
         """Test gate error handling and recovery."""
-        with patch("src.ai_guard.analyzer.run_lint_check", side_effect=Exception("Unexpected error")):
+        with patch(
+            "src.ai_guard.analyzer.run_lint_check",
+            side_effect=Exception("Unexpected error"),
+        ):
             with pytest.raises(Exception):
                 # Call the function directly to trigger the exception
                 from src.ai_guard.analyzer import run_lint_check
+
                 run_lint_check(["src/test.py"])
 
     def test_gate_result_attributes(self):

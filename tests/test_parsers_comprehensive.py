@@ -4,7 +4,11 @@ import pytest
 import json
 from unittest.mock import patch, MagicMock
 
-from src.ai_guard.parsers.common import normalize_rule, _extract_mypy_rule, _RULE_NORMALIZERS
+from src.ai_guard.parsers.common import (
+    normalize_rule,
+    _extract_mypy_rule,
+    _RULE_NORMALIZERS,
+)
 from src.ai_guard.parsers.typescript import parse_eslint, parse_jest
 
 
@@ -114,30 +118,32 @@ class TestTypeScriptParsers:
 
     def test_parse_eslint_json_format(self):
         """Test parsing ESLint JSON output."""
-        json_output = json.dumps([
-            {
-                "filePath": "test.js",
-                "messages": [
-                    {
-                        "ruleId": "no-unused-vars",
-                        "severity": 2,
-                        "line": 5,
-                        "column": 10,
-                        "message": "Variable is not used"
-                    },
-                    {
-                        "ruleId": "no-console",
-                        "severity": 1,
-                        "line": 10,
-                        "column": 5,
-                        "message": "Console statement"
-                    }
-                ]
-            }
-        ])
-        
+        json_output = json.dumps(
+            [
+                {
+                    "filePath": "test.js",
+                    "messages": [
+                        {
+                            "ruleId": "no-unused-vars",
+                            "severity": 2,
+                            "line": 5,
+                            "column": 10,
+                            "message": "Variable is not used",
+                        },
+                        {
+                            "ruleId": "no-console",
+                            "severity": 1,
+                            "line": 10,
+                            "column": 5,
+                            "message": "Console statement",
+                        },
+                    ],
+                }
+            ]
+        )
+
         result = parse_eslint(json_output)
-        
+
         assert len(result) == 2
         assert result[0]["file"] == "test.js"
         assert result[0]["line"] == 5
@@ -145,7 +151,7 @@ class TestTypeScriptParsers:
         assert result[0]["rule"] == "eslint:no-unused-vars"
         assert result[0]["message"] == "Variable is not used"
         assert result[0]["severity"] == "error"
-        
+
         assert result[1]["file"] == "test.js"
         assert result[1]["line"] == 10
         assert result[1]["col"] == 5
@@ -155,25 +161,27 @@ class TestTypeScriptParsers:
 
     def test_parse_eslint_json_format_missing_fields(self):
         """Test parsing ESLint JSON output with missing fields."""
-        json_output = json.dumps([
-            {
-                "filePath": "test.js",
-                "messages": [
-                    {
-                        "ruleId": "no-unused-vars",
-                        "severity": 2
-                        # Missing line, column, message
-                    }
-                ]
-            }
-        ])
-        
+        json_output = json.dumps(
+            [
+                {
+                    "filePath": "test.js",
+                    "messages": [
+                        {
+                            "ruleId": "no-unused-vars",
+                            "severity": 2,
+                            # Missing line, column, message
+                        }
+                    ],
+                }
+            ]
+        )
+
         result = parse_eslint(json_output)
-        
+
         assert len(result) == 1
         assert result[0]["file"] == "test.js"
         assert result[0]["line"] == 1  # Default value
-        assert result[0]["col"] == 1   # Default value
+        assert result[0]["col"] == 1  # Default value
         assert result[0]["rule"] == "eslint:no-unused-vars"
         assert result[0]["message"] == ""  # Default value
         assert result[0]["severity"] == "error"
@@ -184,9 +192,9 @@ class TestTypeScriptParsers:
 test.js:5:10  error  Variable is not used  no-unused-vars
 test.js:10:5  warning  Console statement  no-console
         """.strip()
-        
+
         result = parse_eslint(stylish_output)
-        
+
         assert len(result) == 2
         assert result[0]["file"] == "test.js"
         assert result[0]["line"] == 5
@@ -194,7 +202,7 @@ test.js:10:5  warning  Console statement  no-console
         assert result[0]["rule"] == "eslint:no-unused-vars"
         assert result[0]["message"] == "Variable is not used"
         assert result[0]["severity"] == "error"
-        
+
         assert result[1]["file"] == "test.js"
         assert result[1]["line"] == 10
         assert result[1]["col"] == 5
@@ -208,7 +216,7 @@ test.js:10:5  warning  Console statement  no-console
 This is not a valid ESLint output line
 Another invalid line
         """.strip()
-        
+
         result = parse_eslint(stylish_output)
         assert len(result) == 0
 
@@ -216,10 +224,10 @@ Another invalid line
         """Test parsing ESLint with invalid JSON falls back to stylish."""
         invalid_json = '{"invalid": json}'
         stylish_output = "test.js:5:10  error  Variable is not used  no-unused-vars"
-        
-        with patch('builtins.print') as mock_print:
+
+        with patch("builtins.print") as mock_print:
             result = parse_eslint(invalid_json + "\n" + stylish_output)
-            
+
             # Should print warning about JSON parsing error
             mock_print.assert_called()
             assert len(result) == 1
@@ -238,9 +246,9 @@ Another invalid line
     def test_parse_jest_valid_output(self):
         """Test parsing Jest output with valid format."""
         jest_output = "Tests:       1 failed, 12 passed, 13 total"
-        
+
         result = parse_jest(jest_output)
-        
+
         assert result["tests"] == 13
         assert result["passed"] == 12
         assert result["failed"] == 1
@@ -248,9 +256,9 @@ Another invalid line
     def test_parse_jest_no_failed(self):
         """Test parsing Jest output with no failed tests."""
         jest_output = "Tests:       12 passed, 12 total"
-        
+
         result = parse_jest(jest_output)
-        
+
         assert result["tests"] == 12
         assert result["passed"] == 12
         assert result["failed"] == 0
@@ -258,9 +266,9 @@ Another invalid line
     def test_parse_jest_no_passed(self):
         """Test parsing Jest output with no passed tests."""
         jest_output = "Tests:       5 failed, 5 total"
-        
+
         result = parse_jest(jest_output)
-        
+
         assert result["tests"] == 5
         assert result["passed"] == 0
         assert result["failed"] == 5
@@ -268,9 +276,9 @@ Another invalid line
     def test_parse_jest_no_match(self):
         """Test parsing Jest output with no matching pattern."""
         jest_output = "This is not a Jest output"
-        
+
         result = parse_jest(jest_output)
-        
+
         assert result["tests"] == 0
         assert result["passed"] == 0
         assert result["failed"] == 0
@@ -297,9 +305,9 @@ Running tests...
 ✗ Test 2 failed
 Tests:       1 failed, 1 passed, 2 total
         """.strip()
-        
+
         result = parse_jest(jest_output)
-        
+
         assert result["tests"] == 2
         assert result["passed"] == 1
         assert result["failed"] == 1

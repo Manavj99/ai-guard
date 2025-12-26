@@ -12,7 +12,7 @@ from src.ai_guard.utils.subprocess_runner import (
     SubprocessRunner,
     CommandExecutor,
     SafeCommandRunner,
-    ToolExecutionError
+    ToolExecutionError,
 )
 
 
@@ -35,34 +35,34 @@ class TestRunCmd:
         with pytest.raises(ToolExecutionError, match="Empty or None command"):
             run_cmd(None)
 
-    @patch('src.ai_guard.utils.subprocess_runner.run')
+    @patch("src.ai_guard.utils.subprocess_runner.run")
     def test_run_cmd_failure_no_output(self, mock_run):
         """Test command failure with no output."""
         mock_result = MagicMock()
         mock_result.returncode = 1
         mock_result.stdout = ""
         mock_run.return_value = mock_result
-        
+
         with pytest.raises(ToolExecutionError, match="Command failed with code 1"):
             run_cmd(["invalid_command"])
 
-    @patch('src.ai_guard.utils.subprocess_runner.run')
+    @patch("src.ai_guard.utils.subprocess_runner.run")
     def test_run_cmd_failure_with_output(self, mock_run):
         """Test command failure with output."""
         mock_result = MagicMock()
         mock_result.returncode = 1
         mock_result.stdout = "Error message"
         mock_run.return_value = mock_result
-        
+
         returncode, output = run_cmd(["command_with_error"])
         assert returncode == 1
         assert output == "Error message"
 
-    @patch('src.ai_guard.utils.subprocess_runner.run')
+    @patch("src.ai_guard.utils.subprocess_runner.run")
     def test_run_cmd_exception(self, mock_run):
         """Test command execution exception."""
         mock_run.side_effect = Exception("Command execution failed")
-        
+
         with pytest.raises(ToolExecutionError, match="Command execution failed"):
             run_cmd(["command"])
 
@@ -129,7 +129,7 @@ class TestRunCommandDict:
         assert result["success"] is False
         assert result["returncode"] == 1
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_dict_timeout(self, mock_run):
         """Test command timeout."""
         mock_run.side_effect = Exception("timeout")
@@ -153,7 +153,7 @@ class TestRunCommandWithOutput:
         assert result["success"] is False
         assert result["returncode"] == 1
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_with_output_timeout(self, mock_run):
         """Test command timeout."""
         mock_run.side_effect = Exception("timeout")
@@ -183,7 +183,7 @@ class TestRunCommandSafe:
         assert result["success"] is True
         assert "test" in result["stdout"]
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_run_command_safe_timeout_expired(self, mock_run):
         """Test timeout expired."""
         mock_run.side_effect = Exception("timeout")
@@ -265,7 +265,7 @@ class TestCommandExecutor:
         executor = CommandExecutor()
         commands = [
             ["python", "-c", "print('test1')"],
-            ["python", "-c", "print('test2')"]
+            ["python", "-c", "print('test2')"],
         ]
         results = executor.execute_multiple_commands(commands)
         assert len(results) == 2
@@ -298,13 +298,12 @@ class TestSafeCommandRunner:
     def test_safe_command_runner_run_command_safe_with_validation(self):
         """Test SafeCommandRunner run_command_safe with validation."""
         runner = SafeCommandRunner()
-        
+
         def validation_func(result):
             return "test" in result.get("stdout", "")
-        
+
         result = runner.run_command_safe(
-            ["python", "-c", "print('test')"],
-            validation_func=validation_func
+            ["python", "-c", "print('test')"], validation_func=validation_func
         )
         assert result["success"] is True
         assert result["validated"] is True
@@ -312,41 +311,42 @@ class TestSafeCommandRunner:
     def test_safe_command_runner_run_command_safe_with_validation_failure(self):
         """Test SafeCommandRunner run_command_safe with validation failure."""
         runner = SafeCommandRunner()
-        
+
         def validation_func(result):
             return False  # Always fail validation
-        
+
         result = runner.run_command_safe(
-            ["python", "-c", "print('test')"],
-            validation_func=validation_func
+            ["python", "-c", "print('test')"], validation_func=validation_func
         )
         assert result["success"] is True
         assert result["validated"] is False
 
-    @patch('src.ai_guard.utils.subprocess_runner.run_command_safe')
+    @patch("src.ai_guard.utils.subprocess_runner.run_command_safe")
     def test_safe_command_runner_run_command_safe_retry(self, mock_run_command_safe):
         """Test SafeCommandRunner run_command_safe with retries."""
         runner = SafeCommandRunner(max_retries=2)
-        
+
         # First call fails, second succeeds
         mock_run_command_safe.side_effect = [
             {"success": False, "error": "First attempt failed"},
-            {"success": True, "stdout": "test"}
+            {"success": True, "stdout": "test"},
         ]
-        
+
         result = runner.run_command_safe(["command"])
         assert result["success"] is True
         assert result["attempts"] == 2
         assert mock_run_command_safe.call_count == 2
 
-    @patch('src.ai_guard.utils.subprocess_runner.run_command_safe')
-    def test_safe_command_runner_run_command_safe_max_retries(self, mock_run_command_safe):
+    @patch("src.ai_guard.utils.subprocess_runner.run_command_safe")
+    def test_safe_command_runner_run_command_safe_max_retries(
+        self, mock_run_command_safe
+    ):
         """Test SafeCommandRunner run_command_safe with max retries exceeded."""
         runner = SafeCommandRunner(max_retries=2)
-        
+
         # All calls fail
         mock_run_command_safe.return_value = {"success": False, "error": "Failed"}
-        
+
         result = runner.run_command_safe(["command"])
         assert result["success"] is False
         assert result["attempts"] == 2

@@ -23,7 +23,7 @@ class TestGetDefaultConfig:
     def test_get_default_config(self):
         """Test getting default configuration."""
         config = get_default_config()
-        
+
         assert isinstance(config, dict)
         assert "min_coverage" in config
         assert "skip_tests" in config
@@ -34,7 +34,7 @@ class TestGetDefaultConfig:
         assert "llm_api_key" in config
         assert "llm_model" in config
         assert "gates" in config
-        
+
         # Check default values
         assert config["min_coverage"] == 80
         assert config["skip_tests"] is False
@@ -44,7 +44,7 @@ class TestGetDefaultConfig:
         assert config["llm_provider"] == "openai"
         assert config["llm_api_key"] == ""
         assert config["llm_model"] == "gpt-4"
-        
+
         # Check gates defaults
         gates = config["gates"]
         assert gates["fail_on_bandit"] is True
@@ -100,7 +100,7 @@ class TestValidateConfig:
             "gates": {
                 "fail_on_bandit": "not a boolean",
                 "fail_on_lint": True,
-                "fail_on_mypy": True
+                "fail_on_mypy": True,
             }
         }
         assert validate_config(config) is False
@@ -111,7 +111,7 @@ class TestValidateConfig:
             "gates": {
                 "fail_on_bandit": True,
                 "fail_on_lint": False,
-                "fail_on_mypy": True
+                "fail_on_mypy": True,
             }
         }
         assert validate_config(config) is True
@@ -152,7 +152,7 @@ class TestMergeConfigs:
         base = {"min_coverage": 80, "skip_tests": False}
         override = {"min_coverage": 90}
         result = merge_configs(base, override)
-        
+
         assert result["min_coverage"] == 90
         assert result["skip_tests"] is False
 
@@ -160,18 +160,11 @@ class TestMergeConfigs:
         """Test merging configs with gates."""
         base = {
             "min_coverage": 80,
-            "gates": {
-                "fail_on_bandit": True,
-                "fail_on_lint": True
-            }
+            "gates": {"fail_on_bandit": True, "fail_on_lint": True},
         }
-        override = {
-            "gates": {
-                "fail_on_mypy": False
-            }
-        }
+        override = {"gates": {"fail_on_mypy": False}}
         result = merge_configs(base, override)
-        
+
         assert result["min_coverage"] == 80
         assert result["gates"]["fail_on_bandit"] is True
         assert result["gates"]["fail_on_lint"] is True
@@ -179,19 +172,10 @@ class TestMergeConfigs:
 
     def test_merge_configs_gates_override(self):
         """Test overriding gates values."""
-        base = {
-            "gates": {
-                "fail_on_bandit": True,
-                "fail_on_lint": True
-            }
-        }
-        override = {
-            "gates": {
-                "fail_on_bandit": False
-            }
-        }
+        base = {"gates": {"fail_on_bandit": True, "fail_on_lint": True}}
+        override = {"gates": {"fail_on_bandit": False}}
         result = merge_configs(base, override)
-        
+
         assert result["gates"]["fail_on_bandit"] is False
         assert result["gates"]["fail_on_lint"] is True
 
@@ -256,15 +240,13 @@ class TestLoadConfig:
         config_data = {
             "min_coverage": 90,
             "skip_tests": True,
-            "gates": {
-                "fail_on_bandit": False
-            }
+            "gates": {"fail_on_bandit": False},
         }
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(config_data, f)
             temp_file = f.name
-        
+
         try:
             config = load_config(temp_file)
             assert config["min_coverage"] == 90
@@ -282,11 +264,11 @@ skip_tests = true
 [gates]
 fail_on_bandit = false
 """
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.toml', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write(toml_content)
             temp_file = f.name
-        
+
         try:
             config = load_config(temp_file)
             assert config["min_coverage"] == 90
@@ -297,10 +279,10 @@ fail_on_bandit = false
 
     def test_load_config_parse_error(self):
         """Test loading config with parse error."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write("invalid json content")
             temp_file = f.name
-        
+
         try:
             config = load_config(temp_file)
             default_config = get_default_config()
@@ -326,7 +308,7 @@ class TestGates:
             min_coverage=90,
             fail_on_bandit=False,
             fail_on_lint=False,
-            fail_on_mypy=False
+            fail_on_mypy=False,
         )
         assert gates.min_coverage == 90
         assert gates.fail_on_bandit is False
@@ -375,13 +357,13 @@ class TestConfig:
         """Test Config reload method."""
         config = Config()
         original_coverage = config.min_coverage
-        
+
         # Change the config file
         config_data = {"min_coverage": 95}
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(config_data, f)
             temp_file = f.name
-        
+
         try:
             config.config_path = temp_file
             config.reload()
@@ -394,15 +376,15 @@ class TestConfig:
         config_dict = {
             "min_coverage": 90,
             "skip_tests": True,
-            "gates": {
-                "fail_on_bandit": False
-            }
+            "gates": {"fail_on_bandit": False},
         }
         config = Config.from_dict(config_dict)
         assert config.min_coverage == 90
         assert config.skip_tests is True
         # Note: fail_on_bandit is read from gates section, but Config class reads from top-level
-        assert config.fail_on_bandit is True  # Default value since it's not at top level
+        assert (
+            config.fail_on_bandit is True
+        )  # Default value since it's not at top level
 
     def test_config_to_dict(self):
         """Test Config conversion to dictionary."""
@@ -415,7 +397,7 @@ class TestConfig:
         """Test Config validation."""
         config = Config()
         assert config.validate() is True
-        
+
         # Test with invalid config
         config.set("min_coverage", -1)
         assert config.validate() is False
