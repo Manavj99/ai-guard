@@ -57,7 +57,7 @@ jobs:
           python -m ai_guard.analyzer --min-cov 80 --skip-tests --sarif ai-guard.sarif || true
 
       - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: ai-guard.sarif
         if: always()
